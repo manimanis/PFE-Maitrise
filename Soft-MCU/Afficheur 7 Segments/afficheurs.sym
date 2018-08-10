@@ -1,0 +1,81 @@
+004-005 @READ_PROGRAM_MEMORY8.P1
+015     CCP_1_HIGH
+015     CCP_1_LOW
+015     CCP_1
+01F.6   C1OUT
+01F.7   C2OUT
+020     @INTERRUPT_AREA
+021     @INTERRUPT_AREA
+022     @INTERRUPT_AREA
+023     @INTERRUPT_AREA
+024     @INTERRUPT_AREA
+025     @INTERRUPT_AREA
+026     @INTERRUPT_AREA
+027     @INTERRUPT_AREA
+028     @INTERRUPT_AREA
+029     @INTERRUPT_AREA
+02A     sz
+02B     pa
+02C     rm
+02D     pos
+02E-04D data
+04E     point
+04F     blink
+050     sens
+051     chiff_cour
+052-053 btm
+055     rda_isr.c
+055     timer0_isr.i
+056     timer0_isr.v
+056     rda_isr.@SCRATCH1
+057.0   timer0_isr.pt
+057     rda_isr.@SCRATCH2
+058     convertToSeg.v
+058     timer0_isr.@SCRATCH1
+077     @SCRATCH
+078     @SCRATCH
+078     _RETURN_
+079     @SCRATCH
+07A     @SCRATCH
+07B     @SCRATCH
+10D-10E @READ_PROGRAM_MEMORY8.P1
+
+ROM Allocation:
+003F  convertToSeg
+0177  rda_isr
+01C9  timer0_isr
+026F  timer1_isr
+02AE  MAIN
+02AE  @cinit
+
+
+User Memory space: 
+
+Project Directory:
+    D:\pfe\Montages Electroniques\afficheurs\
+
+Project Files:
+    afficheurs.c
+    afficheurs.h
+    ..\..\..\Program Files\PICC\devices\16F628A.h
+
+Units:
+    afficheurs.c (main)
+
+Compiler Settings:
+    Processor:      PIC16F628A
+    Pointer Size:   16
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+
+Output Files:
+    Errors:      afficheurs.err
+    Ext Symbols: afficheurs.esym
+    INHX8:       afficheurs.hex
+    Symbols:     afficheurs.sym
+    List:        afficheurs.lst
+    Debug/COFF:  afficheurs.cof
+    Project:     afficheurs.PJT
+    Call Tree:   afficheurs.tre
+    Statistics:  afficheurs.sta

@@ -1,0 +1,5430 @@
+CCS PCH C Compiler, Version 4.114, 93495243               08-mars-12 12:56
+
+               Filename: D:\pfe\Montages Electroniques\principale\principale.lst
+
+               ROM used: 9760 bytes (30%)
+                         Largest free fragment is 23004
+               RAM used: 281 (14%) at main() level
+                         323 (16%) worst case
+               Stack:    13 worst case (6 in main + 7 for interrupts)
+
+*
+0000:  GOTO   22D0
+*
+0008:  MOVWF  04
+000A:  MOVFF  FD8,05
+000E:  MOVFF  FE0,06
+0012:  MOVLB  0
+0014:  MOVFF  FE9,0C
+0018:  MOVFF  FEA,07
+001C:  MOVFF  FE1,08
+0020:  MOVFF  FE2,09
+0024:  MOVFF  FD9,0A
+0028:  MOVFF  FDA,0B
+002C:  MOVFF  FF3,12
+0030:  MOVFF  FF4,13
+0034:  MOVFF  FFA,14
+0038:  MOVFF  FF5,15
+003C:  MOVFF  FF6,16
+0040:  MOVFF  FF7,17
+0044:  MOVFF  00,0E
+0048:  MOVFF  01,0F
+004C:  MOVFF  02,10
+0050:  MOVFF  03,11
+0054:  BTFSS  FF2.5
+0056:  GOTO   0060
+005A:  BTFSC  FF2.2
+005C:  GOTO   0C96
+0060:  MOVFF  0E,00
+0064:  MOVFF  0F,01
+0068:  MOVFF  10,02
+006C:  MOVFF  11,03
+0070:  MOVFF  0C,FE9
+0074:  MOVFF  07,FEA
+0078:  BSF    07.7
+007A:  MOVFF  08,FE1
+007E:  MOVFF  09,FE2
+0082:  MOVFF  0A,FD9
+0086:  MOVFF  0B,FDA
+008A:  MOVFF  12,FF3
+008E:  MOVFF  13,FF4
+0092:  MOVFF  14,FFA
+0096:  MOVFF  15,FF5
+009A:  MOVFF  16,FF6
+009E:  MOVFF  17,FF7
+00A2:  MOVF   04,W
+00A4:  MOVFF  06,FE0
+00A8:  MOVFF  05,FD8
+00AC:  RETFIE 0
+.................... #include <principale.h> 
+.................... #include <18F4550.h> 
+.................... //////// Standard Header file for the PIC18F4550 device //////////////// 
+.................... #device PIC18F4550 
+.................... #list 
+....................  
+.................... #device adc=8 
+....................  
+.................... #FUSES NOWDT                    //No Watch Dog Timer 
+.................... #FUSES WDT128                   //Watch Dog Timer uses 1:128 Postscale 
+.................... #FUSES PLL5                     //Divide By 5(20MHz oscillator input) 
+.................... #FUSES CPUDIV2                  //System Clock by 2 
+.................... #FUSES USBDIV                   //USB clock source comes from primary oscillator 
+.................... #FUSES HSPLL                    //High Speed Crystal/Resonator with PLL enabled 
+.................... #FUSES FCMEN                    //Fail-safe clock monitor enabled 
+.................... #FUSES IESO                     //Internal External Switch Over mode enabled 
+.................... #FUSES NOPUT                    //No Power Up Timer 
+.................... #FUSES NOBROWNOUT               //No brownout reset 
+.................... #FUSES BORV20                   //Brownout reset at 2.0V 
+.................... #FUSES VREGEN                   //USB voltage regulator enabled 
+.................... #FUSES PBADEN                   //PORTB pins are configured as analog input channels on RESET 
+.................... #FUSES LPT1OSC                  //Timer1 configured for low-power operation 
+.................... #FUSES NOMCLR                   //Master Clear pin disabled 
+.................... #FUSES STVREN                   //Stack full/underflow will cause reset 
+.................... #FUSES NOLVP                    //No low voltage prgming, B3(PIC16) or B5(PIC18) used for I/O 
+.................... #FUSES NOXINST                  //Extended set extension and Indexed Addressing mode disabled (Legacy mode) 
+.................... #FUSES NODEBUG                  //No Debug mode for ICD 
+.................... #FUSES NOPROTECT                //Code not protected from reading 
+.................... #FUSES NOCPB                    //No Boot Block code protection 
+.................... #FUSES NOCPD                    //No EE protection 
+.................... #FUSES NOWRT                    //Program memory not write protected 
+.................... #FUSES NOWRTC                   //configuration not registers write protected 
+.................... #FUSES NOWRTB                   //Boot block not write protected 
+.................... #FUSES NOWRTD                   //Data EEPROM not write protected 
+.................... #FUSES NOEBTR                   //Memory not protected from table reads 
+.................... #FUSES NOEBTRB                  //Boot block not protected from table reads 
+....................  
+.................... #define AFF_TX             PIN_A0 
+.................... #define AFF2               PIN_A1 
+.................... #define AFF1               PIN_A2 
+.................... #define AFF0               PIN_A3 
+....................  
+.................... #define LDARR1_DATA        PIN_D1 
+.................... #define LDARR2_DATA        PIN_A5 
+....................  
+.................... #define LCD_DATA           PIN_D2 
+....................  
+.................... #define IR_DATA_READY      PIN_D4 
+.................... #define IR_RX              PIN_D5 
+.................... #define IR_RQ_SEND         PIN_D6 
+....................  
+.................... #define DISABLE_INT        disable_interrupts(GLOBAL) 
+.................... #define ENABLE_INT         enable_interrupts(GLOBAL) 
+....................  
+.................... #use delay(crystal=20000000,  clock=48000000) 
+*
+0CBC:  MOVLW  01
+0CBE:  MOVWF  FEA
+0CC0:  MOVLW  1F
+0CC2:  MOVWF  FE9
+0CC4:  MOVF   FEF,W
+0CC6:  BZ    0CE4
+0CC8:  MOVLW  0F
+0CCA:  MOVWF  01
+0CCC:  CLRF   00
+0CCE:  DECFSZ 00,F
+0CD0:  BRA    0CCE
+0CD2:  DECFSZ 01,F
+0CD4:  BRA    0CCC
+0CD6:  MOVLW  8F
+0CD8:  MOVWF  00
+0CDA:  DECFSZ 00,F
+0CDC:  BRA    0CDA
+0CDE:  NOP   
+0CE0:  DECFSZ FEF,F
+0CE2:  BRA    0CC8
+0CE4:  RETLW  00
+*
+106A:  MOVLW  01
+106C:  MOVLB  1
+106E:  SUBWF  x1F,F
+1070:  BNC   108C
+1072:  MOVLW  01
+1074:  MOVWF  FEA
+1076:  MOVLW  1F
+1078:  MOVWF  FE9
+107A:  MOVF   FEF,W
+107C:  BZ    108C
+107E:  MOVLW  02
+1080:  MOVWF  00
+1082:  DECFSZ 00,F
+1084:  BRA    1082
+1086:  BRA    1088
+1088:  DECFSZ FEF,F
+108A:  BRA    107E
+108C:  MOVLB  0
+108E:  RETLW  00
+.................... #use i2c(master,sda=PIN_B0,scl=PIN_B1) 
+*
+01BE:  MOVLW  08
+01C0:  MOVWF  01
+01C2:  MOVLW  11
+01C4:  MOVWF  00
+01C6:  DECFSZ 00,F
+01C8:  BRA    01C6
+01CA:  BCF    F8A.1
+01CC:  BCF    F93.1
+01CE:  MOVLW  11
+01D0:  MOVWF  00
+01D2:  DECFSZ 00,F
+01D4:  BRA    01D2
+01D6:  MOVLB  1
+01D8:  RLCF   x3E,F
+01DA:  BCF    F8A.0
+01DC:  BTFSC  FD8.0
+01DE:  BSF    F93.0
+01E0:  BTFSS  FD8.0
+01E2:  BCF    F93.0
+01E4:  BSF    F93.1
+01E6:  BTFSS  F81.1
+01E8:  BRA    01E6
+01EA:  DECFSZ 01,F
+01EC:  BRA    01F0
+01EE:  BRA    01F4
+01F0:  MOVLB  0
+01F2:  BRA    01C2
+01F4:  MOVLW  11
+01F6:  MOVWF  00
+01F8:  DECFSZ 00,F
+01FA:  BRA    01F8
+01FC:  BCF    F8A.1
+01FE:  BCF    F93.1
+0200:  NOP   
+0202:  BSF    F93.0
+0204:  MOVLW  11
+0206:  MOVWF  00
+0208:  DECFSZ 00,F
+020A:  BRA    0208
+020C:  MOVLW  11
+020E:  MOVWF  00
+0210:  DECFSZ 00,F
+0212:  BRA    0210
+0214:  BSF    F93.1
+0216:  BTFSS  F81.1
+0218:  BRA    0216
+021A:  CLRF   01
+021C:  MOVLW  11
+021E:  MOVWF  00
+0220:  DECFSZ 00,F
+0222:  BRA    0220
+0224:  BTFSC  F81.0
+0226:  BSF    01.0
+0228:  BCF    F8A.1
+022A:  BCF    F93.1
+022C:  BCF    F8A.0
+022E:  BCF    F93.0
+0230:  MOVLB  0
+0232:  RETLW  00
+0234:  MOVLW  08
+0236:  MOVLB  1
+0238:  MOVWF  x41
+023A:  MOVFF  00,142
+023E:  BSF    F93.0
+0240:  MOVLW  11
+0242:  MOVWF  00
+0244:  DECFSZ 00,F
+0246:  BRA    0244
+0248:  BSF    F93.1
+024A:  BTFSS  F81.1
+024C:  BRA    024A
+024E:  BTFSC  F81.0
+0250:  BSF    FD8.0
+0252:  BTFSS  F81.0
+0254:  BCF    FD8.0
+0256:  RLCF   01,F
+0258:  MOVLW  11
+025A:  MOVWF  00
+025C:  DECFSZ 00,F
+025E:  BRA    025C
+0260:  BCF    F93.1
+0262:  BCF    F8A.1
+0264:  DECFSZ x41,F
+0266:  BRA    023E
+0268:  BSF    F93.0
+026A:  MOVLW  11
+026C:  MOVWF  00
+026E:  DECFSZ 00,F
+0270:  BRA    026E
+0272:  BCF    F8A.0
+0274:  MOVF   x42,W
+0276:  BTFSS  FD8.2
+0278:  BCF    F93.0
+027A:  NOP   
+027C:  BSF    F93.1
+027E:  BTFSS  F81.1
+0280:  BRA    027E
+0282:  MOVLW  11
+0284:  MOVWF  00
+0286:  DECFSZ 00,F
+0288:  BRA    0286
+028A:  BCF    F8A.1
+028C:  BCF    F93.1
+028E:  MOVLW  11
+0290:  MOVWF  00
+0292:  DECFSZ 00,F
+0294:  BRA    0292
+0296:  BCF    F8A.0
+0298:  BCF    F93.0
+029A:  MOVLB  0
+029C:  RETLW  00
+.................... #use rs232(baud=9600,rcv=PIN_C7,xmit=PIN_C6,bits=8) 
+.................... #use rs232(baud=9600,xmit=AFF_TX,bits=8,stream=aff7) 
+*
+03B6:  BCF    F92.0
+03B8:  BCF    F89.0
+03BA:  MOVLW  08
+03BC:  MOVWF  01
+03BE:  BRA    03C0
+03C0:  NOP   
+03C2:  BSF    01.7
+03C4:  BRA    03E6
+03C6:  BCF    01.7
+03C8:  MOVLB  1
+03CA:  RRCF   x38,F
+03CC:  MOVLB  0
+03CE:  BTFSC  FD8.0
+03D0:  BSF    F89.0
+03D2:  BTFSS  FD8.0
+03D4:  BCF    F89.0
+03D6:  BSF    01.6
+03D8:  BRA    03E6
+03DA:  BCF    01.6
+03DC:  DECFSZ 01,F
+03DE:  BRA    03C8
+03E0:  BRA    03E2
+03E2:  NOP   
+03E4:  BSF    F89.0
+03E6:  MOVLW  01
+03E8:  MOVWF  00
+03EA:  CLRF   FE9
+03EC:  DECFSZ FE9,F
+03EE:  BRA    03EC
+03F0:  DECFSZ 00,F
+03F2:  BRA    03EA
+03F4:  MOVLW  99
+03F6:  MOVWF  FE9
+03F8:  DECFSZ FE9,F
+03FA:  BRA    03F8
+03FC:  NOP   
+03FE:  BTFSC  01.7
+0400:  BRA    03C6
+0402:  BTFSC  01.6
+0404:  BRA    03DA
+0406:  RETLW  00
+.................... #use rs232(baud=9600,xmit=LDARR1_DATA,bits=8,stream=ld1) 
+*
+0620:  BCF    F95.1
+0622:  BCF    F8C.1
+0624:  MOVLW  08
+0626:  MOVWF  01
+0628:  BRA    062A
+062A:  NOP   
+062C:  BSF    01.7
+062E:  BRA    0650
+0630:  BCF    01.7
+0632:  MOVLB  1
+0634:  RRCF   x34,F
+0636:  MOVLB  0
+0638:  BTFSC  FD8.0
+063A:  BSF    F8C.1
+063C:  BTFSS  FD8.0
+063E:  BCF    F8C.1
+0640:  BSF    01.6
+0642:  BRA    0650
+0644:  BCF    01.6
+0646:  DECFSZ 01,F
+0648:  BRA    0632
+064A:  BRA    064C
+064C:  NOP   
+064E:  BSF    F8C.1
+0650:  MOVLW  01
+0652:  MOVWF  00
+0654:  CLRF   FE9
+0656:  DECFSZ FE9,F
+0658:  BRA    0656
+065A:  DECFSZ 00,F
+065C:  BRA    0654
+065E:  MOVLW  99
+0660:  MOVWF  FE9
+0662:  DECFSZ FE9,F
+0664:  BRA    0662
+0666:  NOP   
+0668:  BTFSC  01.7
+066A:  BRA    0630
+066C:  BTFSC  01.6
+066E:  BRA    0644
+0670:  RETLW  00
+.................... #use rs232(baud=9600,xmit=LDARR2_DATA,bits=8,stream=ld2) 
+0672:  BCF    F92.5
+0674:  BCF    F89.5
+0676:  MOVLW  08
+0678:  MOVWF  01
+067A:  BRA    067C
+067C:  NOP   
+067E:  BSF    01.7
+0680:  BRA    06A2
+0682:  BCF    01.7
+0684:  MOVLB  1
+0686:  RRCF   x34,F
+0688:  MOVLB  0
+068A:  BTFSC  FD8.0
+068C:  BSF    F89.5
+068E:  BTFSS  FD8.0
+0690:  BCF    F89.5
+0692:  BSF    01.6
+0694:  BRA    06A2
+0696:  BCF    01.6
+0698:  DECFSZ 01,F
+069A:  BRA    0684
+069C:  BRA    069E
+069E:  NOP   
+06A0:  BSF    F89.5
+06A2:  MOVLW  01
+06A4:  MOVWF  00
+06A6:  CLRF   FE9
+06A8:  DECFSZ FE9,F
+06AA:  BRA    06A8
+06AC:  DECFSZ 00,F
+06AE:  BRA    06A6
+06B0:  MOVLW  99
+06B2:  MOVWF  FE9
+06B4:  DECFSZ FE9,F
+06B6:  BRA    06B4
+06B8:  NOP   
+06BA:  BTFSC  01.7
+06BC:  BRA    0682
+06BE:  BTFSC  01.6
+06C0:  BRA    0696
+06C2:  RETLW  00
+.................... #use rs232(baud=9600,xmit=LCD_DATA,bits=8,stream=lcd) 
+*
+1018:  BCF    F95.2
+101A:  BCF    F8C.2
+101C:  MOVLW  08
+101E:  MOVWF  01
+1020:  BRA    1022
+1022:  NOP   
+1024:  BSF    01.7
+1026:  BRA    1048
+1028:  BCF    01.7
+102A:  MOVLB  1
+102C:  RRCF   x20,F
+102E:  MOVLB  0
+1030:  BTFSC  FD8.0
+1032:  BSF    F8C.2
+1034:  BTFSS  FD8.0
+1036:  BCF    F8C.2
+1038:  BSF    01.6
+103A:  BRA    1048
+103C:  BCF    01.6
+103E:  DECFSZ 01,F
+1040:  BRA    102A
+1042:  BRA    1044
+1044:  NOP   
+1046:  BSF    F8C.2
+1048:  MOVLW  01
+104A:  MOVWF  00
+104C:  CLRF   FE9
+104E:  DECFSZ FE9,F
+1050:  BRA    104E
+1052:  DECFSZ 00,F
+1054:  BRA    104C
+1056:  MOVLW  99
+1058:  MOVWF  FE9
+105A:  DECFSZ FE9,F
+105C:  BRA    105A
+105E:  NOP   
+1060:  BTFSC  01.7
+1062:  BRA    1028
+1064:  BTFSC  01.6
+1066:  BRA    103C
+1068:  RETLW  00
+.................... #use rs232(baud=9600,rcv=IR_RX,bits=8,stream=ir) 
+*
+111E:  BSF    F95.5
+1120:  BTFSC  F83.5
+1122:  BRA    1120
+1124:  MOVLW  08
+1126:  MOVWF  00
+1128:  MOVLB  1
+112A:  CLRF   x16
+112C:  BSF    00.7
+112E:  BRA    114C
+1130:  BCF    00.7
+1132:  BRA    114C
+1134:  BCF    FD8.0
+1136:  BTFSC  F83.5
+1138:  BSF    FD8.0
+113A:  RRCF   x16,F
+113C:  BSF    00.6
+113E:  BRA    114C
+1140:  BCF    00.6
+1142:  DECFSZ 00,F
+1144:  BRA    1134
+1146:  MOVFF  116,01
+114A:  BRA    1176
+114C:  MOVLW  01
+114E:  MOVWF  FE9
+1150:  MOVLW  00
+1152:  BTFSC  00.7
+1154:  MOVLW  55
+1156:  MOVWF  01
+1158:  DECFSZ 01,F
+115A:  BRA    1158
+115C:  DECFSZ FE9,F
+115E:  BRA    1150
+1160:  MOVLW  98
+1162:  BTFSC  00.7
+1164:  MOVLW  29
+1166:  MOVWF  01
+1168:  DECFSZ 01,F
+116A:  BRA    1168
+116C:  BTFSC  00.7
+116E:  BRA    1130
+1170:  BTFSC  00.6
+1172:  BRA    1140
+1174:  BRA    1134
+1176:  MOVLB  0
+1178:  GOTO   23DC (RETURN)
+.................... #use rs232(baud=19200,rcv=PIN_C0,xmit=PIN_C2,bits=8,stream=mp3) 
+*
+04CE:  BCF    F94.2
+04D0:  BCF    F8B.2
+04D2:  MOVLW  08
+04D4:  MOVWF  01
+04D6:  BRA    04D8
+04D8:  NOP   
+04DA:  BSF    01.7
+04DC:  BRA    04FE
+04DE:  BCF    01.7
+04E0:  MOVLB  1
+04E2:  RRCF   x30,F
+04E4:  MOVLB  0
+04E6:  BTFSC  FD8.0
+04E8:  BSF    F8B.2
+04EA:  BTFSS  FD8.0
+04EC:  BCF    F8B.2
+04EE:  BSF    01.6
+04F0:  BRA    04FE
+04F2:  BCF    01.6
+04F4:  DECFSZ 01,F
+04F6:  BRA    04E0
+04F8:  BRA    04FA
+04FA:  NOP   
+04FC:  BSF    F8B.2
+04FE:  MOVLW  CA
+0500:  MOVWF  FE9
+0502:  DECFSZ FE9,F
+0504:  BRA    0502
+0506:  NOP   
+0508:  BTFSC  01.7
+050A:  BRA    04DE
+050C:  BTFSC  01.6
+050E:  BRA    04F2
+0510:  RETLW  00
+*
+2116:  BSF    F94.0
+2118:  BTFSC  F82.0
+211A:  BRA    2118
+211C:  MOVLW  08
+211E:  MOVWF  00
+2120:  MOVLB  1
+2122:  CLRF   x1C
+2124:  BSF    00.7
+2126:  BRA    2144
+2128:  BCF    00.7
+212A:  BRA    2144
+212C:  BCF    FD8.0
+212E:  BTFSC  F82.0
+2130:  BSF    FD8.0
+2132:  RRCF   x1C,F
+2134:  BSF    00.6
+2136:  BRA    2144
+2138:  BCF    00.6
+213A:  DECFSZ 00,F
+213C:  BRA    212C
+213E:  MOVFF  11C,01
+2142:  BRA    215A
+2144:  MOVLW  CA
+2146:  BTFSC  00.7
+2148:  MOVLW  37
+214A:  MOVWF  01
+214C:  DECFSZ 01,F
+214E:  BRA    214C
+2150:  BTFSC  00.7
+2152:  BRA    2128
+2154:  BTFSC  00.6
+2156:  BRA    2138
+2158:  BRA    212C
+215A:  MOVLB  0
+215C:  RETLW  00
+....................  
+....................  
+....................  
+.................... #include <infrared.c> 
+.................... #include "infrared.h" 
+.................... #ifndef __INFRARED_H__ 
+....................  
+.................... #define __INFRARED_H__ 
+....................  
+.................... void ir_init(); 
+.................... int ir_is_data_ready(); 
+.................... int ir_get_data(); 
+....................  
+.................... #endif // __INFRARED_H__ 
+....................  
+....................  
+.................... void ir_init() { 
+....................    output_high(IR_RQ_SEND); 
+.................... } 
+....................  
+.................... int ir_is_data_ready() { 
+....................    return input(IR_DATA_READY); 
+.................... } 
+....................  
+.................... int ir_get_data() { 
+....................    int c; 
+....................     
+....................    if (input(IR_DATA_READY)) { 
+....................       DISABLE_INT; 
+....................       output_low(IR_RQ_SEND); 
+....................       c = fgetc(ir); 
+....................       output_high(IR_RQ_SEND); 
+....................       ENABLE_INT; 
+....................       return c; 
+....................    } 
+....................     
+....................    return 0xff; 
+.................... } 
+....................  
+.................... #include <ds1307.c> 
+.................... #include "ds1307.h" 
+.................... #ifndef __DS1307_H__ 
+....................  
+.................... #define __DS1307_H__ 
+....................  
+.................... #define CLK_ADDRESS        0xD0 
+.................... #define CLK_ADDRESS_RD     0xD1 
+.................... #define CLK_HALT_BIT       7 
+.................... #define CLK_AM_BIT         5 
+....................  
+.................... #define SECOND             0 
+.................... #define MINUTE             1 
+.................... #define HOUR               2 
+.................... #define DAY                3 
+.................... #define DATE               4 
+.................... #define MONTH              5 
+.................... #define YEAR               6 
+....................  
+.................... #define CLK_SECOND_CHANGED 1 
+.................... #define CLK_MINUTE_CHANGED 2 
+.................... #define CLK_HOUR_CHANGED   4 
+.................... #define CLK_DATE_CHANGED   8 
+.................... #define CLK_MONTH_CHANGED  16 
+.................... #define CLK_YEAR_CHANGED   32 
+.................... #define CLK_ALL_CHANGED    255 
+.................... #define CLK_NO_CHANGE      0 
+....................  
+.................... #define CLK_TOWN_LOCATION 8 
+....................  
+.................... int clk_event(); 
+....................  
+.................... void clk_start(); 
+.................... void clk_stop(); 
+.................... int  clk_is_started(); 
+....................  
+.................... void clk_set_time(int hr, int mn); 
+.................... void clk_set_date(int dt, int mth, int yr); 
+....................  
+.................... int  clk_read(); 
+.................... void clk_write(); 
+....................  
+.................... int16 clk_days(); 
+....................  
+.................... void clk_set_ville(int ville); 
+.................... int  clk_get_ville(); 
+....................  
+.................... #endif //__DS1307_H__ 
+....................  
+.................... #include "date.h" 
+.................... #ifndef __DATE_H__ 
+....................  
+.................... #define __DATE_H__ 
+....................  
+.................... int date_isleap(int yy); 
+.................... int16 date_nbj(int jj, int mm, int aa); 
+.................... int date_jds(int16 val); 
+....................  
+.................... #endif // __DATE_H__ 
+....................  
+.................... #include "utility.h" 
+.................... #ifndef __UTILITY_H__ 
+....................  
+.................... #define __UTILITY_H__ 
+....................  
+.................... int bcd2dec(int val); 
+.................... int dec2bcd(int val); 
+....................  
+.................... #endif // __UTILITY_H__ 
+....................  
+....................  
+.................... int8 clk_last[7],  
+....................      clk_data[7]; 
+....................  
+.................... int clk_event() { 
+....................    int change; 
+....................     
+....................    change = CLK_NO_CHANGE; 
+*
+029E:  MOVLB  1
+02A0:  CLRF   x2F
+....................    if (clk_last[YEAR] != clk_data[YEAR])        change |= CLK_YEAR_CHANGED; 
+02A2:  MOVF   27,W
+02A4:  SUBWF  20,W
+02A6:  BTFSS  FD8.2
+02A8:  BSF    x2F.5
+....................    if (clk_last[MONTH] != clk_data[MONTH])      change |= CLK_MONTH_CHANGED; 
+02AA:  MOVF   26,W
+02AC:  SUBWF  1F,W
+02AE:  BTFSS  FD8.2
+02B0:  BSF    x2F.4
+....................    if (clk_last[DATE] != clk_data[DATE])        change |= CLK_DATE_CHANGED; 
+02B2:  MOVF   25,W
+02B4:  SUBWF  1E,W
+02B6:  BTFSS  FD8.2
+02B8:  BSF    x2F.3
+....................    if (clk_last[HOUR] != clk_data[HOUR])        change |= CLK_HOUR_CHANGED; 
+02BA:  MOVF   23,W
+02BC:  SUBWF  1C,W
+02BE:  BTFSS  FD8.2
+02C0:  BSF    x2F.2
+....................    if (clk_last[MINUTE] != clk_data[MINUTE])    change |= CLK_MINUTE_CHANGED; 
+02C2:  MOVF   22,W
+02C4:  SUBWF  1B,W
+02C6:  BTFSS  FD8.2
+02C8:  BSF    x2F.1
+....................    if (clk_last[SECOND] != clk_data[SECOND])    change |= CLK_SECOND_CHANGED; 
+02CA:  MOVF   21,W
+02CC:  SUBWF  1A,W
+02CE:  BTFSS  FD8.2
+02D0:  BSF    x2F.0
+....................    return change; 
+02D2:  MOVFF  12F,01
+.................... } 
+02D6:  MOVLB  0
+02D8:  RETLW  00
+....................  
+.................... void clk_init() { 
+....................    memset(clk_last, 0, sizeof(clk_last)); 
+*
+0D04:  CLRF   FEA
+0D06:  MOVLW  1A
+0D08:  MOVWF  FE9
+0D0A:  MOVLB  1
+0D0C:  CLRF   x16
+0D0E:  CLRF   x18
+0D10:  MOVLW  07
+0D12:  MOVWF  x17
+0D14:  MOVLB  0
+0D16:  RCALL  0CE6
+....................    memset(clk_data, 0, sizeof(clk_data)); 
+0D18:  CLRF   FEA
+0D1A:  MOVLW  21
+0D1C:  MOVWF  FE9
+0D1E:  MOVLB  1
+0D20:  CLRF   x16
+0D22:  CLRF   x18
+0D24:  MOVLW  07
+0D26:  MOVWF  x17
+0D28:  MOVLB  0
+0D2A:  RCALL  0CE6
+.................... } 
+0D2C:  GOTO   234E (RETURN)
+....................  
+.................... void clk_start() { 
+....................    bit_clear(clk_data[SECOND], CLK_HALT_BIT); 
+*
+0DEA:  BCF    21.7
+....................    clk_write(); 
+0DEC:  RCALL  0D3C
+.................... } 
+0DEE:  GOTO   236A (RETURN)
+....................  
+.................... void clk_stop() { 
+....................    bit_set(clk_data[SECOND], CLK_HALT_BIT); 
+....................    clk_write(); 
+.................... } 
+....................  
+.................... int  clk_is_started() {    
+....................    return (!bit_test(clk_data[SECOND], CLK_HALT_BIT)); 
+*
+0D30:  MOVLW  00
+0D32:  BTFSS  21.7
+0D34:  MOVLW  01
+0D36:  MOVWF  01
+.................... } 
+0D38:  GOTO   2362 (RETURN)
+....................  
+.................... void clk_set_time(int hr, int mn) { 
+....................    clk_data[HOUR] = hr; 
+*
+2078:  MOVFF  118,23
+....................    clk_data[MINUTE] = mn; 
+207C:  MOVFF  119,22
+....................    clk_data[SECOND] = 0; 
+2080:  CLRF   21
+....................     
+....................    clk_write(); 
+2082:  CALL   0D3C
+.................... } 
+2086:  GOTO   2482 (RETURN)
+....................  
+.................... void clk_set_date(int dt, int mth, int yr) { 
+....................    clk_data[DATE] = dt; 
+*
+1FF8:  MOVFF  119,25
+....................    clk_data[MONTH] = mth; 
+1FFC:  MOVFF  11A,26
+....................    clk_data[YEAR] = yr; 
+2000:  MOVFF  11B,27
+2004:  CLRF   19
+2006:  BTFSC  FF2.7
+2008:  BSF    19.7
+200A:  BCF    FF2.7
+....................    clk_data[DAY] = date_jds(date_nbj(bcd2dec(dt), bcd2dec(mth), bcd2dec(yr))); 
+200C:  MOVFF  119,137
+2010:  CALL   074E
+2014:  BTFSC  19.7
+2016:  BSF    FF2.7
+2018:  MOVFF  01,11C
+201C:  CLRF   19
+201E:  BTFSC  FF2.7
+2020:  BSF    19.7
+2022:  BCF    FF2.7
+2024:  MOVFF  11A,137
+2028:  CALL   074E
+202C:  BTFSC  19.7
+202E:  BSF    FF2.7
+2030:  MOVFF  01,11D
+2034:  CLRF   19
+2036:  BTFSC  FF2.7
+2038:  BSF    19.7
+203A:  BCF    FF2.7
+203C:  MOVFF  11B,137
+2040:  CALL   074E
+2044:  BTFSC  19.7
+2046:  BSF    FF2.7
+2048:  MOVFF  01,11E
+204C:  MOVFF  11C,11F
+2050:  MOVFF  11D,120
+2054:  MOVFF  01,121
+2058:  BRA    1EBA
+205A:  MOVFF  02,11D
+205E:  MOVFF  01,11C
+2062:  MOVFF  02,11F
+2066:  MOVFF  01,11E
+206A:  BRA    1FBC
+206C:  MOVFF  01,24
+....................     
+....................    clk_write(); 
+2070:  CALL   0D3C
+.................... } 
+2074:  GOTO   244E (RETURN)
+....................  
+.................... int clk_read() { 
+....................    int i;    
+....................     
+....................    memcpy(clk_last, clk_data, sizeof(clk_data)); 
+*
+02DA:  CLRF   FEA
+02DC:  MOVLW  1A
+02DE:  MOVWF  FE9
+02E0:  CLRF   FE2
+02E2:  MOVLW  21
+02E4:  MOVWF  FE1
+02E6:  MOVLW  07
+02E8:  MOVWF  01
+02EA:  MOVFF  FE6,FEE
+02EE:  DECFSZ 01,F
+02F0:  BRA    02EA
+....................     
+....................    i2c_start(); 
+02F2:  BSF    F93.0
+02F4:  MOVLW  11
+02F6:  MOVWF  00
+02F8:  DECFSZ 00,F
+02FA:  BRA    02F8
+02FC:  BSF    F93.1
+02FE:  MOVLW  11
+0300:  MOVWF  00
+0302:  DECFSZ 00,F
+0304:  BRA    0302
+0306:  BCF    F8A.0
+0308:  BCF    F93.0
+030A:  MOVLW  11
+030C:  MOVWF  00
+030E:  DECFSZ 00,F
+0310:  BRA    030E
+0312:  BCF    F8A.1
+0314:  BCF    F93.1
+....................    i2c_write(CLK_ADDRESS); 
+0316:  MOVLW  D0
+0318:  MOVLB  1
+031A:  MOVWF  x3E
+031C:  MOVLB  0
+031E:  RCALL  01BE
+....................    i2c_write(0); 
+0320:  MOVLB  1
+0322:  CLRF   x3E
+0324:  MOVLB  0
+0326:  RCALL  01BE
+....................    i2c_start(); 
+0328:  BSF    F93.0
+032A:  MOVLW  11
+032C:  MOVWF  00
+032E:  DECFSZ 00,F
+0330:  BRA    032E
+0332:  BSF    F93.1
+0334:  MOVLW  11
+0336:  MOVWF  00
+0338:  DECFSZ 00,F
+033A:  BRA    0338
+033C:  BTFSS  F81.1
+033E:  BRA    033C
+0340:  BCF    F8A.0
+0342:  BCF    F93.0
+0344:  MOVLW  11
+0346:  MOVWF  00
+0348:  DECFSZ 00,F
+034A:  BRA    0348
+034C:  BCF    F8A.1
+034E:  BCF    F93.1
+....................    i2c_write(CLK_ADDRESS_RD); 
+0350:  MOVLW  D1
+0352:  MOVLB  1
+0354:  MOVWF  x3E
+0356:  MOVLB  0
+0358:  RCALL  01BE
+....................     
+....................    for (i = 0; i < 7 ; i++) { 
+035A:  MOVLB  1
+035C:  CLRF   x2E
+035E:  MOVF   x2E,W
+0360:  SUBLW  06
+0362:  BNC   038E
+....................       clk_data[i] = i2c_read(i != 6); 
+0364:  CLRF   03
+0366:  MOVF   x2E,W
+0368:  ADDLW  21
+036A:  MOVWF  FE9
+036C:  MOVLW  00
+036E:  ADDWFC 03,W
+0370:  MOVWF  FEA
+0372:  MOVF   x2E,W
+0374:  SUBLW  06
+0376:  BNZ   037C
+0378:  MOVLW  00
+037A:  BRA    037E
+037C:  MOVLW  01
+037E:  MOVWF  00
+0380:  MOVLB  0
+0382:  RCALL  0234
+0384:  MOVFF  01,FEF
+....................    } 
+0388:  MOVLB  1
+038A:  INCF   x2E,F
+038C:  BRA    035E
+....................     
+....................    i2c_stop(); 
+038E:  BCF    F93.0
+0390:  NOP   
+0392:  BSF    F93.1
+0394:  BTFSS  F81.1
+0396:  BRA    0394
+0398:  MOVLW  11
+039A:  MOVWF  00
+039C:  DECFSZ 00,F
+039E:  BRA    039C
+03A0:  BRA    03A2
+03A2:  NOP   
+03A4:  BSF    F93.0
+03A6:  MOVLW  11
+03A8:  MOVWF  00
+03AA:  DECFSZ 00,F
+03AC:  BRA    03AA
+....................     
+....................    return clk_event(); 
+03AE:  MOVLB  0
+03B0:  RCALL  029E
+03B2:  MOVF   01,W
+.................... } 
+03B4:  RETLW  00
+....................  
+.................... void clk_write() { 
+....................    int i; 
+....................     
+....................    i2c_start(); 
+*
+0D3C:  BSF    F93.0
+0D3E:  MOVLW  11
+0D40:  MOVWF  00
+0D42:  DECFSZ 00,F
+0D44:  BRA    0D42
+0D46:  BSF    F93.1
+0D48:  MOVLW  11
+0D4A:  MOVWF  00
+0D4C:  DECFSZ 00,F
+0D4E:  BRA    0D4C
+0D50:  BCF    F8A.0
+0D52:  BCF    F93.0
+0D54:  MOVLW  11
+0D56:  MOVWF  00
+0D58:  DECFSZ 00,F
+0D5A:  BRA    0D58
+0D5C:  BCF    F8A.1
+0D5E:  BCF    F93.1
+0D60:  CLRF   19
+0D62:  BTFSC  FF2.7
+0D64:  BSF    19.7
+0D66:  BCF    FF2.7
+....................    i2c_write(CLK_ADDRESS); 
+0D68:  MOVLW  D0
+0D6A:  MOVLB  1
+0D6C:  MOVWF  x3E
+0D6E:  MOVLB  0
+0D70:  CALL   01BE
+0D74:  BTFSC  19.7
+0D76:  BSF    FF2.7
+0D78:  CLRF   19
+0D7A:  BTFSC  FF2.7
+0D7C:  BSF    19.7
+0D7E:  BCF    FF2.7
+....................    i2c_write(0); 
+0D80:  MOVLB  1
+0D82:  CLRF   x3E
+0D84:  MOVLB  0
+0D86:  CALL   01BE
+0D8A:  BTFSC  19.7
+0D8C:  BSF    FF2.7
+....................     
+....................    for (i = 0; i < 7 ; i++) { 
+0D8E:  MOVLB  1
+0D90:  CLRF   x1C
+0D92:  MOVF   x1C,W
+0D94:  SUBLW  06
+0D96:  BNC   0DC6
+....................       i2c_write(clk_data[i]); 
+0D98:  CLRF   03
+0D9A:  MOVF   x1C,W
+0D9C:  ADDLW  21
+0D9E:  MOVWF  FE9
+0DA0:  MOVLW  00
+0DA2:  ADDWFC 03,W
+0DA4:  MOVWF  FEA
+0DA6:  MOVFF  FEF,11D
+0DAA:  CLRF   19
+0DAC:  BTFSC  FF2.7
+0DAE:  BSF    19.7
+0DB0:  BCF    FF2.7
+0DB2:  MOVFF  11D,13E
+0DB6:  MOVLB  0
+0DB8:  CALL   01BE
+0DBC:  BTFSC  19.7
+0DBE:  BSF    FF2.7
+....................    } 
+0DC0:  MOVLB  1
+0DC2:  INCF   x1C,F
+0DC4:  BRA    0D92
+....................     
+....................    i2c_stop(); 
+0DC6:  BCF    F93.0
+0DC8:  NOP   
+0DCA:  BSF    F93.1
+0DCC:  BTFSS  F81.1
+0DCE:  BRA    0DCC
+0DD0:  MOVLW  11
+0DD2:  MOVWF  00
+0DD4:  DECFSZ 00,F
+0DD6:  BRA    0DD4
+0DD8:  BRA    0DDA
+0DDA:  NOP   
+0DDC:  BSF    F93.0
+0DDE:  MOVLW  11
+0DE0:  MOVWF  00
+0DE2:  DECFSZ 00,F
+0DE4:  BRA    0DE2
+.................... } 
+0DE6:  MOVLB  0
+0DE8:  RETLW  00
+....................  
+.................... int16 clk_days() { 
+....................    int16 dy; 
+....................     
+....................    dy = 0; 
+*
+076C:  MOVLB  1
+076E:  CLRF   x36
+0770:  CLRF   x35
+....................     
+....................    if (clk_data[MONTH] > 1) dy += 31; 
+0772:  MOVF   26,W
+0774:  SUBLW  01
+0776:  BC    0780
+0778:  MOVLW  1F
+077A:  ADDWF  x35,F
+077C:  MOVLW  00
+077E:  ADDWFC x36,F
+....................    if (clk_data[MONTH] > 2) dy += 29; 
+0780:  MOVF   26,W
+0782:  SUBLW  02
+0784:  BC    078E
+0786:  MOVLW  1D
+0788:  ADDWF  x35,F
+078A:  MOVLW  00
+078C:  ADDWFC x36,F
+....................    if (clk_data[MONTH] > 3) dy += 31; 
+078E:  MOVF   26,W
+0790:  SUBLW  03
+0792:  BC    079C
+0794:  MOVLW  1F
+0796:  ADDWF  x35,F
+0798:  MOVLW  00
+079A:  ADDWFC x36,F
+....................    if (clk_data[MONTH] > 4) dy += 30; 
+079C:  MOVF   26,W
+079E:  SUBLW  04
+07A0:  BC    07AA
+07A2:  MOVLW  1E
+07A4:  ADDWF  x35,F
+07A6:  MOVLW  00
+07A8:  ADDWFC x36,F
+....................    if (clk_data[MONTH] > 5) dy += 31; 
+07AA:  MOVF   26,W
+07AC:  SUBLW  05
+07AE:  BC    07B8
+07B0:  MOVLW  1F
+07B2:  ADDWF  x35,F
+07B4:  MOVLW  00
+07B6:  ADDWFC x36,F
+....................    if (clk_data[MONTH] > 6) dy += 30; 
+07B8:  MOVF   26,W
+07BA:  SUBLW  06
+07BC:  BC    07C6
+07BE:  MOVLW  1E
+07C0:  ADDWF  x35,F
+07C2:  MOVLW  00
+07C4:  ADDWFC x36,F
+....................    if (clk_data[MONTH] > 7) dy += 31; 
+07C6:  MOVF   26,W
+07C8:  SUBLW  07
+07CA:  BC    07D4
+07CC:  MOVLW  1F
+07CE:  ADDWF  x35,F
+07D0:  MOVLW  00
+07D2:  ADDWFC x36,F
+....................    if (clk_data[MONTH] > 8) dy += 31; 
+07D4:  MOVF   26,W
+07D6:  SUBLW  08
+07D8:  BC    07E2
+07DA:  MOVLW  1F
+07DC:  ADDWF  x35,F
+07DE:  MOVLW  00
+07E0:  ADDWFC x36,F
+....................    if (clk_data[MONTH] > 9) dy += 30; 
+07E2:  MOVF   26,W
+07E4:  SUBLW  09
+07E6:  BC    07F0
+07E8:  MOVLW  1E
+07EA:  ADDWF  x35,F
+07EC:  MOVLW  00
+07EE:  ADDWFC x36,F
+....................    if (clk_data[MONTH] > 0x10) dy += 31; 
+07F0:  MOVF   26,W
+07F2:  SUBLW  10
+07F4:  BC    07FE
+07F6:  MOVLW  1F
+07F8:  ADDWF  x35,F
+07FA:  MOVLW  00
+07FC:  ADDWFC x36,F
+....................    if (clk_data[MONTH] > 0x11) dy += 30; 
+07FE:  MOVF   26,W
+0800:  SUBLW  11
+0802:  BC    080C
+0804:  MOVLW  1E
+0806:  ADDWF  x35,F
+0808:  MOVLW  00
+080A:  ADDWFC x36,F
+....................    if (clk_data[MONTH] > 0x12) dy += 31; 
+080C:  MOVF   26,W
+080E:  SUBLW  12
+0810:  BC    081A
+0812:  MOVLW  1F
+0814:  ADDWF  x35,F
+0816:  MOVLW  00
+0818:  ADDWFC x36,F
+....................     
+....................    dy += bcd2dec(clk_data[DATE]) - 1; 
+081A:  MOVFF  25,137
+081E:  MOVLB  0
+0820:  RCALL  074E
+0822:  MOVLW  01
+0824:  SUBWF  01,W
+0826:  MOVLB  1
+0828:  ADDWF  x35,F
+082A:  MOVLW  00
+082C:  ADDWFC x36,F
+....................     
+....................    return dy; 
+082E:  MOVFF  135,01
+0832:  MOVFF  136,02
+.................... } 
+0836:  MOVLB  0
+0838:  RETLW  00
+....................  
+.................... void clk_set_ville(int ville) { 
+....................    i2c_start(); 
+*
+208A:  BSF    F93.0
+208C:  MOVLW  11
+208E:  MOVWF  00
+2090:  DECFSZ 00,F
+2092:  BRA    2090
+2094:  BSF    F93.1
+2096:  MOVLW  11
+2098:  MOVWF  00
+209A:  DECFSZ 00,F
+209C:  BRA    209A
+209E:  BCF    F8A.0
+20A0:  BCF    F93.0
+20A2:  MOVLW  11
+20A4:  MOVWF  00
+20A6:  DECFSZ 00,F
+20A8:  BRA    20A6
+20AA:  BCF    F8A.1
+20AC:  BCF    F93.1
+20AE:  CLRF   19
+20B0:  BTFSC  FF2.7
+20B2:  BSF    19.7
+20B4:  BCF    FF2.7
+....................    i2c_write(CLK_ADDRESS); 
+20B6:  MOVLW  D0
+20B8:  MOVLB  1
+20BA:  MOVWF  x3E
+20BC:  MOVLB  0
+20BE:  CALL   01BE
+20C2:  BTFSC  19.7
+20C4:  BSF    FF2.7
+20C6:  CLRF   19
+20C8:  BTFSC  FF2.7
+20CA:  BSF    19.7
+20CC:  BCF    FF2.7
+....................    i2c_write(CLK_TOWN_LOCATION); 
+20CE:  MOVLW  08
+20D0:  MOVLB  1
+20D2:  MOVWF  x3E
+20D4:  MOVLB  0
+20D6:  CALL   01BE
+20DA:  BTFSC  19.7
+20DC:  BSF    FF2.7
+20DE:  CLRF   19
+20E0:  BTFSC  FF2.7
+20E2:  BSF    19.7
+20E4:  BCF    FF2.7
+....................     
+....................    i2c_write(ville); 
+20E6:  MOVFF  116,13E
+20EA:  CALL   01BE
+20EE:  BTFSC  19.7
+20F0:  BSF    FF2.7
+....................     
+....................    i2c_stop(); 
+20F2:  BCF    F93.0
+20F4:  NOP   
+20F6:  BSF    F93.1
+20F8:  BTFSS  F81.1
+20FA:  BRA    20F8
+20FC:  MOVLW  11
+20FE:  MOVWF  00
+2100:  DECFSZ 00,F
+2102:  BRA    2100
+2104:  BRA    2106
+2106:  NOP   
+2108:  BSF    F93.0
+210A:  MOVLW  11
+210C:  MOVWF  00
+210E:  DECFSZ 00,F
+2110:  BRA    210E
+.................... } 
+2112:  GOTO   2532 (RETURN)
+....................  
+.................... int  clk_get_ville() { 
+....................    int pos ; 
+....................    i2c_start(); 
+*
+0DF2:  BSF    F93.0
+0DF4:  MOVLW  11
+0DF6:  MOVWF  00
+0DF8:  DECFSZ 00,F
+0DFA:  BRA    0DF8
+0DFC:  BSF    F93.1
+0DFE:  MOVLW  11
+0E00:  MOVWF  00
+0E02:  DECFSZ 00,F
+0E04:  BRA    0E02
+0E06:  BCF    F8A.0
+0E08:  BCF    F93.0
+0E0A:  MOVLW  11
+0E0C:  MOVWF  00
+0E0E:  DECFSZ 00,F
+0E10:  BRA    0E0E
+0E12:  BCF    F8A.1
+0E14:  BCF    F93.1
+0E16:  CLRF   19
+0E18:  BTFSC  FF2.7
+0E1A:  BSF    19.7
+0E1C:  BCF    FF2.7
+....................    i2c_write(CLK_ADDRESS); 
+0E1E:  MOVLW  D0
+0E20:  MOVLB  1
+0E22:  MOVWF  x3E
+0E24:  MOVLB  0
+0E26:  CALL   01BE
+0E2A:  BTFSC  19.7
+0E2C:  BSF    FF2.7
+0E2E:  CLRF   19
+0E30:  BTFSC  FF2.7
+0E32:  BSF    19.7
+0E34:  BCF    FF2.7
+....................    i2c_write(CLK_TOWN_LOCATION); 
+0E36:  MOVLW  08
+0E38:  MOVLB  1
+0E3A:  MOVWF  x3E
+0E3C:  MOVLB  0
+0E3E:  CALL   01BE
+0E42:  BTFSC  19.7
+0E44:  BSF    FF2.7
+....................    i2c_start(); 
+0E46:  BSF    F93.0
+0E48:  MOVLW  11
+0E4A:  MOVWF  00
+0E4C:  DECFSZ 00,F
+0E4E:  BRA    0E4C
+0E50:  BSF    F93.1
+0E52:  MOVLW  11
+0E54:  MOVWF  00
+0E56:  DECFSZ 00,F
+0E58:  BRA    0E56
+0E5A:  BTFSS  F81.1
+0E5C:  BRA    0E5A
+0E5E:  BCF    F8A.0
+0E60:  BCF    F93.0
+0E62:  MOVLW  11
+0E64:  MOVWF  00
+0E66:  DECFSZ 00,F
+0E68:  BRA    0E66
+0E6A:  BCF    F8A.1
+0E6C:  BCF    F93.1
+0E6E:  CLRF   19
+0E70:  BTFSC  FF2.7
+0E72:  BSF    19.7
+0E74:  BCF    FF2.7
+....................    i2c_write(CLK_ADDRESS_RD); 
+0E76:  MOVLW  D1
+0E78:  MOVLB  1
+0E7A:  MOVWF  x3E
+0E7C:  MOVLB  0
+0E7E:  CALL   01BE
+0E82:  BTFSC  19.7
+0E84:  BSF    FF2.7
+....................     
+....................    pos = i2c_read(FALSE); 
+0E86:  CLRF   00
+0E88:  CLRF   19
+0E8A:  BTFSC  FF2.7
+0E8C:  BSF    19.7
+0E8E:  BCF    FF2.7
+0E90:  CALL   0234
+0E94:  BTFSC  19.7
+0E96:  BSF    FF2.7
+0E98:  MOVFF  01,116
+....................     
+....................    i2c_stop(); 
+0E9C:  BCF    F93.0
+0E9E:  NOP   
+0EA0:  BSF    F93.1
+0EA2:  BTFSS  F81.1
+0EA4:  BRA    0EA2
+0EA6:  MOVLW  11
+0EA8:  MOVWF  00
+0EAA:  DECFSZ 00,F
+0EAC:  BRA    0EAA
+0EAE:  BRA    0EB0
+0EB0:  NOP   
+0EB2:  BSF    F93.0
+0EB4:  MOVLW  11
+0EB6:  MOVWF  00
+0EB8:  DECFSZ 00,F
+0EBA:  BRA    0EB8
+....................     
+....................    return pos; 
+0EBC:  MOVLB  1
+0EBE:  MOVFF  116,01
+.................... } 
+0EC2:  MOVLB  0
+0EC4:  GOTO   2378 (RETURN)
+....................  
+....................  
+.................... #include <24lc512.c> 
+.................... #include "24lc512.h" 
+.................... #ifndef __24LC512_H__ 
+....................  
+.................... #define __24LC512_H__ 
+....................  
+.................... #define MEM_ADDRESS1          0xA0 
+.................... #define MEM_ADDRESS2          0xA2 
+....................  
+.................... void mem_read_page(int dev_addr, unsigned int16 page, char* buffer); 
+.................... void mem_write_page(int dev_addr, unsigned int16 page, char* buffer); 
+....................  
+.................... #endif // __24LC512_H__ 
+....................  
+.................... #include "lcddisplay.h" 
+.................... #ifndef __LCDDISPLAY_H__ 
+....................  
+.................... #define __LCDDISPLAY_H__ 
+....................  
+.................... void lcd_show(char* buffer, int size); 
+.................... void lcd_putc(char c); 
+.................... void lcd_clear(); 
+.................... void lcd_line_clear(); 
+.................... void lcd_light(int ison); 
+.................... void lcd_gotoxy(int x, int y); 
+.................... void lcd_cur_left(); 
+.................... void lcd_cur_right(); 
+.................... void lcd_cur_up(); 
+.................... void lcd_cur_down(); 
+....................  
+.................... #endif // __LCDDISPLAY_H__ 
+....................  
+....................  
+.................... int buffer[128]; 
+....................  
+.................... #define hi(x) (*((int8 *)&x+1)) 
+....................  
+.................... void mem_read_page(int dev_addr, unsigned int16 page, char* buffer) { 
+....................    int i; 
+....................    unsigned int16 address; 
+....................     
+....................    address = page << 7; 
+*
+08A2:  MOVLB  1
+08A4:  RLCF   x36,W
+08A6:  MOVWF  x3B
+08A8:  RLCF   x37,W
+08AA:  MOVWF  x3C
+08AC:  RLCF   x3B,F
+08AE:  RLCF   x3C,F
+08B0:  RLCF   x3B,F
+08B2:  RLCF   x3C,F
+08B4:  RLCF   x3B,F
+08B6:  RLCF   x3C,F
+08B8:  RLCF   x3B,F
+08BA:  RLCF   x3C,F
+08BC:  RLCF   x3B,F
+08BE:  RLCF   x3C,F
+08C0:  RLCF   x3B,F
+08C2:  RLCF   x3C,F
+08C4:  MOVLW  80
+08C6:  ANDWF  x3B,F
+....................     
+....................    i2c_start(); 
+08C8:  BSF    F93.0
+08CA:  MOVLW  11
+08CC:  MOVWF  00
+08CE:  DECFSZ 00,F
+08D0:  BRA    08CE
+08D2:  BSF    F93.1
+08D4:  MOVLW  11
+08D6:  MOVWF  00
+08D8:  DECFSZ 00,F
+08DA:  BRA    08D8
+08DC:  BCF    F8A.0
+08DE:  BCF    F93.0
+08E0:  MOVLW  11
+08E2:  MOVWF  00
+08E4:  DECFSZ 00,F
+08E6:  BRA    08E4
+08E8:  BCF    F8A.1
+08EA:  BCF    F93.1
+....................    i2c_write(dev_addr); 
+08EC:  MOVFF  135,13E
+08F0:  MOVLB  0
+08F2:  RCALL  01BE
+....................    i2c_write(hi(address)); 
+08F4:  MOVLW  01
+08F6:  MOVLB  1
+08F8:  MOVWF  x3E
+08FA:  MOVLW  3B
+08FC:  MOVWF  x3D
+08FE:  MOVLW  01
+0900:  ADDWF  x3D,W
+0902:  MOVWF  01
+0904:  MOVLW  00
+0906:  ADDWFC x3E,W
+0908:  MOVWF  03
+090A:  MOVFF  01,FE9
+090E:  MOVWF  FEA
+0910:  MOVFF  FEF,13D
+0914:  MOVFF  13D,13E
+0918:  MOVLB  0
+091A:  RCALL  01BE
+....................    i2c_write(address); 
+091C:  MOVFF  13B,13E
+0920:  RCALL  01BE
+....................    i2c_start(); 
+0922:  BSF    F93.0
+0924:  MOVLW  11
+0926:  MOVWF  00
+0928:  DECFSZ 00,F
+092A:  BRA    0928
+092C:  BSF    F93.1
+092E:  MOVLW  11
+0930:  MOVWF  00
+0932:  DECFSZ 00,F
+0934:  BRA    0932
+0936:  BTFSS  F81.1
+0938:  BRA    0936
+093A:  BCF    F8A.0
+093C:  BCF    F93.0
+093E:  MOVLW  11
+0940:  MOVWF  00
+0942:  DECFSZ 00,F
+0944:  BRA    0942
+0946:  BCF    F8A.1
+0948:  BCF    F93.1
+....................    i2c_write(dev_addr | 1); 
+094A:  MOVLB  1
+094C:  MOVF   x35,W
+094E:  IORLW  01
+0950:  MOVWF  x3D
+0952:  MOVWF  x3E
+0954:  MOVLB  0
+0956:  RCALL  01BE
+....................     
+....................    for (i = 0 ; i < 128 ; i++) { 
+0958:  MOVLB  1
+095A:  CLRF   x3A
+095C:  MOVF   x3A,W
+095E:  SUBLW  7F
+0960:  BNC   098C
+....................       buffer[i] = i2c_read(i != 127); 
+0962:  CLRF   03
+0964:  MOVF   x3A,W
+0966:  ADDWF  x38,W
+0968:  MOVWF  FE9
+096A:  MOVF   x39,W
+096C:  ADDWFC 03,W
+096E:  MOVWF  FEA
+0970:  MOVF   x3A,W
+0972:  SUBLW  7F
+0974:  BNZ   097A
+0976:  MOVLW  00
+0978:  BRA    097C
+097A:  MOVLW  01
+097C:  MOVWF  00
+097E:  MOVLB  0
+0980:  RCALL  0234
+0982:  MOVFF  01,FEF
+....................    } 
+0986:  MOVLB  1
+0988:  INCF   x3A,F
+098A:  BRA    095C
+....................     
+....................    i2c_stop(); 
+098C:  BCF    F93.0
+098E:  NOP   
+0990:  BSF    F93.1
+0992:  BTFSS  F81.1
+0994:  BRA    0992
+0996:  MOVLW  11
+0998:  MOVWF  00
+099A:  DECFSZ 00,F
+099C:  BRA    099A
+099E:  BRA    09A0
+09A0:  NOP   
+09A2:  BSF    F93.0
+09A4:  MOVLW  11
+09A6:  MOVWF  00
+09A8:  DECFSZ 00,F
+09AA:  BRA    09A8
+.................... } 
+09AC:  MOVLB  0
+09AE:  RETLW  00
+....................  
+.................... void mem_write_page(int dev_addr, unsigned int16 page, char* buffer) { 
+....................    int i; 
+....................     
+....................    i2c_start(); 
+....................    i2c_write(dev_addr); 
+....................    i2c_write(page >> 1); 
+....................    i2c_write((page & 1) << 7); 
+....................     
+....................    for (i = 0 ; i < 128 ; i++) { 
+....................       i2c_write(buffer[i]); 
+....................    } 
+....................     
+....................    i2c_stop(); 
+....................     
+....................    do { 
+....................       i2c_start(); 
+....................       i = i2c_write(dev_addr); 
+....................    } while (i == 1); 
+....................     
+....................    i2c_stop(); 
+.................... } 
+....................  
+.................... #include <aff7seg.c> 
+.................... #include "aff7seg.h" 
+.................... #ifndef __AFF7SEG_H__ 
+....................  
+.................... #define __AFF7SEG_H__ 
+....................  
+.................... #define AFF7_DATE          7 
+.................... #define AFF7_TIME          1 
+.................... #define AFF7_FAJR          6 
+.................... #define AFF7_CHOUROUK      4 
+.................... #define AFF7_DHOHR         3 
+.................... #define AFF7_ASR           5 
+.................... #define AFF7_MAGHREB       2 
+.................... #define AFF7_ISHAA         0 
+....................  
+.................... void aff7_select(int channel); 
+.................... void aff7_show_time(int sel, int hh, int mm); 
+.................... void aff7_show_date(int dd, int mm, int yy); 
+.................... void aff7_show_time(int hh, int mm); 
+.................... void aff7_show_prayers(int* prayers); 
+....................  
+.................... #endif // __AFF7SEG_H__ 
+....................  
+.................... #include "prieres.h" 
+.................... #ifndef __PRIERES_H__ 
+....................  
+.................... #define __PRIERES_H__ 
+....................  
+.................... #define PRIERE_FAJR        0 
+.................... #define PRIERE_CHOUROUK    2 
+.................... #define PRIERE_DHOHR       4 
+.................... #define PRIERE_ASR         6 
+.................... #define PRIERE_MAGHREB     8 
+.................... #define PRIERE_ISHAA       10 
+....................  
+.................... struct struct_location { 
+....................    char pays[16]; 
+....................    char region[16]; 
+....................    char ville[16]; 
+....................    int16 lg_deg; 
+....................    int lg_min; 
+....................    int16 lg_sec; 
+....................    char lg_sens; 
+....................    int16 la_deg; 
+....................    int la_min; 
+....................    int16 la_sec; 
+....................    char la_sens; 
+....................    int gmt; 
+....................    int dst; 
+....................    int method; 
+.................... } ; 
+....................  
+.................... void prieres_load(int town_pos); 
+.................... void location_load(int town_pos); 
+....................  
+.................... #endif // __LEDARRAY_H__ 
+....................  
+....................  
+.................... int aff7_channel; 
+.................... int aff7_state = TRUE; 
+....................  
+.................... void aff7_off() { 
+....................    putc('!', aff7); 
+*
+0408:  MOVLW  21
+040A:  MOVLB  1
+040C:  MOVWF  x38
+040E:  MOVLB  0
+0410:  RCALL  03B6
+....................    putc('$', aff7); 
+0412:  MOVLW  24
+0414:  MOVLB  1
+0416:  MOVWF  x38
+0418:  MOVLB  0
+041A:  RCALL  03B6
+....................    putc(0x0F, aff7);    
+041C:  MOVLW  0F
+041E:  MOVLB  1
+0420:  MOVWF  x38
+0422:  MOVLB  0
+0424:  RCALL  03B6
+.................... } 
+0426:  RETLW  00
+....................  
+.................... void aff7_select(int channel) { 
+....................    aff7_channel = channel; 
+0428:  MOVFF  137,A8
+....................     
+....................    output_bit(AFF0, bit_test(channel, 0)); 
+042C:  MOVLB  1
+042E:  BTFSC  x37.0
+0430:  BRA    0436
+0432:  BCF    F89.3
+0434:  BRA    0438
+0436:  BSF    F89.3
+0438:  BCF    F92.3
+....................    output_bit(AFF1, bit_test(channel, 1)); 
+043A:  BTFSC  x37.1
+043C:  BRA    0442
+043E:  BCF    F89.2
+0440:  BRA    0444
+0442:  BSF    F89.2
+0444:  BCF    F92.2
+....................    output_bit(AFF2, bit_test(channel, 2)); 
+0446:  BTFSC  x37.2
+0448:  BRA    044E
+044A:  BCF    F89.1
+044C:  BRA    0450
+044E:  BSF    F89.1
+0450:  BCF    F92.1
+....................    if (!aff7_state) { 
+0452:  MOVLB  0
+0454:  MOVF   xA9,F
+0456:  BNZ   045A
+....................       aff7_off(); 
+0458:  RCALL  0408
+....................    } 
+.................... } 
+045A:  RETLW  00
+....................  
+.................... void aff7_show_time(int sel, int hh, int mm) { 
+....................    aff7_select(sel); 
+*
+0A74:  MOVFF  134,137
+0A78:  RCALL  0428
+....................    if (!aff7_state) return; 
+0A7A:  MOVF   xA9,F
+0A7C:  BNZ   0A80
+0A7E:  BRA    0AEA
+....................    putc('!', aff7); 
+0A80:  MOVLW  21
+0A82:  MOVLB  1
+0A84:  MOVWF  x38
+0A86:  MOVLB  0
+0A88:  RCALL  03B6
+....................    putc((hh >> 4) + 0x30, aff7); 
+0A8A:  MOVLB  1
+0A8C:  SWAPF  x35,W
+0A8E:  MOVWF  00
+0A90:  MOVLW  0F
+0A92:  ANDWF  00,F
+0A94:  MOVF   00,W
+0A96:  ADDLW  30
+0A98:  MOVWF  x37
+0A9A:  MOVWF  x38
+0A9C:  MOVLB  0
+0A9E:  RCALL  03B6
+....................    putc((hh & 0x0f) + 0x30, aff7); 
+0AA0:  MOVLB  1
+0AA2:  MOVF   x35,W
+0AA4:  ANDLW  0F
+0AA6:  ADDLW  30
+0AA8:  MOVWF  x37
+0AAA:  MOVWF  x38
+0AAC:  MOVLB  0
+0AAE:  RCALL  03B6
+....................    putc((mm >> 4) + 0x30, aff7); 
+0AB0:  MOVLB  1
+0AB2:  SWAPF  x36,W
+0AB4:  MOVWF  00
+0AB6:  MOVLW  0F
+0AB8:  ANDWF  00,F
+0ABA:  MOVF   00,W
+0ABC:  ADDLW  30
+0ABE:  MOVWF  x37
+0AC0:  MOVWF  x38
+0AC2:  MOVLB  0
+0AC4:  RCALL  03B6
+....................    putc((mm & 0x0f) + 0x30, aff7); 
+0AC6:  MOVLB  1
+0AC8:  MOVF   x36,W
+0ACA:  ANDLW  0F
+0ACC:  ADDLW  30
+0ACE:  MOVWF  x37
+0AD0:  MOVWF  x38
+0AD2:  MOVLB  0
+0AD4:  RCALL  03B6
+....................    putc('$', aff7); 
+0AD6:  MOVLW  24
+0AD8:  MOVLB  1
+0ADA:  MOVWF  x38
+0ADC:  MOVLB  0
+0ADE:  RCALL  03B6
+....................    putc(0x0D, aff7);    
+0AE0:  MOVLW  0D
+0AE2:  MOVLB  1
+0AE4:  MOVWF  x38
+0AE6:  MOVLB  0
+0AE8:  RCALL  03B6
+.................... } 
+0AEA:  RETLW  00
+....................  
+.................... void aff7_show_prayers(int* prayers) { 
+....................    aff7_show_time(AFF7_FAJR, prayers[PRIERE_FAJR], prayers[PRIERE_FAJR + 1]); 
+0AEC:  MOVLB  1
+0AEE:  MOVFF  130,FE9
+0AF2:  MOVFF  131,FEA
+0AF6:  MOVFF  FEF,132
+0AFA:  MOVLW  01
+0AFC:  ADDWF  x30,W
+0AFE:  MOVWF  FE9
+0B00:  MOVLW  00
+0B02:  ADDWFC x31,W
+0B04:  MOVWF  FEA
+0B06:  MOVFF  FEF,133
+0B0A:  MOVLW  06
+0B0C:  MOVWF  x34
+0B0E:  MOVFF  132,135
+0B12:  MOVFF  133,136
+0B16:  MOVLB  0
+0B18:  RCALL  0A74
+....................    aff7_show_time(AFF7_CHOUROUK, prayers[PRIERE_CHOUROUK], prayers[PRIERE_CHOUROUK + 1]); 
+0B1A:  MOVLW  02
+0B1C:  MOVLB  1
+0B1E:  ADDWF  x30,W
+0B20:  MOVWF  FE9
+0B22:  MOVLW  00
+0B24:  ADDWFC x31,W
+0B26:  MOVWF  FEA
+0B28:  MOVFF  FEF,132
+0B2C:  MOVLW  03
+0B2E:  ADDWF  x30,W
+0B30:  MOVWF  FE9
+0B32:  MOVLW  00
+0B34:  ADDWFC x31,W
+0B36:  MOVWF  FEA
+0B38:  MOVFF  FEF,133
+0B3C:  MOVLW  04
+0B3E:  MOVWF  x34
+0B40:  MOVFF  132,135
+0B44:  MOVFF  133,136
+0B48:  MOVLB  0
+0B4A:  RCALL  0A74
+....................    aff7_show_time(AFF7_DHOHR, prayers[PRIERE_DHOHR], prayers[PRIERE_DHOHR + 1]); 
+0B4C:  MOVLW  04
+0B4E:  MOVLB  1
+0B50:  ADDWF  x30,W
+0B52:  MOVWF  FE9
+0B54:  MOVLW  00
+0B56:  ADDWFC x31,W
+0B58:  MOVWF  FEA
+0B5A:  MOVFF  FEF,132
+0B5E:  MOVLW  05
+0B60:  ADDWF  x30,W
+0B62:  MOVWF  FE9
+0B64:  MOVLW  00
+0B66:  ADDWFC x31,W
+0B68:  MOVWF  FEA
+0B6A:  MOVFF  FEF,133
+0B6E:  MOVLW  03
+0B70:  MOVWF  x34
+0B72:  MOVFF  132,135
+0B76:  MOVFF  133,136
+0B7A:  MOVLB  0
+0B7C:  RCALL  0A74
+....................    aff7_show_time(AFF7_ASR, prayers[PRIERE_ASR], prayers[PRIERE_ASR + 1]); 
+0B7E:  MOVLW  06
+0B80:  MOVLB  1
+0B82:  ADDWF  x30,W
+0B84:  MOVWF  FE9
+0B86:  MOVLW  00
+0B88:  ADDWFC x31,W
+0B8A:  MOVWF  FEA
+0B8C:  MOVFF  FEF,132
+0B90:  MOVLW  07
+0B92:  ADDWF  x30,W
+0B94:  MOVWF  FE9
+0B96:  MOVLW  00
+0B98:  ADDWFC x31,W
+0B9A:  MOVWF  FEA
+0B9C:  MOVFF  FEF,133
+0BA0:  MOVLW  05
+0BA2:  MOVWF  x34
+0BA4:  MOVFF  132,135
+0BA8:  MOVFF  133,136
+0BAC:  MOVLB  0
+0BAE:  RCALL  0A74
+....................    aff7_show_time(AFF7_MAGHREB, prayers[PRIERE_MAGHREB], prayers[PRIERE_MAGHREB + 1]); 
+0BB0:  MOVLW  08
+0BB2:  MOVLB  1
+0BB4:  ADDWF  x30,W
+0BB6:  MOVWF  FE9
+0BB8:  MOVLW  00
+0BBA:  ADDWFC x31,W
+0BBC:  MOVWF  FEA
+0BBE:  MOVFF  FEF,132
+0BC2:  MOVLW  09
+0BC4:  ADDWF  x30,W
+0BC6:  MOVWF  FE9
+0BC8:  MOVLW  00
+0BCA:  ADDWFC x31,W
+0BCC:  MOVWF  FEA
+0BCE:  MOVFF  FEF,133
+0BD2:  MOVLW  02
+0BD4:  MOVWF  x34
+0BD6:  MOVFF  132,135
+0BDA:  MOVFF  133,136
+0BDE:  MOVLB  0
+0BE0:  RCALL  0A74
+....................    aff7_show_time(AFF7_ISHAA, prayers[PRIERE_ISHAA], prayers[PRIERE_ISHAA + 1]); 
+0BE2:  MOVLW  0A
+0BE4:  MOVLB  1
+0BE6:  ADDWF  x30,W
+0BE8:  MOVWF  FE9
+0BEA:  MOVLW  00
+0BEC:  ADDWFC x31,W
+0BEE:  MOVWF  FEA
+0BF0:  MOVFF  FEF,132
+0BF4:  MOVLW  0B
+0BF6:  ADDWF  x30,W
+0BF8:  MOVWF  FE9
+0BFA:  MOVLW  00
+0BFC:  ADDWFC x31,W
+0BFE:  MOVWF  FEA
+0C00:  MOVFF  FEF,133
+0C04:  CLRF   x34
+0C06:  MOVFF  132,135
+0C0A:  MOVFF  133,136
+0C0E:  MOVLB  0
+0C10:  RCALL  0A74
+.................... } 
+0C12:  RETLW  00
+....................  
+.................... void aff7_show_date(int dd, int mm, int yy) { 
+....................    aff7_select(AFF7_DATE); 
+*
+052E:  MOVLW  07
+0530:  MOVLB  1
+0532:  MOVWF  x37
+0534:  MOVLB  0
+0536:  RCALL  0428
+....................    if (!aff7_state) return; 
+0538:  MOVF   xA9,F
+053A:  BNZ   053E
+053C:  BRA    061E
+....................    putc('!', aff7); 
+053E:  MOVLW  21
+0540:  MOVLB  1
+0542:  MOVWF  x38
+0544:  MOVLB  0
+0546:  RCALL  03B6
+....................    putc((dd >> 4) + 0x30, aff7); 
+0548:  MOVLB  1
+054A:  SWAPF  x30,W
+054C:  MOVWF  00
+054E:  MOVLW  0F
+0550:  ANDWF  00,F
+0552:  MOVF   00,W
+0554:  ADDLW  30
+0556:  MOVWF  x33
+0558:  MOVWF  x38
+055A:  MOVLB  0
+055C:  RCALL  03B6
+....................    putc((dd & 0x0f) + 0x30, aff7); 
+055E:  MOVLB  1
+0560:  MOVF   x30,W
+0562:  ANDLW  0F
+0564:  ADDLW  30
+0566:  MOVWF  x33
+0568:  MOVWF  x38
+056A:  MOVLB  0
+056C:  RCALL  03B6
+....................    putc('-', aff7); 
+056E:  MOVLW  2D
+0570:  MOVLB  1
+0572:  MOVWF  x38
+0574:  MOVLB  0
+0576:  RCALL  03B6
+....................    putc((mm >> 4) + 0x30, aff7); 
+0578:  MOVLB  1
+057A:  SWAPF  x31,W
+057C:  MOVWF  00
+057E:  MOVLW  0F
+0580:  ANDWF  00,F
+0582:  MOVF   00,W
+0584:  ADDLW  30
+0586:  MOVWF  x33
+0588:  MOVWF  x38
+058A:  MOVLB  0
+058C:  RCALL  03B6
+....................    putc((mm & 0x0f) + 0x30, aff7); 
+058E:  MOVLB  1
+0590:  MOVF   x31,W
+0592:  ANDLW  0F
+0594:  ADDLW  30
+0596:  MOVWF  x33
+0598:  MOVWF  x38
+059A:  MOVLB  0
+059C:  RCALL  03B6
+....................    putc('-', aff7); 
+059E:  MOVLW  2D
+05A0:  MOVLB  1
+05A2:  MOVWF  x38
+05A4:  MOVLB  0
+05A6:  RCALL  03B6
+....................    putc(0x32, aff7); 
+05A8:  MOVLW  32
+05AA:  MOVLB  1
+05AC:  MOVWF  x38
+05AE:  MOVLB  0
+05B0:  RCALL  03B6
+....................    putc(0x30, aff7); 
+05B2:  MOVLW  30
+05B4:  MOVLB  1
+05B6:  MOVWF  x38
+05B8:  MOVLB  0
+05BA:  RCALL  03B6
+....................    putc((yy >> 4) + 0x30, aff7); 
+05BC:  MOVLB  1
+05BE:  SWAPF  x32,W
+05C0:  MOVWF  00
+05C2:  MOVLW  0F
+05C4:  ANDWF  00,F
+05C6:  MOVF   00,W
+05C8:  ADDLW  30
+05CA:  MOVWF  x33
+05CC:  MOVWF  x38
+05CE:  MOVLB  0
+05D0:  RCALL  03B6
+....................    putc((yy & 0x0f) + 0x30, aff7); 
+05D2:  MOVLB  1
+05D4:  MOVF   x32,W
+05D6:  ANDLW  0F
+05D8:  ADDLW  30
+05DA:  MOVWF  x33
+05DC:  MOVWF  x38
+05DE:  MOVLB  0
+05E0:  RCALL  03B6
+....................    putc(' ', aff7); 
+05E2:  MOVLW  20
+05E4:  MOVLB  1
+05E6:  MOVWF  x38
+05E8:  MOVLB  0
+05EA:  RCALL  03B6
+....................    putc(' ', aff7); 
+05EC:  MOVLW  20
+05EE:  MOVLB  1
+05F0:  MOVWF  x38
+05F2:  MOVLB  0
+05F4:  RCALL  03B6
+....................    putc(' ', aff7); 
+05F6:  MOVLW  20
+05F8:  MOVLB  1
+05FA:  MOVWF  x38
+05FC:  MOVLB  0
+05FE:  RCALL  03B6
+....................    putc(' ', aff7); 
+0600:  MOVLW  20
+0602:  MOVLB  1
+0604:  MOVWF  x38
+0606:  MOVLB  0
+0608:  RCALL  03B6
+....................    putc('$', aff7); 
+060A:  MOVLW  24
+060C:  MOVLB  1
+060E:  MOVWF  x38
+0610:  MOVLB  0
+0612:  RCALL  03B6
+....................    putc(0x0f, aff7); 
+0614:  MOVLW  0F
+0616:  MOVLB  1
+0618:  MOVWF  x38
+061A:  MOVLB  0
+061C:  RCALL  03B6
+.................... } 
+061E:  RETLW  00
+....................  
+.................... void aff7_show_time(int hh, int mm) { 
+....................    aff7_select(AFF7_TIME); 
+*
+045C:  MOVLW  01
+045E:  MOVLB  1
+0460:  MOVWF  x37
+0462:  MOVLB  0
+0464:  RCALL  0428
+....................    if (!aff7_state) return; 
+0466:  MOVF   xA9,F
+0468:  BNZ   046C
+046A:  BRA    04CC
+....................    putc('!', aff7); 
+046C:  MOVLW  21
+046E:  MOVLB  1
+0470:  MOVWF  x38
+0472:  MOVLB  0
+0474:  RCALL  03B6
+....................    putc((clk_data[2] >> 4) + 0x30, aff7); 
+0476:  SWAPF  23,W
+0478:  MOVWF  00
+047A:  MOVLW  0F
+047C:  ANDWF  00,F
+047E:  MOVF   00,W
+0480:  ADDLW  30
+0482:  MOVLB  1
+0484:  MOVWF  x32
+0486:  MOVWF  x38
+0488:  MOVLB  0
+048A:  RCALL  03B6
+....................    putc((clk_data[2] & 0x0f) + 0x30, aff7); 
+048C:  MOVF   23,W
+048E:  ANDLW  0F
+0490:  ADDLW  30
+0492:  MOVLB  1
+0494:  MOVWF  x32
+0496:  MOVWF  x38
+0498:  MOVLB  0
+049A:  RCALL  03B6
+....................    putc((clk_data[1] >> 4) + 0x30, aff7); 
+049C:  SWAPF  22,W
+049E:  MOVWF  00
+04A0:  MOVLW  0F
+04A2:  ANDWF  00,F
+04A4:  MOVF   00,W
+04A6:  ADDLW  30
+04A8:  MOVLB  1
+04AA:  MOVWF  x32
+04AC:  MOVWF  x38
+04AE:  MOVLB  0
+04B0:  RCALL  03B6
+....................    putc((clk_data[1] & 0x0f) + 0x30, aff7); 
+04B2:  MOVF   22,W
+04B4:  ANDLW  0F
+04B6:  ADDLW  30
+04B8:  MOVLB  1
+04BA:  MOVWF  x32
+04BC:  MOVWF  x38
+04BE:  MOVLB  0
+04C0:  RCALL  03B6
+....................    putc('$', aff7); 
+04C2:  MOVLW  24
+04C4:  MOVLB  1
+04C6:  MOVWF  x38
+04C8:  MOVLB  0
+04CA:  RCALL  03B6
+.................... } 
+04CC:  RETLW  00
+....................  
+.................... #include <ledarray.c> 
+.................... #include "ledarray.h" 
+.................... #ifndef __LEDARRAY_H__ 
+....................  
+.................... #define __LEDARRAY_H__ 
+....................  
+.................... #define LED_DAY   1 
+....................  
+.................... void ldarr_show(int sel, int val); 
+....................  
+.................... #endif // __LEDARRAY_H__ 
+....................  
+....................  
+.................... void ldarr_show(int sel, int val) { 
+....................    if (sel == 0) { 
+*
+06DC:  MOVLB  1
+06DE:  MOVF   x32,F
+06E0:  BNZ   06EE
+....................       putc(val, ld1); 
+06E2:  MOVFF  133,134
+06E6:  MOVLB  0
+06E8:  RCALL  0620
+....................    } else { 
+06EA:  BRA    06F6
+06EC:  MOVLB  1
+....................       putc(val, ld2); 
+06EE:  MOVFF  133,134
+06F2:  MOVLB  0
+06F4:  RCALL  0672
+....................    } 
+.................... } 
+06F6:  RETLW  00
+....................  
+.................... void ldarr_off(int sel) { 
+....................    if (sel == 0) { 
+*
+06C4:  MOVLB  1
+06C6:  MOVF   x31,F
+06C8:  BNZ   06D4
+....................       putc(0, ld1); 
+06CA:  CLRF   x34
+06CC:  MOVLB  0
+06CE:  RCALL  0620
+....................    } else { 
+06D0:  BRA    06DA
+06D2:  MOVLB  1
+....................       putc(0, ld2); 
+06D4:  CLRF   x34
+06D6:  MOVLB  0
+06D8:  RCALL  0672
+....................    } 
+.................... } 
+06DA:  RETLW  00
+....................  
+.................... #include <prieres.c> 
+.................... #include "prieres.h" 
+.................... #ifndef __PRIERES_H__ 
+....................  
+.................... #define __PRIERES_H__ 
+....................  
+.................... #define PRIERE_FAJR        0 
+.................... #define PRIERE_CHOUROUK    2 
+.................... #define PRIERE_DHOHR       4 
+.................... #define PRIERE_ASR         6 
+.................... #define PRIERE_MAGHREB     8 
+.................... #define PRIERE_ISHAA       10 
+....................  
+.................... struct struct_location { 
+....................    char pays[16]; 
+....................    char region[16]; 
+....................    char ville[16]; 
+....................    int16 lg_deg; 
+....................    int lg_min; 
+....................    int16 lg_sec; 
+....................    char lg_sens; 
+....................    int16 la_deg; 
+....................    int la_min; 
+....................    int16 la_sec; 
+....................    char la_sens; 
+....................    int gmt; 
+....................    int dst; 
+....................    int method; 
+.................... } ; 
+....................  
+.................... void prieres_load(int town_pos); 
+.................... void location_load(int town_pos); 
+....................  
+.................... #endif // __LEDARRAY_H__ 
+....................  
+....................  
+.................... int town_pos = 0; 
+.................... int prayers[12]; 
+....................  
+.................... struct struct_location town_info; 
+....................  
+.................... void prieres_load(int town_pos) { 
+....................    int16 days; 
+....................    int16 address; 
+....................     
+....................    days = clk_days();    
+*
+09B0:  RCALL  076C
+09B2:  MOVFF  02,132
+09B6:  MOVFF  01,131
+....................    address = (int16)38 * town_pos + days / 10 + 1; 
+09BA:  MOVLB  1
+09BC:  CLRF   x38
+09BE:  MOVLW  26
+09C0:  MOVWF  x37
+09C2:  CLRF   x3A
+09C4:  MOVFF  130,139
+09C8:  MOVLB  0
+09CA:  RCALL  083A
+09CC:  MOVFF  02,136
+09D0:  MOVFF  01,135
+09D4:  MOVFF  132,138
+09D8:  MOVFF  131,137
+09DC:  MOVLB  1
+09DE:  CLRF   x3A
+09E0:  MOVLW  0A
+09E2:  MOVWF  x39
+09E4:  MOVLB  0
+09E6:  RCALL  085C
+09E8:  MOVF   01,W
+09EA:  MOVLB  1
+09EC:  ADDWF  x35,F
+09EE:  MOVF   02,W
+09F0:  ADDWFC x36,F
+09F2:  MOVLW  01
+09F4:  ADDWF  x35,W
+09F6:  MOVWF  x33
+09F8:  MOVLW  00
+09FA:  ADDWFC x36,W
+09FC:  MOVWF  x34
+....................    mem_read_page(MEM_ADDRESS1, address, buffer); 
+09FE:  MOVLW  A0
+0A00:  MOVWF  x35
+0A02:  MOVFF  134,137
+0A06:  MOVFF  133,136
+0A0A:  CLRF   x39
+0A0C:  MOVLW  28
+0A0E:  MOVWF  x38
+0A10:  MOVLB  0
+0A12:  RCALL  08A2
+....................    memcpy(prayers, buffer + (days % 10) * 12, 12); 
+0A14:  MOVFF  132,138
+0A18:  MOVFF  131,137
+0A1C:  MOVLB  1
+0A1E:  CLRF   x3A
+0A20:  MOVLW  0A
+0A22:  MOVWF  x39
+0A24:  MOVLB  0
+0A26:  RCALL  085C
+0A28:  MOVFF  00,135
+0A2C:  MOVLB  1
+0A2E:  MOVFF  03,136
+0A32:  MOVFF  03,138
+0A36:  MOVFF  00,137
+0A3A:  CLRF   x3A
+0A3C:  MOVLW  0C
+0A3E:  MOVWF  x39
+0A40:  MOVLB  0
+0A42:  RCALL  083A
+0A44:  MOVFF  02,03
+0A48:  MOVF   01,W
+0A4A:  ADDLW  28
+0A4C:  MOVLB  1
+0A4E:  MOVWF  x35
+0A50:  MOVLW  00
+0A52:  ADDWFC 02,W
+0A54:  MOVWF  x36
+0A56:  CLRF   FEA
+0A58:  MOVLW  AB
+0A5A:  MOVWF  FE9
+0A5C:  MOVFF  136,FE2
+0A60:  MOVFF  135,FE1
+0A64:  MOVLW  0C
+0A66:  MOVWF  01
+0A68:  MOVFF  FE6,FEE
+0A6C:  DECFSZ 01,F
+0A6E:  BRA    0A68
+.................... } 
+0A70:  MOVLB  0
+0A72:  RETLW  00
+....................  
+.................... void location_load(int town_pos) { 
+*
+0EC8:  CLRF   19
+0ECA:  BTFSC  FF2.7
+0ECC:  BSF    19.7
+0ECE:  BCF    FF2.7
+....................    int i; 
+....................    int16 address; 
+....................     
+....................    address = (int16)38 * town_pos; 
+0ED0:  MOVLB  1
+0ED2:  CLRF   x38
+0ED4:  MOVLW  26
+0ED6:  MOVWF  x37
+0ED8:  CLRF   x3A
+0EDA:  MOVFF  11B,139
+0EDE:  MOVLB  0
+0EE0:  RCALL  083A
+0EE2:  BTFSC  19.7
+0EE4:  BSF    FF2.7
+0EE6:  MOVFF  02,11E
+0EEA:  MOVFF  01,11D
+0EEE:  CLRF   19
+0EF0:  BTFSC  FF2.7
+0EF2:  BSF    19.7
+0EF4:  BCF    FF2.7
+....................    mem_read_page(MEM_ADDRESS1, address, buffer); 
+0EF6:  MOVLW  A0
+0EF8:  MOVLB  1
+0EFA:  MOVWF  x35
+0EFC:  MOVFF  11E,137
+0F00:  MOVFF  11D,136
+0F04:  CLRF   x39
+0F06:  MOVLW  28
+0F08:  MOVWF  x38
+0F0A:  MOVLB  0
+0F0C:  RCALL  08A2
+0F0E:  BTFSC  19.7
+0F10:  BSF    FF2.7
+....................    memcpy(&town_info, buffer, sizeof(town_info)); 
+0F12:  CLRF   FEA
+0F14:  MOVLW  B7
+0F16:  MOVWF  FE9
+0F18:  CLRF   FE2
+0F1A:  MOVLW  28
+0F1C:  MOVWF  FE1
+0F1E:  MOVLW  3F
+0F20:  MOVWF  01
+0F22:  MOVFF  FE6,FEE
+0F26:  DECFSZ 01,F
+0F28:  BRA    0F22
+....................    for (i = 0; i < 16 ; i++) { 
+0F2A:  MOVLB  1
+0F2C:  CLRF   x1C
+0F2E:  MOVF   x1C,W
+0F30:  SUBLW  0F
+0F32:  BNC   0F9E
+....................       if (town_info.pays[i] == 0xFF) town_info.pays[i] = 0; 
+0F34:  CLRF   03
+0F36:  MOVF   x1C,W
+0F38:  ADDLW  B7
+0F3A:  MOVWF  FE9
+0F3C:  MOVLW  00
+0F3E:  ADDWFC 03,W
+0F40:  MOVWF  FEA
+0F42:  INCFSZ FEF,W
+0F44:  BRA    0F56
+0F46:  CLRF   03
+0F48:  MOVF   x1C,W
+0F4A:  ADDLW  B7
+0F4C:  MOVWF  FE9
+0F4E:  MOVLW  00
+0F50:  ADDWFC 03,W
+0F52:  MOVWF  FEA
+0F54:  CLRF   FEF
+....................       if (town_info.region[i] == 0xFF) town_info.region[i] = 0; 
+0F56:  CLRF   03
+0F58:  MOVF   x1C,W
+0F5A:  ADDLW  C7
+0F5C:  MOVWF  FE9
+0F5E:  MOVLW  00
+0F60:  ADDWFC 03,W
+0F62:  MOVWF  FEA
+0F64:  INCFSZ FEF,W
+0F66:  BRA    0F78
+0F68:  CLRF   03
+0F6A:  MOVF   x1C,W
+0F6C:  ADDLW  C7
+0F6E:  MOVWF  FE9
+0F70:  MOVLW  00
+0F72:  ADDWFC 03,W
+0F74:  MOVWF  FEA
+0F76:  CLRF   FEF
+....................       if (town_info.ville[i] == 0xFF) town_info.ville[i] = 0; 
+0F78:  CLRF   03
+0F7A:  MOVF   x1C,W
+0F7C:  ADDLW  D7
+0F7E:  MOVWF  FE9
+0F80:  MOVLW  00
+0F82:  ADDWFC 03,W
+0F84:  MOVWF  FEA
+0F86:  INCFSZ FEF,W
+0F88:  BRA    0F9A
+0F8A:  CLRF   03
+0F8C:  MOVF   x1C,W
+0F8E:  ADDLW  D7
+0F90:  MOVWF  FE9
+0F92:  MOVLW  00
+0F94:  ADDWFC 03,W
+0F96:  MOVWF  FEA
+0F98:  CLRF   FEF
+....................    } 
+0F9A:  INCF   x1C,F
+0F9C:  BRA    0F2E
+.................... } 
+0F9E:  MOVLB  0
+0FA0:  RETLW  00
+....................  
+.................... #include <date.c> 
+.................... #include <date.h> 
+.................... #ifndef __DATE_H__ 
+....................  
+.................... #define __DATE_H__ 
+....................  
+.................... int date_isleap(int yy); 
+.................... int16 date_nbj(int jj, int mm, int aa); 
+.................... int date_jds(int16 val); 
+....................  
+.................... #endif // __DATE_H__ 
+....................  
+....................  
+.................... int date_isleap(int yy) { 
+....................    return ((yy & 0x03) == 0); 
+*
+1EA4:  MOVLB  1
+1EA6:  MOVF   x24,W
+1EA8:  ANDLW  03
+1EAA:  BZ    1EB0
+1EAC:  MOVLW  00
+1EAE:  BRA    1EB2
+1EB0:  MOVLW  01
+1EB2:  MOVWF  01
+.................... } 
+1EB4:  MOVLB  0
+1EB6:  GOTO   1EE6 (RETURN)
+....................  
+.................... int16 date_nbj(int jj, int mm, int aa) { 
+....................    int16 nbj; 
+....................     
+....................    nbj = jj; 
+1EBA:  MOVLB  1
+1EBC:  CLRF   x23
+1EBE:  MOVFF  11F,122
+....................    if (mm > 1) nbj += 31; 
+1EC2:  MOVF   x20,W
+1EC4:  SUBLW  01
+1EC6:  BC    1ED0
+1EC8:  MOVLW  1F
+1ECA:  ADDWF  x22,F
+1ECC:  MOVLW  00
+1ECE:  ADDWFC x23,F
+....................    if (mm > 2) { 
+1ED0:  MOVF   x20,W
+1ED2:  SUBLW  02
+1ED4:  BC    1EF0
+....................       nbj += 28; 
+1ED6:  MOVLW  1C
+1ED8:  ADDWF  x22,F
+1EDA:  MOVLW  00
+1EDC:  ADDWFC x23,F
+....................       nbj += date_isleap(aa); 
+1EDE:  MOVFF  121,124
+1EE2:  MOVLB  0
+1EE4:  BRA    1EA4
+1EE6:  MOVF   01,W
+1EE8:  MOVLB  1
+1EEA:  ADDWF  x22,F
+1EEC:  MOVLW  00
+1EEE:  ADDWFC x23,F
+....................    } 
+....................    if (mm > 3) nbj += 31; 
+1EF0:  MOVF   x20,W
+1EF2:  SUBLW  03
+1EF4:  BC    1EFE
+1EF6:  MOVLW  1F
+1EF8:  ADDWF  x22,F
+1EFA:  MOVLW  00
+1EFC:  ADDWFC x23,F
+....................    if (mm > 4) nbj += 30; 
+1EFE:  MOVF   x20,W
+1F00:  SUBLW  04
+1F02:  BC    1F0C
+1F04:  MOVLW  1E
+1F06:  ADDWF  x22,F
+1F08:  MOVLW  00
+1F0A:  ADDWFC x23,F
+....................    if (mm > 5) nbj += 31; 
+1F0C:  MOVF   x20,W
+1F0E:  SUBLW  05
+1F10:  BC    1F1A
+1F12:  MOVLW  1F
+1F14:  ADDWF  x22,F
+1F16:  MOVLW  00
+1F18:  ADDWFC x23,F
+....................    if (mm > 6) nbj += 30; 
+1F1A:  MOVF   x20,W
+1F1C:  SUBLW  06
+1F1E:  BC    1F28
+1F20:  MOVLW  1E
+1F22:  ADDWF  x22,F
+1F24:  MOVLW  00
+1F26:  ADDWFC x23,F
+....................    if (mm > 7) nbj += 31; 
+1F28:  MOVF   x20,W
+1F2A:  SUBLW  07
+1F2C:  BC    1F36
+1F2E:  MOVLW  1F
+1F30:  ADDWF  x22,F
+1F32:  MOVLW  00
+1F34:  ADDWFC x23,F
+....................    if (mm > 8) nbj += 31; 
+1F36:  MOVF   x20,W
+1F38:  SUBLW  08
+1F3A:  BC    1F44
+1F3C:  MOVLW  1F
+1F3E:  ADDWF  x22,F
+1F40:  MOVLW  00
+1F42:  ADDWFC x23,F
+....................    if (mm > 9) nbj += 30; 
+1F44:  MOVF   x20,W
+1F46:  SUBLW  09
+1F48:  BC    1F52
+1F4A:  MOVLW  1E
+1F4C:  ADDWF  x22,F
+1F4E:  MOVLW  00
+1F50:  ADDWFC x23,F
+....................    if (mm > 10) nbj += 31; 
+1F52:  MOVF   x20,W
+1F54:  SUBLW  0A
+1F56:  BC    1F60
+1F58:  MOVLW  1F
+1F5A:  ADDWF  x22,F
+1F5C:  MOVLW  00
+1F5E:  ADDWFC x23,F
+....................    if (mm > 11) nbj += 30; 
+1F60:  MOVF   x20,W
+1F62:  SUBLW  0B
+1F64:  BC    1F6E
+1F66:  MOVLW  1E
+1F68:  ADDWF  x22,F
+1F6A:  MOVLW  00
+1F6C:  ADDWFC x23,F
+1F6E:  CLRF   19
+1F70:  BTFSC  FF2.7
+1F72:  BSF    19.7
+1F74:  BCF    FF2.7
+....................     
+....................    nbj += 365 * aa; 
+1F76:  MOVLW  01
+1F78:  MOVWF  x38
+1F7A:  MOVLW  6D
+1F7C:  MOVWF  x37
+1F7E:  CLRF   x3A
+1F80:  MOVFF  121,139
+1F84:  MOVLB  0
+1F86:  CALL   083A
+1F8A:  BTFSC  19.7
+1F8C:  BSF    FF2.7
+1F8E:  MOVF   01,W
+1F90:  MOVLB  1
+1F92:  ADDWF  x22,F
+1F94:  MOVF   02,W
+1F96:  ADDWFC x23,F
+....................    nbj += (aa - 1) / 4; // jours des années bissextiles 
+1F98:  MOVLW  01
+1F9A:  SUBWF  x21,W
+1F9C:  MOVWF  00
+1F9E:  RRCF   00,F
+1FA0:  RRCF   00,F
+1FA2:  MOVLW  3F
+1FA4:  ANDWF  00,F
+1FA6:  MOVF   00,W
+1FA8:  ADDWF  x22,F
+1FAA:  MOVLW  00
+1FAC:  ADDWFC x23,F
+....................     
+....................    return nbj; 
+1FAE:  MOVFF  122,01
+1FB2:  MOVFF  123,02
+.................... } 
+1FB6:  MOVLB  0
+1FB8:  GOTO   205A (RETURN)
+....................  
+.................... int date_jds(int16 val) { 
+1FBC:  CLRF   19
+1FBE:  BTFSC  FF2.7
+1FC0:  BSF    19.7
+1FC2:  BCF    FF2.7
+....................    return (val % 7 + 1); 
+1FC4:  MOVFF  11F,138
+1FC8:  MOVFF  11E,137
+1FCC:  MOVLB  1
+1FCE:  CLRF   x3A
+1FD0:  MOVLW  07
+1FD2:  MOVWF  x39
+1FD4:  MOVLB  0
+1FD6:  CALL   085C
+1FDA:  BTFSC  19.7
+1FDC:  BSF    FF2.7
+1FDE:  MOVLB  1
+1FE0:  MOVFF  03,121
+1FE4:  MOVLW  01
+1FE6:  ADDWF  00,W
+1FE8:  MOVWF  01
+1FEA:  MOVLW  00
+1FEC:  ADDWFC 03,W
+1FEE:  MOVWF  03
+1FF0:  MOVF   01,W
+.................... } 
+1FF2:  MOVLB  0
+1FF4:  GOTO   206C (RETURN)
+....................  
+.................... #include <utility.c> 
+.................... #include <utility.h> 
+.................... #ifndef __UTILITY_H__ 
+....................  
+.................... #define __UTILITY_H__ 
+....................  
+.................... int bcd2dec(int val); 
+.................... int dec2bcd(int val); 
+....................  
+.................... #endif // __UTILITY_H__ 
+....................  
+....................  
+.................... int bcd2dec(int val) { 
+....................    return (val >> 4) * 10 + (val & 0x0f); 
+*
+074E:  MOVLB  1
+0750:  SWAPF  x37,W
+0752:  MOVWF  00
+0754:  MOVLW  0F
+0756:  ANDWF  00,F
+0758:  MOVF   00,W
+075A:  MULLW  0A
+075C:  MOVFF  FF3,138
+0760:  MOVF   x37,W
+0762:  ANDLW  0F
+0764:  ADDWF  x38,W
+0766:  MOVWF  01
+.................... } 
+0768:  MOVLB  0
+076A:  RETLW  00
+....................  
+.................... int dec2bcd(int val) { 
+....................    return ((val / 10) << 4) + (val % 10);    
+*
+1E70:  MOVFF  119,124
+1E74:  MOVLW  0A
+1E76:  MOVLB  1
+1E78:  MOVWF  x25
+1E7A:  MOVLB  0
+1E7C:  CALL   123E
+1E80:  SWAPF  01,W
+1E82:  MOVLB  1
+1E84:  MOVWF  x1A
+1E86:  MOVLW  F0
+1E88:  ANDWF  x1A,F
+1E8A:  MOVFF  119,124
+1E8E:  MOVLW  0A
+1E90:  MOVWF  x25
+1E92:  MOVLB  0
+1E94:  CALL   123E
+1E98:  MOVF   00,W
+1E9A:  MOVLB  1
+1E9C:  ADDWF  x1A,W
+1E9E:  MOVWF  01
+.................... } 
+1EA0:  MOVLB  0
+1EA2:  RETLW  00
+....................  
+.................... #include <lcddisplay.c> 
+.................... #include "lcddisplay.h" 
+.................... #ifndef __LCDDISPLAY_H__ 
+....................  
+.................... #define __LCDDISPLAY_H__ 
+....................  
+.................... void lcd_show(char* buffer, int size); 
+.................... void lcd_putc(char c); 
+.................... void lcd_clear(); 
+.................... void lcd_line_clear(); 
+.................... void lcd_light(int ison); 
+.................... void lcd_gotoxy(int x, int y); 
+.................... void lcd_cur_left(); 
+.................... void lcd_cur_right(); 
+.................... void lcd_cur_up(); 
+.................... void lcd_cur_down(); 
+....................  
+.................... #endif // __LCDDISPLAY_H__ 
+....................  
+....................  
+.................... void lcd_show(char* buffer, int size) { 
+....................    int i; 
+....................     
+....................    DISABLE_INT; 
+*
+10DA:  BCF    FF2.6
+10DC:  BCF    FF2.7
+10DE:  BTFSC  FF2.7
+10E0:  BRA    10DC
+....................    for (i = 0 ; i < size ; i++) { 
+10E2:  MOVLB  1
+10E4:  CLRF   x1E
+10E6:  MOVF   x1D,W
+10E8:  SUBWF  x1E,W
+10EA:  BC    1116
+....................       fputc(buffer[i], lcd); 
+10EC:  CLRF   03
+10EE:  MOVF   x1E,W
+10F0:  ADDWF  x1B,W
+10F2:  MOVWF  FE9
+10F4:  MOVF   x1C,W
+10F6:  ADDWFC 03,W
+10F8:  MOVWF  FEA
+10FA:  MOVFF  FEF,11F
+10FE:  MOVFF  11F,120
+1102:  MOVLB  0
+1104:  RCALL  1018
+....................       delay_ms(20); 
+1106:  MOVLW  14
+1108:  MOVLB  1
+110A:  MOVWF  x1F
+110C:  MOVLB  0
+110E:  RCALL  0CBC
+....................    } 
+1110:  MOVLB  1
+1112:  INCF   x1E,F
+1114:  BRA    10E6
+....................    ENABLE_INT; 
+1116:  MOVLW  C0
+1118:  IORWF  FF2,F
+.................... } 
+111A:  MOVLB  0
+111C:  RETLW  00
+....................  
+.................... void lcd_putc(char c) { 
+....................    DISABLE_INT; 
+....................    fputc(c, lcd); 
+....................    delay_us(500); 
+....................    ENABLE_INT; 
+.................... } 
+....................  
+.................... void lcd_clear() { 
+....................    DISABLE_INT; 
+*
+1090:  BCF    FF2.6
+1092:  BCF    FF2.7
+1094:  BTFSC  FF2.7
+1096:  BRA    1092
+....................    fputc(0x1b, lcd); 
+1098:  MOVLW  1B
+109A:  MOVLB  1
+109C:  MOVWF  x20
+109E:  MOVLB  0
+10A0:  RCALL  1018
+....................    delay_us(500); 
+10A2:  MOVLW  02
+10A4:  MOVLB  1
+10A6:  MOVWF  x1B
+10A8:  MOVLW  FA
+10AA:  MOVWF  x1F
+10AC:  MOVLB  0
+10AE:  RCALL  106A
+10B0:  MOVLB  1
+10B2:  DECFSZ x1B,F
+10B4:  BRA    10A8
+....................    fputc('C', lcd); 
+10B6:  MOVLW  43
+10B8:  MOVWF  x20
+10BA:  MOVLB  0
+10BC:  RCALL  1018
+....................    delay_us(500); 
+10BE:  MOVLW  02
+10C0:  MOVLB  1
+10C2:  MOVWF  x1B
+10C4:  MOVLW  FA
+10C6:  MOVWF  x1F
+10C8:  MOVLB  0
+10CA:  RCALL  106A
+10CC:  MOVLB  1
+10CE:  DECFSZ x1B,F
+10D0:  BRA    10C4
+....................    ENABLE_INT; 
+10D2:  MOVLW  C0
+10D4:  IORWF  FF2,F
+.................... } 
+10D6:  MOVLB  0
+10D8:  RETLW  00
+....................  
+.................... void lcd_line_clear() { 
+....................    DISABLE_INT; 
+....................    fputc(0x1b, lcd); 
+....................    delay_us(500); 
+....................    fputc('E', lcd); 
+....................    delay_us(500); 
+....................    ENABLE_INT; 
+.................... } 
+....................  
+.................... void lcd_light(int ison) { 
+....................    DISABLE_INT; 
+*
+11A4:  BCF    FF2.6
+11A6:  BCF    FF2.7
+11A8:  BTFSC  FF2.7
+11AA:  BRA    11A6
+....................    fputc(0x1b, lcd); 
+11AC:  MOVLW  1B
+11AE:  MOVLB  1
+11B0:  MOVWF  x20
+11B2:  MOVLB  0
+11B4:  RCALL  1018
+....................    delay_us(500); 
+11B6:  MOVLW  02
+11B8:  MOVLB  1
+11BA:  MOVWF  x19
+11BC:  MOVLW  FA
+11BE:  MOVWF  x1F
+11C0:  MOVLB  0
+11C2:  RCALL  106A
+11C4:  MOVLB  1
+11C6:  DECFSZ x19,F
+11C8:  BRA    11BC
+....................    fputc((ison) ? 'N' : 'F', lcd); 
+11CA:  MOVF   x18,F
+11CC:  BZ    11D2
+11CE:  MOVLW  4E
+11D0:  BRA    11D4
+11D2:  MOVLW  46
+11D4:  MOVWF  x20
+11D6:  MOVLB  0
+11D8:  RCALL  1018
+....................    delay_us(500); 
+11DA:  MOVLW  02
+11DC:  MOVLB  1
+11DE:  MOVWF  x19
+11E0:  MOVLW  FA
+11E2:  MOVWF  x1F
+11E4:  MOVLB  0
+11E6:  RCALL  106A
+11E8:  MOVLB  1
+11EA:  DECFSZ x19,F
+11EC:  BRA    11E0
+....................    ENABLE_INT; 
+11EE:  MOVLW  C0
+11F0:  IORWF  FF2,F
+.................... } 
+11F2:  MOVLB  0
+11F4:  RETLW  00
+....................  
+.................... void lcd_gotoxy(int x, int y) { 
+....................    DISABLE_INT; 
+*
+1348:  BCF    FF2.6
+134A:  BCF    FF2.7
+134C:  BTFSC  FF2.7
+134E:  BRA    134A
+....................    fputc(0x1b, lcd); 
+1350:  MOVLW  1B
+1352:  MOVLB  1
+1354:  MOVWF  x20
+1356:  MOVLB  0
+1358:  RCALL  1018
+....................    delay_us(500); 
+135A:  MOVLW  02
+135C:  MOVLB  1
+135E:  MOVWF  x1E
+1360:  MOVLW  FA
+1362:  MOVWF  x1F
+1364:  MOVLB  0
+1366:  RCALL  106A
+1368:  MOVLB  1
+136A:  DECFSZ x1E,F
+136C:  BRA    1360
+....................    fputc('G', lcd); 
+136E:  MOVLW  47
+1370:  MOVWF  x20
+1372:  MOVLB  0
+1374:  RCALL  1018
+....................    delay_us(500); 
+1376:  MOVLW  02
+1378:  MOVLB  1
+137A:  MOVWF  x1E
+137C:  MOVLW  FA
+137E:  MOVWF  x1F
+1380:  MOVLB  0
+1382:  RCALL  106A
+1384:  MOVLB  1
+1386:  DECFSZ x1E,F
+1388:  BRA    137C
+....................    fputc(x + 0x30, lcd); 
+138A:  MOVLW  30
+138C:  ADDWF  x1C,W
+138E:  MOVWF  x1E
+1390:  MOVWF  x20
+1392:  MOVLB  0
+1394:  RCALL  1018
+....................    delay_us(500); 
+1396:  MOVLW  02
+1398:  MOVLB  1
+139A:  MOVWF  x1E
+139C:  MOVLW  FA
+139E:  MOVWF  x1F
+13A0:  MOVLB  0
+13A2:  RCALL  106A
+13A4:  MOVLB  1
+13A6:  DECFSZ x1E,F
+13A8:  BRA    139C
+....................    fputc(y + 0x30, lcd); 
+13AA:  MOVLW  30
+13AC:  ADDWF  x1D,W
+13AE:  MOVWF  x1E
+13B0:  MOVWF  x20
+13B2:  MOVLB  0
+13B4:  RCALL  1018
+....................    delay_us(500); 
+13B6:  MOVLW  02
+13B8:  MOVLB  1
+13BA:  MOVWF  x1E
+13BC:  MOVLW  FA
+13BE:  MOVWF  x1F
+13C0:  MOVLB  0
+13C2:  RCALL  106A
+13C4:  MOVLB  1
+13C6:  DECFSZ x1E,F
+13C8:  BRA    13BC
+....................    ENABLE_INT; 
+13CA:  MOVLW  C0
+13CC:  IORWF  FF2,F
+.................... } 
+13CE:  MOVLB  0
+13D0:  RETLW  00
+....................  
+.................... void lcd_cur_left() { 
+....................    DISABLE_INT; 
+....................    fputc(0x1b, lcd); 
+....................    delay_us(500); 
+....................    fputc('P', lcd); 
+....................    delay_us(500); 
+....................    fputc('L', lcd); 
+....................    delay_us(500); 
+....................    ENABLE_INT; 
+.................... } 
+....................  
+.................... void lcd_cur_right() { 
+....................    DISABLE_INT; 
+....................    fputc(0x1b, lcd); 
+....................    delay_us(500); 
+....................    fputc('P', lcd); 
+....................    delay_us(500); 
+....................    fputc('R', lcd); 
+....................    delay_us(500); 
+....................    ENABLE_INT; 
+.................... } 
+....................  
+.................... void lcd_cur_up() { 
+....................    DISABLE_INT; 
+....................    fputc(0x1b, lcd); 
+....................    delay_us(500); 
+....................    fputc('P', lcd); 
+....................    delay_us(500); 
+....................    fputc('U', lcd); 
+....................    delay_us(500); 
+....................    ENABLE_INT; 
+.................... } 
+....................  
+.................... void lcd_cur_down() { 
+....................    DISABLE_INT; 
+....................    fputc(0x1b, lcd); 
+....................    delay_us(500); 
+....................    fputc('P', lcd); 
+....................    delay_us(500); 
+....................    fputc('D', lcd); 
+....................    delay_us(500); 
+....................    ENABLE_INT; 
+.................... } 
+....................  
+.................... #include <mp3.c> 
+.................... #include "mp3.h" 
+.................... #ifndef __MP3_H__ 
+....................  
+.................... #define __MP3_H__ 
+....................  
+.................... void play_mp3(); 
+.................... void stop_mp3(); 
+.................... void state_mp3(); 
+....................  
+.................... #endif // __MP3_H__ 
+....................  
+....................  
+....................  
+.................... int is_playing = 0,  
+....................     curr_state = 0; 
+.................... int16 mp3_pos = 0; 
+....................  
+.................... void play_mp3() { 
+....................    DISABLE_INT; 
+*
+0512:  BCF    FF2.6
+0514:  BCF    FF2.7
+0516:  BTFSC  FF2.7
+0518:  BRA    0514
+....................    fputc('P', mp3); 
+051A:  MOVLW  50
+051C:  MOVLB  1
+051E:  MOVWF  x30
+0520:  MOVLB  0
+0522:  RCALL  04CE
+....................    is_playing = TRUE; 
+0524:  MOVLW  01
+0526:  MOVWF  xF6
+....................    ENABLE_INT; 
+0528:  MOVLW  C0
+052A:  IORWF  FF2,F
+.................... } 
+052C:  RETLW  00
+....................  
+.................... void stop_mp3(){ 
+....................    DISABLE_INT; 
+*
+117C:  BCF    FF2.6
+117E:  BCF    FF2.7
+1180:  BTFSC  FF2.7
+1182:  BRA    117E
+1184:  CLRF   19
+1186:  BTFSC  FF2.7
+1188:  BSF    19.7
+118A:  BCF    FF2.7
+....................    fputc('S', mp3); 
+118C:  MOVLW  53
+118E:  MOVLB  1
+1190:  MOVWF  x30
+1192:  MOVLB  0
+1194:  CALL   04CE
+1198:  BTFSC  19.7
+119A:  BSF    FF2.7
+....................    is_playing = FALSE; 
+119C:  CLRF   xF6
+....................    ENABLE_INT; 
+119E:  MOVLW  C0
+11A0:  IORWF  FF2,F
+.................... } 
+11A2:  RETLW  00
+....................  
+.................... void state_mp3() { 
+....................    int *p; 
+....................    p = &mp3_pos; 
+*
+215E:  MOVLB  1
+2160:  CLRF   x17
+2162:  MOVLW  F8
+2164:  MOVWF  x16
+....................    DISABLE_INT; 
+2166:  BCF    FF2.6
+2168:  BCF    FF2.7
+216A:  BTFSC  FF2.7
+216C:  BRA    2168
+216E:  CLRF   19
+2170:  BTFSC  FF2.7
+2172:  BSF    19.7
+2174:  BCF    FF2.7
+....................    fputc('Y', mp3); 
+2176:  MOVLW  59
+2178:  MOVWF  x30
+217A:  MOVLB  0
+217C:  CALL   04CE
+2180:  BTFSC  19.7
+2182:  BSF    FF2.7
+....................    curr_state = fgetc(mp3); 
+2184:  RCALL  2116
+2186:  MOVFF  01,F7
+....................    p[0] = fgetc(mp3); 
+218A:  MOVFF  116,FE9
+218E:  MOVFF  117,FEA
+2192:  MOVFF  FEA,11B
+2196:  MOVFF  FE9,11A
+219A:  MOVLB  0
+219C:  RCALL  2116
+219E:  MOVFF  11B,FEA
+21A2:  MOVFF  11A,FE9
+21A6:  MOVFF  01,FEF
+....................    p[1] = fgetc(mp3); 
+21AA:  MOVLW  01
+21AC:  MOVLB  1
+21AE:  ADDWF  x16,W
+21B0:  MOVWF  FE9
+21B2:  MOVLW  00
+21B4:  ADDWFC x17,W
+21B6:  MOVWF  FEA
+21B8:  MOVFF  FEA,11B
+21BC:  MOVFF  FE9,11A
+21C0:  MOVLB  0
+21C2:  RCALL  2116
+21C4:  MOVFF  11B,FEA
+21C8:  MOVFF  11A,FE9
+21CC:  MOVFF  01,FEF
+....................    ENABLE_INT; 
+21D0:  MOVLW  C0
+21D2:  IORWF  FF2,F
+.................... } 
+21D4:  GOTO   25B2 (RETURN)
+....................  
+.................... #include <keys.c> 
+.................... #include "keys.h" 
+.................... #ifndef __KEYS_H__ 
+....................  
+.................... #define __KEYS_H__ 
+....................  
+.................... #define KEY_ONOFF 'A' 
+.................... #define KEY_MUTE  'B' 
+.................... #define KEY_EPG   'C' 
+.................... #define KEY_DOTS  'D' 
+.................... #define KEY_INFO  'E' 
+.................... #define KEY_0     '0' 
+.................... #define KEY_1     '1' 
+.................... #define KEY_2     '2' 
+.................... #define KEY_3     '3' 
+.................... #define KEY_4     '4' 
+.................... #define KEY_5     '5' 
+.................... #define KEY_6     '6' 
+.................... #define KEY_7     '7' 
+.................... #define KEY_8     '8' 
+.................... #define KEY_9     '9' 
+.................... #define KEY_EXIT  'G' 
+.................... #define KEY_UP    'H' 
+.................... #define KEY_DOWN  'K' 
+.................... #define KEY_LEFT  'I' 
+.................... #define KEY_RIGHT 'J' 
+.................... #define KEY_OK    'L' 
+.................... #define KEY_NPRG  'M' 
+.................... #define KEY_PPRG  'N' 
+.................... #define KEY_RCL   'O' 
+.................... #define KEY_TVRDO 'P' 
+.................... #define KEY_FAV   'Q' 
+.................... #define KEY_LANG  'R' 
+.................... #define KEY_BLUE  'S' 
+.................... #define KEY_WHITE 'T' 
+.................... #define KEY_MENU  'F' 
+....................  
+.................... #define MENU_PRAYER_CALLER          0 
+.................... #define MENU_CONFIG_MP3             1 
+.................... #define MENU_CONFIG_HOURS           2 
+.................... #define MENU_CONFIG_DATE            3 
+.................... #define MENU_CONFIG_TOWN            4 
+.................... #define MENU_CONFIG_PRAYERS         5 
+....................  
+.................... #define MENU_COUNT                  6 
+....................  
+.................... #define MENU_CONFIG_HOURS_HOURS     1 
+.................... #define MENU_CONFIG_HOURS_MINUTES   2 
+....................  
+.................... #define MENU_CONFIG_DATE_DAY        1 
+.................... #define MENU_CONFIG_DATE_MONTH      2 
+.................... #define MENU_CONFIG_DATE_YEAR       3 
+....................  
+.................... #define MENU_CONFIG_PRAYERS_TIMES1  1 
+.................... #define MENU_CONFIG_PRAYERS_TIMES2  2 
+.................... #define MENU_CONFIG_PRAYERS_FAJR    3 
+.................... #define MENU_CONFIG_PRAYERS_SHURUQ  4 
+.................... #define MENU_CONFIG_PRAYERS_THUHR   5 
+.................... #define MENU_CONFIG_PRAYERS_ASR     6 
+.................... #define MENU_CONFIG_PRAYERS_MAGHREB 7 
+.................... #define MENU_CONFIG_PRAYERS_ISHAA   8 
+....................  
+.................... #define MENU_CONFIG_TOWN_NUMBER     0 
+....................  
+.................... #define MENU_CONFIG_MP3_PLAY        1 
+.................... #define MENU_CONFIG_MP3_STOP        2 
+....................  
+.................... #define USER_TIME_CHANGED           1 
+.................... #define USER_DATE_CHANGED           2 
+.................... #define USER_TOWN_CHANGED           3 
+.................... #define USER_PRAYERS_CHANGED        4 
+.................... #define USER_POWERON_CHANGED        5 
+.................... #define USER_PLAY_SOUND             6 
+.................... #define USER_STOP_SOUND             7 
+....................  
+.................... void show_menu(); 
+.................... int handle_key(int key); 
+....................  
+....................  
+.................... #endif // __KEYS_H__ 
+....................  
+....................  
+.................... char last_key = 0,  
+....................      last_key_count = 0, 
+....................      key_ready = FALSE; 
+....................       
+.................... int  dec_val, 
+....................      dec_min, 
+....................      dec_max, 
+....................      dec_count; 
+.................... int  edit_val[12];      
+....................  
+.................... int curr_step = MENU_PRAYER_CALLER; 
+.................... int curr_cmd = 0; 
+....................  
+.................... int user_event = 0; 
+....................  
+.................... void show_menu() { 
+....................    int16 state; 
+....................    int size; 
+....................     
+....................    if (curr_step == MENU_PRAYER_CALLER) 
+*
+1418:  MOVLB  1
+141A:  MOVF   x0D,F
+141C:  BNZ   144E
+....................    { 
+....................       // 123456789ABCDEF0123456789ABCD 
+....................       strcpy(buffer, "Welcome to      Prayer Caller"); 
+141E:  CLRF   FEA
+1420:  MOVLW  28
+1422:  MOVWF  FE9
+1424:  MOVLW  00
+1426:  MOVLB  0
+1428:  CALL   00AE
+142C:  TBLRD*-
+142E:  TBLRD*+
+1430:  MOVF   FF5,W
+1432:  MOVWF  FEE
+1434:  IORLW  00
+1436:  BNZ   142E
+....................       lcd_clear(); 
+1438:  RCALL  1090
+....................       lcd_show(buffer, 0x1D); 
+143A:  MOVLB  1
+143C:  CLRF   x1C
+143E:  MOVLW  28
+1440:  MOVWF  x1B
+1442:  MOVLW  1D
+1444:  MOVWF  x1D
+1446:  MOVLB  0
+1448:  RCALL  10DA
+....................        
+....................    } 
+....................    else if (curr_step == MENU_CONFIG_HOURS) 
+144A:  BRA    1A40
+144C:  MOVLB  1
+144E:  MOVF   x0D,W
+1450:  SUBLW  02
+1452:  BTFSS  FD8.2
+1454:  BRA    154C
+....................    { 
+....................       if (curr_cmd == 0) { 
+1456:  MOVF   x0E,F
+1458:  BNZ   14E0
+145A:  CLRF   19
+145C:  BTFSC  FF2.7
+145E:  BSF    19.7
+1460:  BCF    FF2.7
+....................                        // 0123456789ABCDEF01  234 
+....................          sprintf(buffer, "REGLAGE HEURE   %02d:%02d", bcd2dec(clk_data[HOUR]), bcd2dec(clk_data[MINUTE])); 
+1462:  MOVFF  23,137
+1466:  MOVLB  0
+1468:  CALL   074E
+146C:  BTFSC  19.7
+146E:  BSF    FF2.7
+1470:  MOVFF  01,11B
+1474:  CLRF   19
+1476:  BTFSC  FF2.7
+1478:  BSF    19.7
+147A:  BCF    FF2.7
+147C:  MOVFF  22,137
+1480:  CALL   074E
+1484:  BTFSC  19.7
+1486:  BSF    FF2.7
+1488:  MOVFF  01,11C
+148C:  MOVLB  1
+148E:  CLRF   x11
+1490:  MOVLW  28
+1492:  MOVWF  x10
+1494:  MOVLW  DC
+1496:  MOVWF  FF6
+1498:  MOVLW  00
+149A:  MOVWF  FF7
+149C:  MOVLW  10
+149E:  MOVWF  x1E
+14A0:  MOVLB  0
+14A2:  RCALL  1216
+14A4:  MOVFF  11B,11E
+14A8:  MOVLW  01
+14AA:  MOVLB  1
+14AC:  MOVWF  x1F
+14AE:  MOVLB  0
+14B0:  RCALL  126A
+14B2:  MOVLW  3A
+14B4:  MOVLB  1
+14B6:  MOVWF  x24
+14B8:  MOVLB  0
+14BA:  RCALL  11F6
+14BC:  MOVFF  11C,11E
+14C0:  MOVLW  01
+14C2:  MOVLB  1
+14C4:  MOVWF  x1F
+14C6:  MOVLB  0
+14C8:  RCALL  126A
+....................          lcd_clear(); 
+14CA:  RCALL  1090
+....................          lcd_show(buffer, 0x15); 
+14CC:  MOVLB  1
+14CE:  CLRF   x1C
+14D0:  MOVLW  28
+14D2:  MOVWF  x1B
+14D4:  MOVLW  15
+14D6:  MOVWF  x1D
+14D8:  MOVLB  0
+14DA:  RCALL  10DA
+....................       } else if (curr_cmd == 1 || curr_cmd == 2) { 
+14DC:  BRA    1548
+14DE:  MOVLB  1
+14E0:  DECFSZ x0E,W
+14E2:  BRA    14E6
+14E4:  BRA    14EC
+14E6:  MOVF   x0E,W
+14E8:  SUBLW  02
+14EA:  BNZ   154A
+....................          lcd_gotoxy(0, 1); 
+14EC:  CLRF   x1C
+14EE:  MOVLW  01
+14F0:  MOVWF  x1D
+14F2:  MOVLB  0
+14F4:  RCALL  1348
+....................          sprintf(buffer, "%02d:%02d", edit_val[0], edit_val[1]); 
+14F6:  MOVLB  1
+14F8:  CLRF   x11
+14FA:  MOVLW  28
+14FC:  MOVWF  x10
+14FE:  MOVFF  101,11E
+1502:  MOVLW  01
+1504:  MOVWF  x1F
+1506:  MOVLB  0
+1508:  RCALL  126A
+150A:  MOVLW  3A
+150C:  MOVLB  1
+150E:  MOVWF  x24
+1510:  MOVLB  0
+1512:  RCALL  11F6
+1514:  MOVFF  102,11E
+1518:  MOVLW  01
+151A:  MOVLB  1
+151C:  MOVWF  x1F
+151E:  MOVLB  0
+1520:  RCALL  126A
+....................          lcd_show(buffer, 0x05); 
+1522:  MOVLB  1
+1524:  CLRF   x1C
+1526:  MOVLW  28
+1528:  MOVWF  x1B
+152A:  MOVLW  05
+152C:  MOVWF  x1D
+152E:  MOVLB  0
+1530:  RCALL  10DA
+....................          lcd_gotoxy((curr_cmd == 1) ? 0 : 3, 1); 
+1532:  MOVLB  1
+1534:  DECFSZ x0E,W
+1536:  BRA    153C
+1538:  MOVLW  00
+153A:  BRA    153E
+153C:  MOVLW  03
+153E:  MOVWF  x1C
+1540:  MOVLW  01
+1542:  MOVWF  x1D
+1544:  MOVLB  0
+1546:  RCALL  1348
+1548:  MOVLB  1
+....................       }  
+....................    } 
+....................    else if (curr_step == MENU_CONFIG_DATE) 
+154A:  BRA    1A42
+154C:  MOVF   x0D,W
+154E:  SUBLW  03
+1550:  BTFSS  FD8.2
+1552:  BRA    16B8
+....................    { 
+....................       if (curr_cmd == 0) { 
+1554:  MOVF   x0E,F
+1556:  BNZ   160E
+1558:  CLRF   19
+155A:  BTFSC  FF2.7
+155C:  BSF    19.7
+155E:  BCF    FF2.7
+....................                       //  0123456789ABCDEF01  234  567 
+....................          sprintf(buffer, "REGLAGE DATE    %02d/%02d/%02d", bcd2dec(clk_data[DATE]), bcd2dec(clk_data[MONTH]), bcd2dec(clk_data[YEAR])); 
+1560:  MOVFF  25,137
+1564:  MOVLB  0
+1566:  CALL   074E
+156A:  BTFSC  19.7
+156C:  BSF    FF2.7
+156E:  MOVFF  01,11B
+1572:  CLRF   19
+1574:  BTFSC  FF2.7
+1576:  BSF    19.7
+1578:  BCF    FF2.7
+157A:  MOVFF  26,137
+157E:  CALL   074E
+1582:  BTFSC  19.7
+1584:  BSF    FF2.7
+1586:  MOVFF  01,11C
+158A:  CLRF   19
+158C:  BTFSC  FF2.7
+158E:  BSF    19.7
+1590:  BCF    FF2.7
+1592:  MOVFF  27,137
+1596:  CALL   074E
+159A:  BTFSC  19.7
+159C:  BSF    FF2.7
+159E:  MOVFF  01,11D
+15A2:  MOVLB  1
+15A4:  CLRF   x11
+15A6:  MOVLW  28
+15A8:  MOVWF  x10
+15AA:  MOVLW  F6
+15AC:  MOVWF  FF6
+15AE:  MOVLW  00
+15B0:  MOVWF  FF7
+15B2:  MOVLW  10
+15B4:  MOVWF  x1E
+15B6:  MOVLB  0
+15B8:  RCALL  1216
+15BA:  MOVFF  11B,11E
+15BE:  MOVLW  01
+15C0:  MOVLB  1
+15C2:  MOVWF  x1F
+15C4:  MOVLB  0
+15C6:  RCALL  126A
+15C8:  MOVLW  2F
+15CA:  MOVLB  1
+15CC:  MOVWF  x24
+15CE:  MOVLB  0
+15D0:  RCALL  11F6
+15D2:  MOVFF  11C,11E
+15D6:  MOVLW  01
+15D8:  MOVLB  1
+15DA:  MOVWF  x1F
+15DC:  MOVLB  0
+15DE:  RCALL  126A
+15E0:  MOVLW  2F
+15E2:  MOVLB  1
+15E4:  MOVWF  x24
+15E6:  MOVLB  0
+15E8:  RCALL  11F6
+15EA:  MOVFF  11D,11E
+15EE:  MOVLW  01
+15F0:  MOVLB  1
+15F2:  MOVWF  x1F
+15F4:  MOVLB  0
+15F6:  RCALL  126A
+....................          lcd_clear(); 
+15F8:  RCALL  1090
+....................          lcd_show(buffer, 0x18); 
+15FA:  MOVLB  1
+15FC:  CLRF   x1C
+15FE:  MOVLW  28
+1600:  MOVWF  x1B
+1602:  MOVLW  18
+1604:  MOVWF  x1D
+1606:  MOVLB  0
+1608:  RCALL  10DA
+....................       } else if (curr_cmd == 1 ||curr_cmd == 2 || curr_cmd == 3) { 
+160A:  BRA    16B4
+160C:  MOVLB  1
+160E:  DECFSZ x0E,W
+1610:  BRA    1614
+1612:  BRA    1620
+1614:  MOVF   x0E,W
+1616:  SUBLW  02
+1618:  BZ    1620
+161A:  MOVF   x0E,W
+161C:  SUBLW  03
+161E:  BNZ   16B6
+....................          lcd_gotoxy(0, 1); 
+1620:  CLRF   x1C
+1622:  MOVLW  01
+1624:  MOVWF  x1D
+1626:  MOVLB  0
+1628:  RCALL  1348
+....................          sprintf(buffer, "%02d/%02d/%02d", edit_val[0], edit_val[1], edit_val[2]); 
+162A:  MOVLB  1
+162C:  CLRF   x11
+162E:  MOVLW  28
+1630:  MOVWF  x10
+1632:  MOVFF  101,11E
+1636:  MOVLW  01
+1638:  MOVWF  x1F
+163A:  MOVLB  0
+163C:  RCALL  126A
+163E:  MOVLW  2F
+1640:  MOVLB  1
+1642:  MOVWF  x24
+1644:  MOVLB  0
+1646:  RCALL  11F6
+1648:  MOVFF  102,11E
+164C:  MOVLW  01
+164E:  MOVLB  1
+1650:  MOVWF  x1F
+1652:  MOVLB  0
+1654:  RCALL  126A
+1656:  MOVLW  2F
+1658:  MOVLB  1
+165A:  MOVWF  x24
+165C:  MOVLB  0
+165E:  RCALL  11F6
+1660:  MOVFF  103,11E
+1664:  MOVLW  01
+1666:  MOVLB  1
+1668:  MOVWF  x1F
+166A:  MOVLB  0
+166C:  RCALL  126A
+....................          lcd_show(buffer, 0x08); 
+166E:  MOVLB  1
+1670:  CLRF   x1C
+1672:  MOVLW  28
+1674:  MOVWF  x1B
+1676:  MOVLW  08
+1678:  MOVWF  x1D
+167A:  MOVLB  0
+167C:  RCALL  10DA
+....................          if (curr_cmd == 1) lcd_gotoxy(0, 1); 
+167E:  MOVLB  1
+1680:  DECFSZ x0E,W
+1682:  BRA    1692
+1684:  CLRF   x1C
+1686:  MOVLW  01
+1688:  MOVWF  x1D
+168A:  MOVLB  0
+168C:  RCALL  1348
+....................          else if (curr_cmd == 2) lcd_gotoxy(3, 1); 
+168E:  BRA    16B4
+1690:  MOVLB  1
+1692:  MOVF   x0E,W
+1694:  SUBLW  02
+1696:  BNZ   16A8
+1698:  MOVLW  03
+169A:  MOVWF  x1C
+169C:  MOVLW  01
+169E:  MOVWF  x1D
+16A0:  MOVLB  0
+16A2:  RCALL  1348
+....................          else lcd_gotoxy(6, 1); 
+16A4:  BRA    16B4
+16A6:  MOVLB  1
+16A8:  MOVLW  06
+16AA:  MOVWF  x1C
+16AC:  MOVLW  01
+16AE:  MOVWF  x1D
+16B0:  MOVLB  0
+16B2:  RCALL  1348
+16B4:  MOVLB  1
+....................       }  
+....................    } 
+....................    else if (curr_step == MENU_CONFIG_PRAYERS) 
+16B6:  BRA    1A42
+16B8:  MOVF   x0D,W
+16BA:  SUBLW  05
+16BC:  BTFSS  FD8.2
+16BE:  BRA    18F2
+....................    { 
+....................       if (curr_cmd == 0) { 
+16C0:  MOVF   x0E,F
+16C2:  BNZ   16F0
+....................          lcd_clear(); 
+16C4:  MOVLB  0
+16C6:  RCALL  1090
+....................          //  0123456789ABCDE 
+....................          sprintf(buffer, "REGLAGE PRIERES"); 
+16C8:  MOVLB  1
+16CA:  CLRF   x11
+16CC:  MOVLW  28
+16CE:  MOVWF  x10
+16D0:  MOVLW  16
+16D2:  MOVWF  FF6
+16D4:  MOVLW  01
+16D6:  MOVWF  FF7
+16D8:  MOVLB  0
+16DA:  RCALL  13D2
+....................          lcd_show(buffer, 0x0F); 
+16DC:  MOVLB  1
+16DE:  CLRF   x1C
+16E0:  MOVLW  28
+16E2:  MOVWF  x1B
+16E4:  MOVLW  0F
+16E6:  MOVWF  x1D
+16E8:  MOVLB  0
+16EA:  RCALL  10DA
+....................       } else if (curr_cmd == 1 || curr_cmd == 2) { 
+16EC:  BRA    18B4
+16EE:  MOVLB  1
+16F0:  DECFSZ x0E,W
+16F2:  BRA    16F6
+16F4:  BRA    16FC
+16F6:  MOVF   x0E,W
+16F8:  SUBLW  02
+16FA:  BNZ   173C
+....................                         //012345678  9AB 
+....................          sprintf(buffer, "FAJR   %02d:%02d", edit_val[0], edit_val[1]); 
+16FC:  CLRF   x11
+16FE:  MOVLW  28
+1700:  MOVWF  x10
+1702:  MOVLW  26
+1704:  MOVWF  FF6
+1706:  MOVLW  01
+1708:  MOVWF  FF7
+170A:  MOVLW  07
+170C:  MOVWF  x1E
+170E:  MOVLB  0
+1710:  RCALL  1216
+1712:  MOVFF  101,11E
+1716:  MOVLW  01
+1718:  MOVLB  1
+171A:  MOVWF  x1F
+171C:  MOVLB  0
+171E:  RCALL  126A
+1720:  MOVLW  3A
+1722:  MOVLB  1
+1724:  MOVWF  x24
+1726:  MOVLB  0
+1728:  RCALL  11F6
+172A:  MOVFF  102,11E
+172E:  MOVLW  01
+1730:  MOVLB  1
+1732:  MOVWF  x1F
+1734:  MOVLB  0
+1736:  RCALL  126A
+....................       } else if (curr_cmd == 3 || curr_cmd == 4) { 
+1738:  BRA    18B4
+173A:  MOVLB  1
+173C:  MOVF   x0E,W
+173E:  SUBLW  03
+1740:  BZ    1748
+1742:  MOVF   x0E,W
+1744:  SUBLW  04
+1746:  BNZ   1788
+....................                         //012345678  9AB 
+....................          sprintf(buffer, "SHURUQ %02d:%02d", edit_val[2], edit_val[3]); 
+1748:  CLRF   x11
+174A:  MOVLW  28
+174C:  MOVWF  x10
+174E:  MOVLW  38
+1750:  MOVWF  FF6
+1752:  MOVLW  01
+1754:  MOVWF  FF7
+1756:  MOVLW  07
+1758:  MOVWF  x1E
+175A:  MOVLB  0
+175C:  RCALL  1216
+175E:  MOVFF  103,11E
+1762:  MOVLW  01
+1764:  MOVLB  1
+1766:  MOVWF  x1F
+1768:  MOVLB  0
+176A:  RCALL  126A
+176C:  MOVLW  3A
+176E:  MOVLB  1
+1770:  MOVWF  x24
+1772:  MOVLB  0
+1774:  RCALL  11F6
+1776:  MOVFF  104,11E
+177A:  MOVLW  01
+177C:  MOVLB  1
+177E:  MOVWF  x1F
+1780:  MOVLB  0
+1782:  RCALL  126A
+....................       } else if (curr_cmd == 5 || curr_cmd == 6) { 
+1784:  BRA    18B4
+1786:  MOVLB  1
+1788:  MOVF   x0E,W
+178A:  SUBLW  05
+178C:  BZ    1794
+178E:  MOVF   x0E,W
+1790:  SUBLW  06
+1792:  BNZ   17D4
+....................                         //012345678  9AB 
+....................          sprintf(buffer, "THUHR  %02d:%02d", edit_val[4], edit_val[5]);; 
+1794:  CLRF   x11
+1796:  MOVLW  28
+1798:  MOVWF  x10
+179A:  MOVLW  4A
+179C:  MOVWF  FF6
+179E:  MOVLW  01
+17A0:  MOVWF  FF7
+17A2:  MOVLW  07
+17A4:  MOVWF  x1E
+17A6:  MOVLB  0
+17A8:  RCALL  1216
+17AA:  MOVFF  105,11E
+17AE:  MOVLW  01
+17B0:  MOVLB  1
+17B2:  MOVWF  x1F
+17B4:  MOVLB  0
+17B6:  RCALL  126A
+17B8:  MOVLW  3A
+17BA:  MOVLB  1
+17BC:  MOVWF  x24
+17BE:  MOVLB  0
+17C0:  RCALL  11F6
+17C2:  MOVFF  106,11E
+17C6:  MOVLW  01
+17C8:  MOVLB  1
+17CA:  MOVWF  x1F
+17CC:  MOVLB  0
+17CE:  RCALL  126A
+....................       } else if (curr_cmd == 7 || curr_cmd == 8) { 
+17D0:  BRA    18B4
+17D2:  MOVLB  1
+17D4:  MOVF   x0E,W
+17D6:  SUBLW  07
+17D8:  BZ    17E0
+17DA:  MOVF   x0E,W
+17DC:  SUBLW  08
+17DE:  BNZ   1820
+....................                         //012345678  9AB 
+....................          sprintf(buffer, "ASR    %02d:%02d", edit_val[6], edit_val[7]); 
+17E0:  CLRF   x11
+17E2:  MOVLW  28
+17E4:  MOVWF  x10
+17E6:  MOVLW  5C
+17E8:  MOVWF  FF6
+17EA:  MOVLW  01
+17EC:  MOVWF  FF7
+17EE:  MOVLW  07
+17F0:  MOVWF  x1E
+17F2:  MOVLB  0
+17F4:  RCALL  1216
+17F6:  MOVFF  107,11E
+17FA:  MOVLW  01
+17FC:  MOVLB  1
+17FE:  MOVWF  x1F
+1800:  MOVLB  0
+1802:  RCALL  126A
+1804:  MOVLW  3A
+1806:  MOVLB  1
+1808:  MOVWF  x24
+180A:  MOVLB  0
+180C:  RCALL  11F6
+180E:  MOVFF  108,11E
+1812:  MOVLW  01
+1814:  MOVLB  1
+1816:  MOVWF  x1F
+1818:  MOVLB  0
+181A:  RCALL  126A
+....................       } else if (curr_cmd == 9 || curr_cmd == 10) { 
+181C:  BRA    18B4
+181E:  MOVLB  1
+1820:  MOVF   x0E,W
+1822:  SUBLW  09
+1824:  BZ    182C
+1826:  MOVF   x0E,W
+1828:  SUBLW  0A
+182A:  BNZ   186C
+....................                         //012345678  9AB 
+....................          sprintf(buffer, "MAGHR. %02d:%02d", edit_val[8], edit_val[9]); 
+182C:  CLRF   x11
+182E:  MOVLW  28
+1830:  MOVWF  x10
+1832:  MOVLW  6E
+1834:  MOVWF  FF6
+1836:  MOVLW  01
+1838:  MOVWF  FF7
+183A:  MOVLW  07
+183C:  MOVWF  x1E
+183E:  MOVLB  0
+1840:  RCALL  1216
+1842:  MOVFF  109,11E
+1846:  MOVLW  01
+1848:  MOVLB  1
+184A:  MOVWF  x1F
+184C:  MOVLB  0
+184E:  RCALL  126A
+1850:  MOVLW  3A
+1852:  MOVLB  1
+1854:  MOVWF  x24
+1856:  MOVLB  0
+1858:  RCALL  11F6
+185A:  MOVFF  10A,11E
+185E:  MOVLW  01
+1860:  MOVLB  1
+1862:  MOVWF  x1F
+1864:  MOVLB  0
+1866:  RCALL  126A
+....................       } else if (curr_cmd == 11 || curr_cmd == 12) { 
+1868:  BRA    18B4
+186A:  MOVLB  1
+186C:  MOVF   x0E,W
+186E:  SUBLW  0B
+1870:  BZ    1878
+1872:  MOVF   x0E,W
+1874:  SUBLW  0C
+1876:  BNZ   18B6
+....................                         //012345678  9AB 
+....................          sprintf(buffer, "ISHAA  %02d:%02d", edit_val[10], edit_val[11]);    
+1878:  CLRF   x11
+187A:  MOVLW  28
+187C:  MOVWF  x10
+187E:  MOVLW  80
+1880:  MOVWF  FF6
+1882:  MOVLW  01
+1884:  MOVWF  FF7
+1886:  MOVLW  07
+1888:  MOVWF  x1E
+188A:  MOVLB  0
+188C:  RCALL  1216
+188E:  MOVFF  10B,11E
+1892:  MOVLW  01
+1894:  MOVLB  1
+1896:  MOVWF  x1F
+1898:  MOVLB  0
+189A:  RCALL  126A
+189C:  MOVLW  3A
+189E:  MOVLB  1
+18A0:  MOVWF  x24
+18A2:  MOVLB  0
+18A4:  RCALL  11F6
+18A6:  MOVFF  10C,11E
+18AA:  MOVLW  01
+18AC:  MOVLB  1
+18AE:  MOVWF  x1F
+18B0:  MOVLB  0
+18B2:  RCALL  126A
+18B4:  MOVLB  1
+....................       } 
+....................       if (curr_cmd > 0) { 
+18B6:  MOVF   x0E,F
+18B8:  BZ    18F0
+....................          lcd_gotoxy(0, 1); 
+18BA:  CLRF   x1C
+18BC:  MOVLW  01
+18BE:  MOVWF  x1D
+18C0:  MOVLB  0
+18C2:  RCALL  1348
+....................          lcd_show(buffer, 0x0c); 
+18C4:  MOVLB  1
+18C6:  CLRF   x1C
+18C8:  MOVLW  28
+18CA:  MOVWF  x1B
+18CC:  MOVLW  0C
+18CE:  MOVWF  x1D
+18D0:  MOVLB  0
+18D2:  RCALL  10DA
+....................          lcd_gotoxy(((curr_cmd & 1) == 1) ? 7 : 10, 1); 
+18D4:  MOVLB  1
+18D6:  MOVF   x0E,W
+18D8:  ANDLW  01
+18DA:  SUBLW  01
+18DC:  BNZ   18E2
+18DE:  MOVLW  07
+18E0:  BRA    18E4
+18E2:  MOVLW  0A
+18E4:  MOVWF  x1C
+18E6:  MOVLW  01
+18E8:  MOVWF  x1D
+18EA:  MOVLB  0
+18EC:  RCALL  1348
+18EE:  MOVLB  1
+....................       } 
+....................    } 
+....................    else if (curr_step == MENU_CONFIG_MP3) 
+18F0:  BRA    1A42
+18F2:  DECFSZ x0D,W
+18F4:  BRA    1998
+....................    { 
+....................       if (curr_cmd == 0) { 
+18F6:  MOVF   x0E,F
+18F8:  BNZ   1926
+....................                       //  0123456789ABCDEF01  234  567 
+....................          sprintf(buffer, "DIFFUSER AZAN"); 
+18FA:  CLRF   x11
+18FC:  MOVLW  28
+18FE:  MOVWF  x10
+1900:  MOVLW  92
+1902:  MOVWF  FF6
+1904:  MOVLW  01
+1906:  MOVWF  FF7
+1908:  MOVLB  0
+190A:  RCALL  13D2
+....................          lcd_clear(); 
+190C:  CALL   1090
+....................          lcd_show(buffer, 0x0D); 
+1910:  MOVLB  1
+1912:  CLRF   x1C
+1914:  MOVLW  28
+1916:  MOVWF  x1B
+1918:  MOVLW  0D
+191A:  MOVWF  x1D
+191C:  MOVLB  0
+191E:  CALL   10DA
+....................       } else if (curr_cmd == 1) { 
+1922:  BRA    1994
+1924:  MOVLB  1
+1926:  DECFSZ x0E,W
+1928:  BRA    195E
+....................                       //  0123456789ABCDEF01  234  567 
+....................          sprintf(buffer, "PLAY"); 
+192A:  CLRF   x11
+192C:  MOVLW  28
+192E:  MOVWF  x10
+1930:  MOVLW  A0
+1932:  MOVWF  FF6
+1934:  MOVLW  01
+1936:  MOVWF  FF7
+1938:  MOVLB  0
+193A:  RCALL  13D2
+....................          lcd_gotoxy(0, 1); 
+193C:  MOVLB  1
+193E:  CLRF   x1C
+1940:  MOVLW  01
+1942:  MOVWF  x1D
+1944:  MOVLB  0
+1946:  RCALL  1348
+....................          lcd_show(buffer, 0x04); 
+1948:  MOVLB  1
+194A:  CLRF   x1C
+194C:  MOVLW  28
+194E:  MOVWF  x1B
+1950:  MOVLW  04
+1952:  MOVWF  x1D
+1954:  MOVLB  0
+1956:  CALL   10DA
+....................       } else if (curr_cmd == 2) { 
+195A:  BRA    1994
+195C:  MOVLB  1
+195E:  MOVF   x0E,W
+1960:  SUBLW  02
+1962:  BNZ   1996
+....................                       //  0123456789ABCDEF01  234  567 
+....................          sprintf(buffer, "STOP"); 
+1964:  CLRF   x11
+1966:  MOVLW  28
+1968:  MOVWF  x10
+196A:  MOVLW  A6
+196C:  MOVWF  FF6
+196E:  MOVLW  01
+1970:  MOVWF  FF7
+1972:  MOVLB  0
+1974:  RCALL  13D2
+....................          lcd_gotoxy(0, 1); 
+1976:  MOVLB  1
+1978:  CLRF   x1C
+197A:  MOVLW  01
+197C:  MOVWF  x1D
+197E:  MOVLB  0
+1980:  RCALL  1348
+....................          lcd_show(buffer, 0x04);  
+1982:  MOVLB  1
+1984:  CLRF   x1C
+1986:  MOVLW  28
+1988:  MOVWF  x1B
+198A:  MOVLW  04
+198C:  MOVWF  x1D
+198E:  MOVLB  0
+1990:  CALL   10DA
+1994:  MOVLB  1
+....................       } 
+....................    } 
+....................    else if (curr_step == MENU_CONFIG_TOWN)  
+1996:  BRA    1A42
+1998:  MOVF   x0D,W
+199A:  SUBLW  04
+199C:  BNZ   1A42
+....................    { 
+....................       if (curr_cmd >= 0)  
+....................       { 
+....................          if (curr_cmd == 0) { 
+199E:  MOVF   x0E,F
+19A0:  BNZ   19B4
+....................             location_load(town_pos); 
+19A2:  MOVFF  AA,11B
+19A6:  MOVLB  0
+19A8:  CALL   0EC8
+....................             edit_val[0] = town_pos; 
+19AC:  MOVFF  AA,101
+....................          } else { 
+19B0:  BRA    19BE
+19B2:  MOVLB  1
+....................             location_load(edit_val[0]); 
+19B4:  MOVFF  101,11B
+19B8:  MOVLB  0
+19BA:  CALL   0EC8
+....................          } 
+....................                         //0123456789ABCD 
+....................          sprintf(buffer, "CONF. VILLE %02d", edit_val[0]); 
+19BE:  MOVLB  1
+19C0:  CLRF   x11
+19C2:  MOVLW  28
+19C4:  MOVWF  x10
+19C6:  MOVLW  AC
+19C8:  MOVWF  FF6
+19CA:  MOVLW  01
+19CC:  MOVWF  FF7
+19CE:  MOVLW  0C
+19D0:  MOVWF  x1E
+19D2:  MOVLB  0
+19D4:  RCALL  1216
+19D6:  MOVFF  101,11E
+19DA:  MOVLW  01
+19DC:  MOVLB  1
+19DE:  MOVWF  x1F
+19E0:  MOVLB  0
+19E2:  RCALL  126A
+....................          lcd_clear(); 
+19E4:  CALL   1090
+....................          lcd_show(buffer, 0x0E); 
+19E8:  MOVLB  1
+19EA:  CLRF   x1C
+19EC:  MOVLW  28
+19EE:  MOVWF  x1B
+19F0:  MOVLW  0E
+19F2:  MOVWF  x1D
+19F4:  MOVLB  0
+19F6:  CALL   10DA
+....................          size = sprintf(buffer, "%s", town_info.ville); 
+19FA:  MOVLB  1
+19FC:  CLRF   x11
+19FE:  MOVLW  28
+1A00:  MOVWF  x10
+1A02:  CLRF   FEA
+1A04:  MOVLW  D7
+1A06:  MOVWF  FE9
+1A08:  MOVLB  0
+1A0A:  BRA    13F2
+1A0C:  MOVLW  28
+1A0E:  MOVLB  1
+1A10:  SUBWF  x10,W
+1A12:  MOVWF  x1A
+....................          lcd_gotoxy(0, 1); 
+1A14:  CLRF   x1C
+1A16:  MOVLW  01
+1A18:  MOVWF  x1D
+1A1A:  MOVLB  0
+1A1C:  RCALL  1348
+....................          lcd_show(buffer, size); 
+1A1E:  MOVLB  1
+1A20:  CLRF   x1C
+1A22:  MOVLW  28
+1A24:  MOVWF  x1B
+1A26:  MOVFF  11A,11D
+1A2A:  MOVLB  0
+1A2C:  CALL   10DA
+....................          if (curr_cmd == 1) lcd_gotoxy(0, 1); 
+1A30:  MOVLB  1
+1A32:  DECFSZ x0E,W
+1A34:  BRA    1A42
+1A36:  CLRF   x1C
+1A38:  MOVLW  01
+1A3A:  MOVWF  x1D
+1A3C:  MOVLB  0
+1A3E:  RCALL  1348
+1A40:  MOVLB  1
+....................       } 
+....................    } 
+.................... } 
+1A42:  MOVLB  0
+1A44:  RETLW  00
+....................  
+.................... void init_bounds() { 
+....................    if (curr_step == MENU_CONFIG_HOURS) { 
+1A46:  MOVLB  1
+1A48:  MOVF   x0D,W
+1A4A:  SUBLW  02
+1A4C:  BNZ   1A70
+....................       if (curr_cmd == 1) { 
+1A4E:  DECFSZ x0E,W
+1A50:  BRA    1A5E
+....................          dec_min = 0; 
+1A52:  MOVLB  0
+1A54:  CLRF   xFE
+....................          dec_max = 23; 
+1A56:  MOVLW  17
+1A58:  MOVWF  xFF
+....................       } else if (curr_cmd == 2) { 
+1A5A:  BRA    1A6C
+1A5C:  MOVLB  1
+1A5E:  MOVF   x0E,W
+1A60:  SUBLW  02
+1A62:  BNZ   1A6E
+....................          dec_min = 0; 
+1A64:  MOVLB  0
+1A66:  CLRF   xFE
+....................          dec_max = 59; 
+1A68:  MOVLW  3B
+1A6A:  MOVWF  xFF
+1A6C:  MOVLB  1
+....................       } 
+....................    } else if (curr_step == MENU_CONFIG_DATE) { 
+1A6E:  BRA    1AEC
+1A70:  MOVF   x0D,W
+1A72:  SUBLW  03
+1A74:  BNZ   1AAE
+....................       if (curr_cmd == 1) { 
+1A76:  DECFSZ x0E,W
+1A78:  BRA    1A88
+....................          dec_min = 1; 
+1A7A:  MOVLW  01
+1A7C:  MOVLB  0
+1A7E:  MOVWF  xFE
+....................          dec_max = 31; 
+1A80:  MOVLW  1F
+1A82:  MOVWF  xFF
+....................       } else if (curr_cmd == 2) { 
+1A84:  BRA    1AAA
+1A86:  MOVLB  1
+1A88:  MOVF   x0E,W
+1A8A:  SUBLW  02
+1A8C:  BNZ   1A9C
+....................          dec_min = 1; 
+1A8E:  MOVLW  01
+1A90:  MOVLB  0
+1A92:  MOVWF  xFE
+....................          dec_max = 12; 
+1A94:  MOVLW  0C
+1A96:  MOVWF  xFF
+....................       } else if (curr_cmd == 3) { 
+1A98:  BRA    1AAA
+1A9A:  MOVLB  1
+1A9C:  MOVF   x0E,W
+1A9E:  SUBLW  03
+1AA0:  BNZ   1AAC
+....................          dec_min = 0; 
+1AA2:  MOVLB  0
+1AA4:  CLRF   xFE
+....................          dec_max = 99; 
+1AA6:  MOVLW  63
+1AA8:  MOVWF  xFF
+1AAA:  MOVLB  1
+....................       } 
+....................    } else if (curr_step == MENU_CONFIG_PRAYERS) { 
+1AAC:  BRA    1AEC
+1AAE:  MOVF   x0D,W
+1AB0:  SUBLW  05
+1AB2:  BNZ   1AD8
+....................       if (curr_cmd > 0) { 
+1AB4:  MOVF   x0E,F
+1AB6:  BZ    1AD6
+....................          if ((curr_cmd & 1) == 1) { 
+1AB8:  MOVF   x0E,W
+1ABA:  ANDLW  01
+1ABC:  SUBLW  01
+1ABE:  BNZ   1ACC
+....................             dec_min = 0; 
+1AC0:  MOVLB  0
+1AC2:  CLRF   xFE
+....................             dec_max = 23; 
+1AC4:  MOVLW  17
+1AC6:  MOVWF  xFF
+....................          } else { 
+1AC8:  BRA    1AD4
+1ACA:  MOVLB  1
+....................             dec_min = 0; 
+1ACC:  MOVLB  0
+1ACE:  CLRF   xFE
+....................             dec_max = 59; 
+1AD0:  MOVLW  3B
+1AD2:  MOVWF  xFF
+1AD4:  MOVLB  1
+....................          } 
+....................       } 
+....................    } else if (curr_step == MENU_CONFIG_TOWN) { 
+1AD6:  BRA    1AEC
+1AD8:  MOVF   x0D,W
+1ADA:  SUBLW  04
+1ADC:  BNZ   1AEC
+....................       if (curr_cmd == 1) { 
+1ADE:  DECFSZ x0E,W
+1AE0:  BRA    1AEC
+....................          dec_min = 0; 
+1AE2:  MOVLB  0
+1AE4:  CLRF   xFE
+....................          dec_max = 12; 
+1AE6:  MOVLW  0C
+1AE8:  MOVWF  xFF
+1AEA:  MOVLB  1
+....................       } 
+....................    } 
+.................... } 
+1AEC:  MOVLB  0
+1AEE:  RETLW  00
+....................  
+.................... int handle_key(int key) {    
+....................    int i; 
+....................    if (key == last_key) 
+1AF0:  MOVF   xFA,W
+1AF2:  MOVLB  1
+1AF4:  SUBWF  x16,W
+1AF6:  BNZ   1B00
+....................    { 
+....................       last_key_count++; 
+1AF8:  MOVLB  0
+1AFA:  INCF   xFB,F
+....................    } 
+....................    else 
+1AFC:  BRA    1B0A
+1AFE:  MOVLB  1
+....................    { 
+....................       last_key = key; 
+1B00:  MOVFF  116,FA
+....................       last_key_count = 1; 
+1B04:  MOVLW  01
+1B06:  MOVLB  0
+1B08:  MOVWF  xFB
+....................    } 
+....................     
+....................    key_ready = (last_key_count == 3); 
+1B0A:  MOVF   xFB,W
+1B0C:  SUBLW  03
+1B0E:  BZ    1B14
+1B10:  MOVLW  00
+1B12:  BRA    1B16
+1B14:  MOVLW  01
+1B16:  MOVWF  xFC
+....................     
+....................    if (!key_ready) return curr_step; 
+1B18:  MOVF   xFC,F
+1B1A:  BNZ   1B24
+1B1C:  MOVLB  1
+1B1E:  MOVFF  10D,01
+1B22:  BRA    1E6A
+....................     
+....................    if (key == KEY_MUTE) { 
+1B24:  MOVLB  1
+1B26:  MOVF   x16,W
+1B28:  SUBLW  42
+1B2A:  BNZ   1B4C
+....................       last_key_count = 0; 
+1B2C:  MOVLB  0
+1B2E:  CLRF   xFB
+....................       stop_mp3(); 
+1B30:  CALL   117C
+....................       lcd_light(FALSE); 
+1B34:  MOVLB  1
+1B36:  CLRF   x18
+1B38:  MOVLB  0
+1B3A:  CALL   11A4
+....................       curr_cmd = 0; 
+1B3E:  MOVLB  1
+1B40:  CLRF   x0E
+....................       curr_step = MENU_PRAYER_CALLER; 
+1B42:  CLRF   x0D
+....................       show_menu(); 
+1B44:  MOVLB  0
+1B46:  RCALL  1418
+....................    } else if (key == KEY_ONOFF) { 
+1B48:  BRA    1E64
+1B4A:  MOVLB  1
+1B4C:  MOVF   x16,W
+1B4E:  SUBLW  41
+1B50:  BNZ   1B5E
+....................       last_key_count = 0; 
+1B52:  MOVLB  0
+1B54:  CLRF   xFB
+....................       user_event = USER_POWERON_CHANGED; 
+1B56:  MOVLW  05
+1B58:  MOVLB  1
+1B5A:  MOVWF  x0F
+....................    } else if (key == KEY_MENU) { 
+1B5C:  BRA    1E66
+1B5E:  MOVF   x16,W
+1B60:  SUBLW  46
+1B62:  BTFSS  FD8.2
+1B64:  BRA    1C9C
+....................       last_key_count = 0; 
+1B66:  MOVLB  0
+1B68:  CLRF   xFB
+....................       curr_step++; 
+1B6A:  MOVLB  1
+1B6C:  INCF   x0D,F
+....................       if (curr_step >= MENU_COUNT) curr_step = 0; 
+1B6E:  MOVF   x0D,W
+1B70:  SUBLW  05
+1B72:  BTFSS  FD8.0
+1B74:  CLRF   x0D
+....................       curr_cmd = 0; 
+1B76:  CLRF   x0E
+....................       dec_val = 0; 
+1B78:  MOVLB  0
+1B7A:  CLRF   xFD
+....................       if (curr_step == MENU_CONFIG_HOURS) {          
+1B7C:  MOVLB  1
+1B7E:  MOVF   x0D,W
+1B80:  SUBLW  02
+1B82:  BNZ   1BBE
+1B84:  CLRF   19
+1B86:  BTFSC  FF2.7
+1B88:  BSF    19.7
+1B8A:  BCF    FF2.7
+....................          edit_val[0] = bcd2dec(clk_data[HOUR]); 
+1B8C:  MOVFF  23,137
+1B90:  MOVLB  0
+1B92:  CALL   074E
+1B96:  BTFSC  19.7
+1B98:  BSF    FF2.7
+1B9A:  MOVFF  01,101
+1B9E:  CLRF   19
+1BA0:  BTFSC  FF2.7
+1BA2:  BSF    19.7
+1BA4:  BCF    FF2.7
+....................          edit_val[1] = bcd2dec(clk_data[MINUTE]); 
+1BA6:  MOVFF  22,137
+1BAA:  CALL   074E
+1BAE:  BTFSC  19.7
+1BB0:  BSF    FF2.7
+1BB2:  MOVFF  01,102
+....................          dec_count = 2; 
+1BB6:  MOVLW  02
+1BB8:  MOVLB  1
+1BBA:  MOVWF  x00
+....................       } else if (curr_step == MENU_CONFIG_DATE) {  
+1BBC:  BRA    1C90
+1BBE:  MOVF   x0D,W
+1BC0:  SUBLW  03
+1BC2:  BNZ   1C16
+1BC4:  CLRF   19
+1BC6:  BTFSC  FF2.7
+1BC8:  BSF    19.7
+1BCA:  BCF    FF2.7
+....................          edit_val[0] = bcd2dec(clk_data[DATE]); 
+1BCC:  MOVFF  25,137
+1BD0:  MOVLB  0
+1BD2:  CALL   074E
+1BD6:  BTFSC  19.7
+1BD8:  BSF    FF2.7
+1BDA:  MOVFF  01,101
+1BDE:  CLRF   19
+1BE0:  BTFSC  FF2.7
+1BE2:  BSF    19.7
+1BE4:  BCF    FF2.7
+....................          edit_val[1] = bcd2dec(clk_data[MONTH]); 
+1BE6:  MOVFF  26,137
+1BEA:  CALL   074E
+1BEE:  BTFSC  19.7
+1BF0:  BSF    FF2.7
+1BF2:  MOVFF  01,102
+1BF6:  CLRF   19
+1BF8:  BTFSC  FF2.7
+1BFA:  BSF    19.7
+1BFC:  BCF    FF2.7
+....................          edit_val[2] = bcd2dec(clk_data[YEAR]);  
+1BFE:  MOVFF  27,137
+1C02:  CALL   074E
+1C06:  BTFSC  19.7
+1C08:  BSF    FF2.7
+1C0A:  MOVFF  01,103
+....................          dec_count = 3; 
+1C0E:  MOVLW  03
+1C10:  MOVLB  1
+1C12:  MOVWF  x00
+....................       } else if (curr_step == MENU_CONFIG_TOWN) { 
+1C14:  BRA    1C90
+1C16:  MOVF   x0D,W
+1C18:  SUBLW  04
+1C1A:  BNZ   1C26
+....................          edit_val[0] = town_pos; 
+1C1C:  MOVFF  AA,101
+....................          dec_count = 1; 
+1C20:  MOVLW  01
+1C22:  MOVWF  x00
+....................       } else if (curr_step == MENU_CONFIG_PRAYERS) { 
+1C24:  BRA    1C90
+1C26:  MOVF   x0D,W
+1C28:  SUBLW  05
+1C2A:  BNZ   1C88
+....................          for (i = 0 ; i < 12 ; i++) edit_val[i] = bcd2dec(prayers[i]); 
+1C2C:  CLRF   x17
+1C2E:  MOVF   x17,W
+1C30:  SUBLW  0B
+1C32:  BNC   1C82
+1C34:  CLRF   03
+1C36:  MOVF   x17,W
+1C38:  ADDLW  01
+1C3A:  MOVWF  01
+1C3C:  MOVLW  01
+1C3E:  ADDWFC 03,F
+1C40:  MOVFF  01,118
+1C44:  MOVFF  03,119
+1C48:  CLRF   03
+1C4A:  MOVF   x17,W
+1C4C:  ADDLW  AB
+1C4E:  MOVWF  FE9
+1C50:  MOVLW  00
+1C52:  ADDWFC 03,W
+1C54:  MOVWF  FEA
+1C56:  MOVFF  FEF,11A
+1C5A:  CLRF   19
+1C5C:  BTFSC  FF2.7
+1C5E:  BSF    19.7
+1C60:  BCF    FF2.7
+1C62:  MOVFF  11A,137
+1C66:  MOVLB  0
+1C68:  CALL   074E
+1C6C:  BTFSC  19.7
+1C6E:  BSF    FF2.7
+1C70:  MOVFF  119,FEA
+1C74:  MOVFF  118,FE9
+1C78:  MOVFF  01,FEF
+1C7C:  MOVLB  1
+1C7E:  INCF   x17,F
+1C80:  BRA    1C2E
+....................          dec_count = 12; 
+1C82:  MOVLW  0C
+1C84:  MOVWF  x00
+....................       } else if (curr_step == MENU_CONFIG_MP3) { 
+1C86:  BRA    1C90
+1C88:  DECFSZ x0D,W
+1C8A:  BRA    1C90
+....................          dec_count = 2; 
+1C8C:  MOVLW  02
+1C8E:  MOVWF  x00
+....................       } 
+....................       init_bounds(); 
+1C90:  MOVLB  0
+1C92:  RCALL  1A46
+....................       show_menu(); 
+1C94:  CALL   1418
+....................    } else if (key == KEY_OK) { 
+1C98:  BRA    1E64
+1C9A:  MOVLB  1
+1C9C:  MOVF   x16,W
+1C9E:  SUBLW  4C
+1CA0:  BNZ   1D08
+....................       last_key_count = 0; 
+1CA2:  MOVLB  0
+1CA4:  CLRF   xFB
+....................       if (curr_cmd == 0) { 
+1CA6:  MOVLB  1
+1CA8:  MOVF   x0E,F
+1CAA:  BNZ   1CB8
+....................          curr_cmd = 1; 
+1CAC:  MOVLW  01
+1CAE:  MOVWF  x0E
+....................          init_bounds(); 
+1CB0:  MOVLB  0
+1CB2:  RCALL  1A46
+....................       } else { 
+1CB4:  BRA    1D00
+1CB6:  MOVLB  1
+....................          if (curr_step == MENU_CONFIG_HOURS)        user_event = USER_TIME_CHANGED; 
+1CB8:  MOVF   x0D,W
+1CBA:  SUBLW  02
+1CBC:  BNZ   1CC4
+1CBE:  MOVLW  01
+1CC0:  MOVWF  x0F
+....................          else if (curr_step == MENU_CONFIG_DATE)    user_event = USER_DATE_CHANGED;  
+1CC2:  BRA    1CFA
+1CC4:  MOVF   x0D,W
+1CC6:  SUBLW  03
+1CC8:  BNZ   1CD0
+1CCA:  MOVLW  02
+1CCC:  MOVWF  x0F
+....................          else if (curr_step == MENU_CONFIG_PRAYERS) user_event = USER_PRAYERS_CHANGED; 
+1CCE:  BRA    1CFA
+1CD0:  MOVF   x0D,W
+1CD2:  SUBLW  05
+1CD4:  BNZ   1CDC
+1CD6:  MOVLW  04
+1CD8:  MOVWF  x0F
+....................          else if (curr_step == MENU_CONFIG_TOWN)    user_event = USER_TOWN_CHANGED; 
+1CDA:  BRA    1CFA
+1CDC:  MOVF   x0D,W
+1CDE:  SUBLW  04
+1CE0:  BNZ   1CE8
+1CE2:  MOVLW  03
+1CE4:  MOVWF  x0F
+....................          else if (curr_step == MENU_CONFIG_MP3) { 
+1CE6:  BRA    1CFA
+1CE8:  DECFSZ x0D,W
+1CEA:  BRA    1CFA
+....................             if (curr_cmd == 1) 
+1CEC:  DECFSZ x0E,W
+1CEE:  BRA    1CF6
+....................                user_event = USER_PLAY_SOUND; 
+1CF0:  MOVLW  06
+1CF2:  MOVWF  x0F
+....................             else 
+1CF4:  BRA    1CFA
+....................                user_event = USER_STOP_SOUND; 
+1CF6:  MOVLW  07
+1CF8:  MOVWF  x0F
+....................          } 
+....................          curr_cmd = 0; 
+1CFA:  CLRF   x0E
+....................          curr_step = MENU_PRAYER_CALLER; 
+1CFC:  CLRF   x0D
+1CFE:  MOVLB  0
+....................       } 
+....................       show_menu(); 
+1D00:  CALL   1418
+.................... //!      if (curr_step == MENU_CONFIG_MP3) { 
+.................... //!         if (curr_cmd == 0) { 
+.................... //!            last_key_count = 0; 
+.................... //!            curr_cmd = 1; 
+.................... //!            play_mp3(); 
+.................... //!            show_menu(); 
+.................... //!         } else if (curr_cmd == 1) { 
+.................... //!            last_key_count = 0; 
+.................... //!            curr_cmd = 2; 
+.................... //!            stop_mp3(); 
+.................... //!            show_menu(); 
+.................... //!         } else if (curr_cmd == 2) { 
+.................... //!            last_key_count = 0; 
+.................... //!            curr_cmd = 1; 
+.................... //!            play_mp3(); 
+.................... //!            show_menu(); 
+.................... //!         } 
+.................... //!      }  
+....................    } else if (key == KEY_RIGHT) { 
+1D04:  BRA    1E64
+1D06:  MOVLB  1
+1D08:  MOVF   x16,W
+1D0A:  SUBLW  4A
+1D0C:  BNZ   1D3E
+....................       if (curr_cmd > 0) { 
+1D0E:  MOVF   x0E,F
+1D10:  BZ    1D3C
+....................          last_key_count = 0; 
+1D12:  MOVLB  0
+1D14:  CLRF   xFB
+....................          curr_cmd++; 
+1D16:  MOVLB  1
+1D18:  INCF   x0E,F
+....................          if (curr_cmd > dec_count) curr_cmd = 1; 
+1D1A:  MOVF   x0E,W
+1D1C:  SUBWF  x00,W
+1D1E:  BC    1D24
+1D20:  MOVLW  01
+1D22:  MOVWF  x0E
+....................          dec_val++; 
+1D24:  MOVLB  0
+1D26:  INCF   xFD,F
+....................          if (dec_val >= dec_count) dec_val = 0; 
+1D28:  MOVLB  1
+1D2A:  MOVF   x00,W
+1D2C:  MOVLB  0
+1D2E:  SUBWF  xFD,W
+1D30:  BTFSC  FD8.0
+1D32:  CLRF   xFD
+....................          init_bounds(); 
+1D34:  RCALL  1A46
+....................          show_menu(); 
+1D36:  CALL   1418
+1D3A:  MOVLB  1
+....................       } 
+....................    } else if (key == KEY_LEFT) { 
+1D3C:  BRA    1E66
+1D3E:  MOVF   x16,W
+1D40:  SUBLW  49
+1D42:  BNZ   1D74
+....................       if (curr_cmd > 0) { 
+1D44:  MOVF   x0E,F
+1D46:  BZ    1D72
+....................          last_key_count = 0; 
+1D48:  MOVLB  0
+1D4A:  CLRF   xFB
+....................          curr_cmd--; 
+1D4C:  MOVLB  1
+1D4E:  DECF   x0E,F
+....................          if (curr_cmd < 1) curr_cmd = dec_count; 
+1D50:  MOVF   x0E,F
+1D52:  BNZ   1D58
+1D54:  MOVFF  100,10E
+....................          dec_val--; 
+1D58:  MOVLB  0
+1D5A:  DECF   xFD,F
+....................          if (dec_val == 0xff) dec_val = dec_count - 1; 
+1D5C:  INCFSZ xFD,W
+1D5E:  BRA    1D6A
+1D60:  MOVLW  01
+1D62:  MOVLB  1
+1D64:  SUBWF  x00,W
+1D66:  MOVLB  0
+1D68:  MOVWF  xFD
+....................          init_bounds(); 
+1D6A:  RCALL  1A46
+....................          show_menu(); 
+1D6C:  CALL   1418
+1D70:  MOVLB  1
+....................       }  
+....................    } else if (key == KEY_UP) { 
+1D72:  BRA    1E66
+1D74:  MOVF   x16,W
+1D76:  SUBLW  48
+1D78:  BNZ   1DE4
+....................       if (curr_cmd > 0) { 
+1D7A:  MOVF   x0E,F
+1D7C:  BZ    1DE2
+....................          last_key_count = 0; 
+1D7E:  MOVLB  0
+1D80:  CLRF   xFB
+....................          edit_val[dec_val] = edit_val[dec_val] + 1; 
+1D82:  CLRF   03
+1D84:  MOVF   xFD,W
+1D86:  ADDLW  01
+1D88:  MOVWF  01
+1D8A:  MOVLW  01
+1D8C:  ADDWFC 03,F
+1D8E:  MOVLB  1
+1D90:  MOVFF  03,119
+1D94:  CLRF   03
+1D96:  MOVLB  0
+1D98:  MOVF   xFD,W
+1D9A:  ADDLW  01
+1D9C:  MOVWF  FE9
+1D9E:  MOVLW  01
+1DA0:  ADDWFC 03,W
+1DA2:  MOVWF  FEA
+1DA4:  MOVLW  01
+1DA6:  ADDWF  FEF,W
+1DA8:  MOVLB  1
+1DAA:  MOVFF  119,FEA
+1DAE:  MOVFF  01,FE9
+1DB2:  MOVWF  FEF
+....................          if (edit_val[dec_val] > dec_max) edit_val[dec_val] = dec_min; 
+1DB4:  CLRF   03
+1DB6:  MOVLB  0
+1DB8:  MOVF   xFD,W
+1DBA:  ADDLW  01
+1DBC:  MOVWF  FE9
+1DBE:  MOVLW  01
+1DC0:  ADDWFC 03,W
+1DC2:  MOVWF  FEA
+1DC4:  MOVF   FEF,W
+1DC6:  SUBWF  xFF,W
+1DC8:  BC    1DDC
+1DCA:  CLRF   03
+1DCC:  MOVF   xFD,W
+1DCE:  ADDLW  01
+1DD0:  MOVWF  FE9
+1DD2:  MOVLW  01
+1DD4:  ADDWFC 03,W
+1DD6:  MOVWF  FEA
+1DD8:  MOVFF  FE,FEF
+....................          show_menu(); 
+1DDC:  CALL   1418
+1DE0:  MOVLB  1
+....................       } 
+....................    } else if (key == KEY_DOWN) { 
+1DE2:  BRA    1E66
+1DE4:  MOVF   x16,W
+1DE6:  SUBLW  4B
+1DE8:  BNZ   1E66
+....................       if (curr_cmd > 0) { 
+1DEA:  MOVF   x0E,F
+1DEC:  BZ    1E66
+....................          last_key_count = 0; 
+1DEE:  MOVLB  0
+1DF0:  CLRF   xFB
+....................          edit_val[dec_val] = edit_val[dec_val] - 1; 
+1DF2:  CLRF   03
+1DF4:  MOVF   xFD,W
+1DF6:  ADDLW  01
+1DF8:  MOVWF  01
+1DFA:  MOVLW  01
+1DFC:  ADDWFC 03,F
+1DFE:  MOVLB  1
+1E00:  MOVFF  03,119
+1E04:  CLRF   03
+1E06:  MOVLB  0
+1E08:  MOVF   xFD,W
+1E0A:  ADDLW  01
+1E0C:  MOVWF  FE9
+1E0E:  MOVLW  01
+1E10:  ADDWFC 03,W
+1E12:  MOVWF  FEA
+1E14:  MOVLW  01
+1E16:  SUBWF  FEF,W
+1E18:  MOVLB  1
+1E1A:  MOVFF  119,FEA
+1E1E:  MOVFF  01,FE9
+1E22:  MOVWF  FEF
+....................          if (edit_val[dec_val] == 0xff || edit_val[dec_val] < dec_min) edit_val[dec_val] = dec_max; 
+1E24:  CLRF   03
+1E26:  MOVLB  0
+1E28:  MOVF   xFD,W
+1E2A:  ADDLW  01
+1E2C:  MOVWF  FE9
+1E2E:  MOVLW  01
+1E30:  ADDWFC 03,W
+1E32:  MOVWF  FEA
+1E34:  INCFSZ FEF,W
+1E36:  BRA    1E3A
+1E38:  BRA    1E4E
+1E3A:  CLRF   03
+1E3C:  MOVF   xFD,W
+1E3E:  ADDLW  01
+1E40:  MOVWF  FE9
+1E42:  MOVLW  01
+1E44:  ADDWFC 03,W
+1E46:  MOVWF  FEA
+1E48:  MOVF   xFE,W
+1E4A:  SUBWF  FEF,W
+1E4C:  BC    1E60
+1E4E:  CLRF   03
+1E50:  MOVF   xFD,W
+1E52:  ADDLW  01
+1E54:  MOVWF  FE9
+1E56:  MOVLW  01
+1E58:  ADDWFC 03,W
+1E5A:  MOVWF  FEA
+1E5C:  MOVFF  FF,FEF
+....................          show_menu(); 
+1E60:  CALL   1418
+1E64:  MOVLB  1
+....................       } 
+....................    } 
+....................     
+....................    return curr_step; 
+1E66:  MOVFF  10D,01
+.................... } 
+1E6A:  MOVLB  0
+1E6C:  GOTO   23F0 (RETURN)
+....................  
+....................  
+....................  
+.................... int tmr1_timeout = 2; 
+....................  
+.................... void show_day() { 
+....................    int dt; 
+....................     
+....................    if (!aff7_state) { 
+*
+06F8:  MOVF   xA9,F
+06FA:  BNZ   0710
+....................       ldarr_off(0); 
+06FC:  MOVLB  1
+06FE:  CLRF   x31
+0700:  MOVLB  0
+0702:  RCALL  06C4
+....................       ldarr_off(1); 
+0704:  MOVLW  01
+0706:  MOVLB  1
+0708:  MOVWF  x31
+070A:  MOVLB  0
+070C:  RCALL  06C4
+....................       return; 
+070E:  BRA    074C
+....................    } 
+....................     
+....................    dt = clk_data[DAY] + 5; 
+0710:  MOVLW  05
+0712:  ADDWF  24,W
+0714:  MOVLB  1
+0716:  MOVWF  x30
+....................    if (dt > 6) dt -= 7; 
+0718:  MOVF   x30,W
+071A:  SUBLW  06
+071C:  BC    0722
+071E:  MOVLW  07
+0720:  SUBWF  x30,F
+....................    ldarr_show(LED_DAY, 1 << dt); 
+0722:  MOVLW  01
+0724:  MOVWF  x31
+0726:  MOVF   x30,W
+0728:  MOVWF  01
+072A:  BZ    0734
+072C:  BCF    FD8.0
+072E:  RLCF   x31,F
+0730:  DECFSZ 01,F
+0732:  BRA    072C
+0734:  MOVLW  01
+0736:  MOVWF  x32
+0738:  MOVFF  131,133
+073C:  MOVLB  0
+073E:  RCALL  06DC
+....................    ldarr_show(0, dt); 
+0740:  MOVLB  1
+0742:  CLRF   x32
+0744:  MOVFF  130,133
+0748:  MOVLB  0
+074A:  RCALL  06DC
+.................... } 
+074C:  RETLW  00
+....................  
+.................... void clk_changed(int v) { 
+....................    int i; 
+....................     
+....................    if (v & CLK_MINUTE_CHANGED) { 
+*
+0C14:  MOVLB  1
+0C16:  BTFSS  x2E.1
+0C18:  BRA    0C66
+....................       aff7_show_time(clk_data[HOUR], clk_data[MINUTE]); 
+0C1A:  MOVFF  23,130
+0C1E:  MOVFF  22,131
+0C22:  MOVLB  0
+0C24:  RCALL  045C
+....................       if ((clk_data[HOUR] == prayers[PRIERE_FAJR] && clk_data[MINUTE] == prayers[PRIERE_FAJR + 1]) ||  
+....................          (clk_data[HOUR] == prayers[PRIERE_DHOHR] && clk_data[MINUTE] == prayers[PRIERE_DHOHR + 1]) ||  
+....................          (clk_data[HOUR] == prayers[PRIERE_ASR] && clk_data[MINUTE] == prayers[PRIERE_ASR + 1]) ||  
+....................          (clk_data[HOUR] == prayers[PRIERE_MAGHREB] && clk_data[MINUTE] == prayers[PRIERE_MAGHREB + 1]) ||  
+....................          (clk_data[HOUR] == prayers[PRIERE_ISHAA] && clk_data[MINUTE] == prayers[PRIERE_ISHAA + 1])) { 
+0C26:  MOVF   xAB,W
+0C28:  SUBWF  23,W
+0C2A:  BNZ   0C32
+0C2C:  MOVF   xAC,W
+0C2E:  SUBWF  22,W
+0C30:  BZ    0C62
+0C32:  MOVF   xAF,W
+0C34:  SUBWF  23,W
+0C36:  BNZ   0C3E
+0C38:  MOVF   xB0,W
+0C3A:  SUBWF  22,W
+0C3C:  BZ    0C62
+0C3E:  MOVF   xB1,W
+0C40:  SUBWF  23,W
+0C42:  BNZ   0C4A
+0C44:  MOVF   xB2,W
+0C46:  SUBWF  22,W
+0C48:  BZ    0C62
+0C4A:  MOVF   xB3,W
+0C4C:  SUBWF  23,W
+0C4E:  BNZ   0C56
+0C50:  MOVF   xB4,W
+0C52:  SUBWF  22,W
+0C54:  BZ    0C62
+0C56:  MOVF   xB5,W
+0C58:  SUBWF  23,W
+0C5A:  BNZ   0C64
+0C5C:  MOVF   xB6,W
+0C5E:  SUBWF  22,W
+0C60:  BNZ   0C64
+....................          play_mp3(); 
+0C62:  RCALL  0512
+0C64:  MOVLB  1
+....................       } 
+....................    } 
+....................     
+....................    if (v & CLK_DATE_CHANGED) { 
+0C66:  BTFSS  x2E.3
+0C68:  BRA    0C90
+....................       aff7_show_date(clk_data[DATE], clk_data[MONTH], clk_data[YEAR]); 
+0C6A:  MOVFF  25,130
+0C6E:  MOVFF  26,131
+0C72:  MOVFF  27,132
+0C76:  MOVLB  0
+0C78:  RCALL  052E
+....................       show_day(); 
+0C7A:  RCALL  06F8
+....................        
+....................       prieres_load(town_pos); 
+0C7C:  MOVFF  AA,130
+0C80:  RCALL  09B0
+....................       aff7_show_prayers(prayers); 
+0C82:  MOVLB  1
+0C84:  CLRF   x31
+0C86:  MOVLW  AB
+0C88:  MOVWF  x30
+0C8A:  MOVLB  0
+0C8C:  RCALL  0AEC
+0C8E:  MOVLB  1
+....................    } 
+.................... } 
+0C90:  MOVLB  0
+0C92:  GOTO   0CAC (RETURN)
+....................  
+.................... #int_timer0 
+.................... void timer0_isr() { 
+....................    int v; 
+....................    v = clk_read(); 
+0C96:  CALL   02DA
+0C9A:  MOVFF  01,12D
+....................    if (v) clk_changed(v); 
+0C9E:  MOVLB  1
+0CA0:  MOVF   x2D,F
+0CA2:  BZ    0CAE
+0CA4:  MOVFF  12D,12E
+0CA8:  MOVLB  0
+0CAA:  BRA    0C14
+0CAC:  MOVLB  1
+....................    if (tmr1_timeout > 0) tmr1_timeout--; 
+0CAE:  MOVF   x12,F
+0CB0:  BTFSS  FD8.2
+0CB2:  DECF   x12,F
+.................... } 
+....................  
+0CB4:  BCF    FF2.2
+0CB6:  MOVLB  0
+0CB8:  GOTO   0060
+.................... void update_display() { 
+*
+0FA2:  CLRF   19
+0FA4:  BTFSC  FF2.7
+0FA6:  BSF    19.7
+0FA8:  BCF    FF2.7
+....................    prieres_load(town_pos); 
+0FAA:  MOVFF  AA,130
+0FAE:  RCALL  09B0
+0FB0:  BTFSC  19.7
+0FB2:  BSF    FF2.7
+....................    location_load(town_pos); 
+0FB4:  MOVFF  AA,11B
+0FB8:  RCALL  0EC8
+0FBA:  CLRF   19
+0FBC:  BTFSC  FF2.7
+0FBE:  BSF    19.7
+0FC0:  BCF    FF2.7
+....................     
+....................    aff7_show_time(clk_data[HOUR], clk_data[MINUTE]); 
+0FC2:  MOVFF  23,130
+0FC6:  MOVFF  22,131
+0FCA:  CALL   045C
+0FCE:  BTFSC  19.7
+0FD0:  BSF    FF2.7
+0FD2:  CLRF   19
+0FD4:  BTFSC  FF2.7
+0FD6:  BSF    19.7
+0FD8:  BCF    FF2.7
+....................    aff7_show_date(clk_data[DATE], clk_data[MONTH], clk_data[YEAR]); 
+0FDA:  MOVFF  25,130
+0FDE:  MOVFF  26,131
+0FE2:  MOVFF  27,132
+0FE6:  CALL   052E
+0FEA:  BTFSC  19.7
+0FEC:  BSF    FF2.7
+0FEE:  CLRF   19
+0FF0:  BTFSC  FF2.7
+0FF2:  BSF    19.7
+0FF4:  BCF    FF2.7
+....................    show_day(); 
+0FF6:  CALL   06F8
+0FFA:  BTFSC  19.7
+0FFC:  BSF    FF2.7
+0FFE:  CLRF   19
+1000:  BTFSC  FF2.7
+1002:  BSF    19.7
+1004:  BCF    FF2.7
+....................    aff7_show_prayers(prayers); 
+1006:  MOVLB  1
+1008:  CLRF   x31
+100A:  MOVLW  AB
+100C:  MOVWF  x30
+100E:  MOVLB  0
+1010:  RCALL  0AEC
+1012:  BTFSC  19.7
+1014:  BSF    FF2.7
+.................... } 
+1016:  RETLW  00
+....................  
+.................... void main() 
+.................... { 
+*
+22D0:  CLRF   FF8
+22D2:  BCF    FD0.7
+22D4:  BSF    07.7
+22D6:  CLRF   FEA
+22D8:  CLRF   FE9
+22DA:  BSF    FB8.3
+22DC:  MOVLW  E1
+22DE:  MOVWF  FAF
+22E0:  MOVLW  04
+22E2:  MOVWF  FB0
+22E4:  MOVLW  A6
+22E6:  MOVWF  FAC
+22E8:  MOVLW  90
+22EA:  MOVWF  FAB
+22EC:  BCF    F92.0
+22EE:  BSF    F89.0
+22F0:  BCF    F95.1
+22F2:  BSF    F8C.1
+22F4:  BCF    F92.5
+22F6:  BSF    F89.5
+22F8:  BCF    F95.2
+22FA:  BSF    F8C.2
+22FC:  BCF    F92.0
+22FE:  BSF    F89.0
+2300:  BCF    F94.2
+2302:  BSF    F8B.2
+2304:  MOVLW  01
+2306:  MOVWF  xA9
+2308:  CLRF   xAA
+230A:  CLRF   xF6
+230C:  CLRF   xF7
+230E:  CLRF   xF9
+2310:  CLRF   xF8
+2312:  CLRF   xFA
+2314:  CLRF   xFB
+2316:  CLRF   xFC
+2318:  MOVLB  1
+231A:  CLRF   x0D
+231C:  CLRF   x0E
+231E:  CLRF   x0F
+2320:  CLRF   x11
+2322:  CLRF   x10
+2324:  MOVLW  02
+2326:  MOVWF  x12
+2328:  MOVF   FC1,W
+232A:  ANDLW  C0
+232C:  IORLW  0F
+232E:  MOVWF  FC1
+2330:  MOVLW  07
+2332:  MOVWF  FB4
+....................    int i; 
+....................    int16 st; 
+....................     
+....................    delay_ms(5000); 
+2334:  MOVLW  14
+2336:  MOVWF  x16
+2338:  MOVLW  FA
+233A:  MOVWF  x1F
+233C:  MOVLB  0
+233E:  CALL   0CBC
+2342:  MOVLB  1
+2344:  DECFSZ x16,F
+2346:  BRA    2338
+....................     
+....................    clk_init(); 
+2348:  MOVLB  0
+234A:  GOTO   0D04
+234E:  CLRF   19
+2350:  BTFSC  FF2.7
+2352:  BSF    19.7
+2354:  BCF    FF2.7
+....................    clk_read(); 
+2356:  CALL   02DA
+235A:  BTFSC  19.7
+235C:  BSF    FF2.7
+....................    if (!clk_is_started()) { 
+235E:  GOTO   0D30
+2362:  MOVF   01,F
+2364:  BNZ   236A
+....................       clk_start(); 
+2366:  GOTO   0DEA
+....................    } 
+....................    setup_timer_0(RTCC_INTERNAL | RTCC_DIV_64); 
+236A:  MOVLW  85
+236C:  MOVWF  FD5
+....................     
+....................    enable_interrupts(INT_TIMER0); 
+236E:  BSF    FF2.5
+....................    enable_interrupts(GLOBAL); 
+2370:  MOVLW  C0
+2372:  IORWF  FF2,F
+....................     
+....................    town_pos = clk_get_ville(); 
+2374:  GOTO   0DF2
+2378:  MOVFF  01,AA
+....................     
+....................    update_display(); 
+237C:  CALL   0FA2
+....................     
+....................    delay_ms(2000); 
+2380:  MOVLW  08
+2382:  MOVLB  1
+2384:  MOVWF  x16
+2386:  MOVLW  FA
+2388:  MOVWF  x1F
+238A:  MOVLB  0
+238C:  CALL   0CBC
+2390:  MOVLB  1
+2392:  DECFSZ x16,F
+2394:  BRA    2386
+....................     
+....................    lcd_clear(); 
+2396:  MOVLB  0
+2398:  CALL   1090
+....................                  //0123456789ABCDEF0123456789ABC 
+....................    strcpy(buffer, "Welcome to      Prayer Caller"); 
+239C:  CLRF   FEA
+239E:  MOVLW  28
+23A0:  MOVWF  FE9
+23A2:  MOVLW  00
+23A4:  CALL   00AE
+23A8:  TBLRD*-
+23AA:  TBLRD*+
+23AC:  MOVF   FF5,W
+23AE:  MOVWF  FEE
+23B0:  IORLW  00
+23B2:  BNZ   23AA
+....................    lcd_show(buffer, 0x1D); 
+23B4:  MOVLB  1
+23B6:  CLRF   x1C
+23B8:  MOVLW  28
+23BA:  MOVWF  x1B
+23BC:  MOVLW  1D
+23BE:  MOVWF  x1D
+23C0:  MOVLB  0
+23C2:  CALL   10DA
+....................     
+....................    while (1) {    
+....................       if (input(IR_DATA_READY)) { 
+23C6:  BSF    F95.4
+23C8:  BTFSS  F83.4
+23CA:  BRA    2410
+....................          disable_interrupts(GLOBAL); 
+23CC:  BCF    FF2.6
+23CE:  BCF    FF2.7
+23D0:  BTFSC  FF2.7
+23D2:  BRA    23CE
+....................          output_low(IR_RQ_SEND); 
+23D4:  BCF    F95.6
+23D6:  BCF    F8C.6
+....................          i = fgetc(ir); 
+23D8:  GOTO   111E
+23DC:  MOVFF  01,113
+....................          output_high(IR_RQ_SEND); 
+23E0:  BCF    F95.6
+23E2:  BSF    F8C.6
+....................          enable_interrupts(GLOBAL); 
+23E4:  MOVLW  C0
+23E6:  IORWF  FF2,F
+....................           
+....................          curr_step = handle_key(i); 
+23E8:  MOVFF  113,116
+23EC:  GOTO   1AF0
+23F0:  MOVFF  01,10D
+....................          if (curr_step != MENU_PRAYER_CALLER) { 
+23F4:  MOVLB  1
+23F6:  MOVF   x0D,F
+23F8:  BZ    2408
+....................             lcd_light(TRUE);          
+23FA:  MOVLW  01
+23FC:  MOVWF  x18
+23FE:  MOVLB  0
+2400:  CALL   11A4
+....................          } else { 
+2404:  BRA    2410
+2406:  MOVLB  1
+....................             lcd_light(FALSE); 
+2408:  CLRF   x18
+240A:  MOVLB  0
+240C:  CALL   11A4
+....................          } 
+....................       } 
+....................        
+....................       if (user_event == USER_DATE_CHANGED) { 
+2410:  MOVLB  1
+2412:  MOVF   x0F,W
+2414:  SUBLW  02
+2416:  BNZ   2456
+....................          DISABLE_INT; 
+2418:  BCF    FF2.6
+241A:  BCF    FF2.7
+241C:  BTFSC  FF2.7
+241E:  BRA    241A
+....................          clk_set_date(dec2bcd(edit_val[0]), dec2bcd(edit_val[1]), dec2bcd(edit_val[2])); 
+2420:  MOVFF  101,119
+2424:  MOVLB  0
+2426:  RCALL  1E70
+2428:  MOVFF  01,116
+242C:  MOVFF  102,119
+2430:  RCALL  1E70
+2432:  MOVFF  01,117
+2436:  MOVFF  103,119
+243A:  RCALL  1E70
+243C:  MOVFF  01,118
+2440:  MOVFF  116,119
+2444:  MOVFF  117,11A
+2448:  MOVFF  01,11B
+244C:  BRA    1FF8
+....................          ENABLE_INT; 
+244E:  MOVLW  C0
+2450:  IORWF  FF2,F
+....................       } else if (user_event == USER_TIME_CHANGED) { 
+2452:  BRA    256E
+2454:  MOVLB  1
+2456:  DECFSZ x0F,W
+2458:  BRA    248A
+....................          DISABLE_INT; 
+245A:  BCF    FF2.6
+245C:  BCF    FF2.7
+245E:  BTFSC  FF2.7
+2460:  BRA    245C
+....................          clk_set_time(dec2bcd(edit_val[0]), dec2bcd(edit_val[1])); 
+2462:  MOVFF  101,119
+2466:  MOVLB  0
+2468:  RCALL  1E70
+246A:  MOVFF  01,116
+246E:  MOVFF  102,119
+2472:  RCALL  1E70
+2474:  MOVFF  01,117
+2478:  MOVFF  116,118
+247C:  MOVFF  01,119
+2480:  BRA    2078
+....................          ENABLE_INT; 
+2482:  MOVLW  C0
+2484:  IORWF  FF2,F
+....................       } else if (user_event == USER_PRAYERS_CHANGED) { 
+2486:  BRA    256E
+2488:  MOVLB  1
+248A:  MOVF   x0F,W
+248C:  SUBLW  04
+248E:  BNZ   2500
+....................          for (i = 0 ; i < 12 ; i++) { edit_val[i] = dec2bcd(edit_val[i]); } 
+2490:  CLRF   x13
+2492:  MOVF   x13,W
+2494:  SUBLW  0B
+2496:  BNC   24D8
+2498:  CLRF   03
+249A:  MOVF   x13,W
+249C:  ADDLW  01
+249E:  MOVWF  01
+24A0:  MOVLW  01
+24A2:  ADDWFC 03,F
+24A4:  MOVFF  01,116
+24A8:  MOVFF  03,117
+24AC:  CLRF   03
+24AE:  MOVF   x13,W
+24B0:  ADDLW  01
+24B2:  MOVWF  FE9
+24B4:  MOVLW  01
+24B6:  ADDWFC 03,W
+24B8:  MOVWF  FEA
+24BA:  MOVFF  FEF,118
+24BE:  MOVFF  118,119
+24C2:  MOVLB  0
+24C4:  RCALL  1E70
+24C6:  MOVFF  117,FEA
+24CA:  MOVFF  116,FE9
+24CE:  MOVFF  01,FEF
+24D2:  MOVLB  1
+24D4:  INCF   x13,F
+24D6:  BRA    2492
+....................          DISABLE_INT; 
+24D8:  BCF    FF2.6
+24DA:  BCF    FF2.7
+24DC:  BTFSC  FF2.7
+24DE:  BRA    24DA
+24E0:  CLRF   19
+24E2:  BTFSC  FF2.7
+24E4:  BSF    19.7
+24E6:  BCF    FF2.7
+....................          aff7_show_prayers(edit_val); 
+24E8:  MOVLW  01
+24EA:  MOVWF  x31
+24EC:  MOVWF  x30
+24EE:  MOVLB  0
+24F0:  CALL   0AEC
+24F4:  BTFSC  19.7
+24F6:  BSF    FF2.7
+....................          ENABLE_INT; 
+24F8:  MOVLW  C0
+24FA:  IORWF  FF2,F
+....................       } else if (user_event == USER_POWERON_CHANGED) { 
+24FC:  BRA    256E
+24FE:  MOVLB  1
+2500:  MOVF   x0F,W
+2502:  SUBLW  05
+2504:  BNZ   2518
+....................          aff7_state = !aff7_state; 
+2506:  MOVLB  0
+2508:  MOVF   xA9,F
+250A:  BZ    2510
+250C:  MOVLW  00
+250E:  BRA    2512
+2510:  MOVLW  01
+2512:  MOVWF  xA9
+....................       } else if (user_event == USER_TOWN_CHANGED) { 
+2514:  BRA    256E
+2516:  MOVLB  1
+2518:  MOVF   x0F,W
+251A:  SUBLW  03
+251C:  BNZ   253E
+....................          DISABLE_INT; 
+251E:  BCF    FF2.6
+2520:  BCF    FF2.7
+2522:  BTFSC  FF2.7
+2524:  BRA    2520
+....................          town_pos = edit_val[0]; 
+2526:  MOVFF  101,AA
+....................          clk_set_ville(town_pos); 
+252A:  MOVFF  AA,116
+252E:  MOVLB  0
+2530:  BRA    208A
+....................          ENABLE_INT; 
+2532:  MOVLW  C0
+2534:  IORWF  FF2,F
+....................          update_display(); 
+2536:  CALL   0FA2
+....................       } else if (user_event == USER_PLAY_SOUND) { 
+253A:  BRA    256E
+253C:  MOVLB  1
+253E:  MOVF   x0F,W
+2540:  SUBLW  06
+2542:  BNZ   255C
+2544:  CLRF   19
+2546:  BTFSC  FF2.7
+2548:  BSF    19.7
+254A:  BCF    FF2.7
+....................          play_mp3(); 
+254C:  MOVLB  0
+254E:  CALL   0512
+2552:  BTFSC  19.7
+2554:  BSF    FF2.7
+....................          user_event = 0; 
+2556:  MOVLB  1
+2558:  CLRF   x0F
+....................       } else if (user_event == USER_STOP_SOUND) { 
+255A:  BRA    256C
+255C:  MOVF   x0F,W
+255E:  SUBLW  07
+2560:  BNZ   256C
+....................          stop_mp3(); 
+2562:  MOVLB  0
+2564:  CALL   117C
+....................          user_event = 0; 
+2568:  MOVLB  1
+256A:  CLRF   x0F
+256C:  MOVLB  0
+....................       } 
+....................        
+....................       if (user_event == USER_TIME_CHANGED || user_event == USER_DATE_CHANGED  ||  
+....................           user_event == USER_PRAYERS_CHANGED || user_event == USER_POWERON_CHANGED || 
+....................           user_event == USER_TOWN_CHANGED) { 
+256E:  MOVLB  1
+2570:  DECFSZ x0F,W
+2572:  BRA    2576
+2574:  BRA    258E
+2576:  MOVF   x0F,W
+2578:  SUBLW  02
+257A:  BZ    258E
+257C:  MOVF   x0F,W
+257E:  SUBLW  04
+2580:  BZ    258E
+2582:  MOVF   x0F,W
+2584:  SUBLW  05
+2586:  BZ    258E
+2588:  MOVF   x0F,W
+258A:  SUBLW  03
+258C:  BNZ   259E
+....................          if (user_event != USER_PRAYERS_CHANGED)  
+258E:  MOVF   x0F,W
+2590:  SUBLW  04
+2592:  BZ    259C
+....................             update_display(); 
+2594:  MOVLB  0
+2596:  CALL   0FA2
+259A:  MOVLB  1
+....................          user_event = 0; 
+259C:  CLRF   x0F
+....................       } 
+....................        
+....................       if (curr_step == MENU_PRAYER_CALLER) { 
+259E:  MOVF   x0D,F
+25A0:  BNZ   261E
+....................          if (is_playing) { 
+25A2:  MOVLB  0
+25A4:  MOVF   xF6,F
+25A6:  BZ    261E
+....................             if (tmr1_timeout == 0) { 
+25A8:  MOVLB  1
+25AA:  MOVF   x12,F
+25AC:  BNZ   2608
+....................                state_mp3(); 
+25AE:  MOVLB  0
+25B0:  BRA    215E
+....................                lcd_light(TRUE); 
+25B2:  MOVLW  01
+25B4:  MOVLB  1
+25B6:  MOVWF  x18
+25B8:  MOVLB  0
+25BA:  CALL   11A4
+....................                i = sprintf(buffer, "%04ld", mp3_pos); 
+25BE:  MOVLB  1
+25C0:  CLRF   x11
+25C2:  MOVLW  28
+25C4:  MOVWF  x10
+25C6:  MOVLW  0A
+25C8:  MOVWF  FE9
+25CA:  MOVFF  F9,117
+25CE:  MOVFF  F8,116
+25D2:  MOVLB  0
+25D4:  BRA    21D8
+25D6:  MOVLW  28
+25D8:  MOVLB  1
+25DA:  SUBWF  x10,W
+25DC:  MOVWF  x13
+....................                lcd_gotoxy(0, 0); 
+25DE:  CLRF   x1C
+25E0:  CLRF   x1D
+25E2:  MOVLB  0
+25E4:  CALL   1348
+....................                lcd_show(buffer, i); 
+25E8:  MOVLB  1
+25EA:  CLRF   x1C
+25EC:  MOVLW  28
+25EE:  MOVWF  x1B
+25F0:  MOVFF  113,11D
+25F4:  MOVLB  0
+25F6:  CALL   10DA
+....................                st = mp3_pos; 
+25FA:  MOVFF  F9,115
+25FE:  MOVFF  F8,114
+....................                tmr1_timeout = 2; 
+2602:  MOVLW  02
+2604:  MOVLB  1
+2606:  MOVWF  x12
+....................             } 
+....................              
+....................             if (curr_state == FALSE) { 
+2608:  MOVLB  0
+260A:  MOVF   xF7,F
+260C:  BNZ   261E
+....................                lcd_light(FALSE); 
+260E:  MOVLB  1
+2610:  CLRF   x18
+2612:  MOVLB  0
+2614:  CALL   11A4
+....................                show_menu(); 
+2618:  CALL   1418
+....................                is_playing = FALSE; 
+261C:  CLRF   xF6
+....................             } 
+....................          } 
+....................       } 
+....................    } 
+261E:  MOVLB  0
+2620:  BRA    23C6
+.................... } 
+....................  
+2622:  SLEEP 
+
+Configuration Fuses:
+   Word  1: CE24   PLL5 CPUDIV1 USBDIV HSPLL FCMEN IESO
+   Word  2: 0E39   NOPUT NOBROWNOUT BORV20 VREGEN NOWDT WDT128
+   Word  3: 0700   CCP2C1 PBADEN LPT1OSC NOMCLR
+   Word  4: 00A1   STVREN NOLVP ICPRT NOXINST NODEBUG
+   Word  5: C00F   NOPROTECT NOCPB NOCPD
+   Word  6: E00F   NOWRT NOWRTC NOWRTB NOWRTD
+   Word  7: 400F   NOEBTR NOEBTRB

@@ -1,0 +1,7 @@
+*** Error 24 "C:\Program Files (x86)\PICC\devices\16F628A.h" Line 11(9,19): Unknown device type    -- Try PCM
+      1 Errors,  0 Warnings.
+Build Failed.
+>>> Warning 208 "F:\Importation\PFE-Maitrise\Montages\Horloge\ds1307.h" Line 30(6,14): Function not void and does not return a value  clk_read
+      Memory usage:   ROM=63%      RAM=14% - 17%
+      0 Errors,  1 Warnings.
+Build Successful.

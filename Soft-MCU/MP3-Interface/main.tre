@@ -1,0 +1,19 @@
+ÀÄmain
+   ÃÄMAIN  0/84  Ram=2
+   ³  ÃÄ??0??
+   ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄdisable_sounds  0/6  Ram=0
+   ³  ÃÄ@GETCH_1_  0/37  Ram=1
+   ³  ÃÄ@GETCH_1_  0/37  Ram=1
+   ³  ÃÄ@GETCH_1_  0/37  Ram=1
+   ³  ÃÄ@GETCH_1_  0/37  Ram=1
+   ³  ÃÄ@GETCH_1_  0/37  Ram=1
+   ³  ÃÄ@GETCH_1_  0/37  Ram=1
+   ³  ÃÄcalc_value  0/67  Ram=4
+   ³  ³  ÃÄ@MUL1616  (Inline)  Ram=5
+   ³  ³  ÃÄ@MUL88  0/37  Ram=2
+   ³  ³  ÀÄ@MUL88  0/37  Ram=2
+   ³  ÀÄdisable_sounds  0/6  Ram=0
+   ÀÄrda_isr  0/66  Ram=2
+      ÃÄenable_sounds  (Inline)  Ram=0
+      ÀÄdisable_sounds  0/6  Ram=0

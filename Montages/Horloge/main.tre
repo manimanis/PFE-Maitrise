@@ -1,0 +1,68 @@
+ÀÄmain
+   ÃÄMAIN  0/427  Ram=3
+   ³  ÃÄ@cinit1  (Inline)  Ram=0
+   ³  ÃÄserialize_data  0/54  Ram=4
+   ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄclk_init  0/15  Ram=0
+   ³  ³  ÃÄ@MEMSET  0/9  Ram=0
+   ³  ³  ÀÄ@MEMSET  0/9  Ram=0
+   ³  ÃÄclk_read  0/206  Ram=4
+   ³  ³  ÃÄ@I2C_WRITE_1  0/70  Ram=1
+   ³  ³  ÃÄ@I2C_WRITE_1  0/70  Ram=1
+   ³  ³  ÃÄ@I2C_WRITE_1  0/70  Ram=1
+   ³  ³  ÃÄ@I2C_READ_1  (Inline)  Ram=3
+   ³  ³  ÀÄbcd2dec  0/53  Ram=3
+   ³  ³     ÀÄ@MUL88  (Inline)  Ram=2
+   ³  ÃÄclk_is_started  0/5  Ram=0
+   ³  ÃÄclk_start  0/3  Ram=0
+   ³  ³  ÀÄclk_write  0/65  Ram=2
+   ³  ³     ÃÄ@I2C_WRITE_1  0/70  Ram=1
+   ³  ³     ÃÄ@I2C_WRITE_1  0/70  Ram=1
+   ³  ³     ÀÄ@I2C_WRITE_1  0/70  Ram=1
+   ³  ÃÄclk_read  0/206  Ram=4
+   ³  ³  ÀÄ*
+   ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄupdate_display  0/52  Ram=1
+   ³  ³  ÃÄ@DIV88  0/21  Ram=3
+   ³  ³  ÃÄconvert  0/39  Ram=1
+   ³  ³  ³  ÀÄ@goto10620  0/17  Ram=0
+   ³  ³  ÃÄ@DIV88  0/21  Ram=3
+   ³  ³  ÃÄconvert  0/39  Ram=1
+   ³  ³  ³  ÀÄ*
+   ³  ³  ÃÄ@DIV88  0/21  Ram=3
+   ³  ³  ÃÄconvert  0/39  Ram=1
+   ³  ³  ³  ÀÄ*
+   ³  ³  ÃÄ@DIV88  0/21  Ram=3
+   ³  ³  ÃÄconvert  0/39  Ram=1
+   ³  ³  ³  ÀÄ*
+   ³  ³  ÀÄserialize_data  0/54  Ram=4
+   ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄ@DIV88  0/21  Ram=3
+   ³  ÃÄconvert  0/39  Ram=1
+   ³  ³  ÀÄ*
+   ³  ÃÄ@DIV88  0/21  Ram=3
+   ³  ÃÄconvert  0/39  Ram=1
+   ³  ³  ÀÄ*
+   ³  ÃÄserialize_data  0/54  Ram=4
+   ³  ÃÄ@DIV88  0/21  Ram=3
+   ³  ÃÄconvert  0/39  Ram=1
+   ³  ³  ÀÄ*
+   ³  ÃÄ@DIV88  0/21  Ram=3
+   ³  ÃÄconvert  0/39  Ram=1
+   ³  ³  ÀÄ*
+   ³  ÃÄserialize_data  0/54  Ram=4
+   ³  ÃÄupdate_display  0/52  Ram=1
+   ³  ³  ÀÄ*
+   ³  ÃÄdec2bcd  0/18  Ram=2
+   ³  ³  ÃÄ@DIV88  0/21  Ram=3
+   ³  ³  ÀÄ@DIV88  0/21  Ram=3
+   ³  ÃÄdec2bcd  0/18  Ram=2
+   ³  ³  ÀÄ*
+   ³  ÀÄclk_set_time  0/17  Ram=2
+   ³     ÃÄclk_write  0/65  Ram=2
+   ³     ³  ÀÄ*
+   ³     ÃÄbcd2dec  0/53  Ram=3
+   ³     ³  ÀÄ*
+   ³     ÀÄbcd2dec  0/53  Ram=3
+   ³        ÀÄ*
+   ÀÄtimer0_isr  0/150  Ram=0

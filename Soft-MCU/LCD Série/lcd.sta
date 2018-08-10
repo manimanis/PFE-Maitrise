@@ -1,0 +1,56 @@
+
+ROM used: 802 (39%)
+          802 (39%) including unused fragments
+
+          2 Average locations per line
+          4 Average locations per statement
+
+RAM used: 60 (27%) at main() level
+          70 (31%) worst case
+
+Stack used: 8 worst case (out of 8 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+  259   182 100  lcd.c
+   27     0   0  lcd.h
+  224     0   0  ..\..\..\Program Files\PICC\devices\16F628A.h
+----- -----
+  510   182 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     20   2   1             @delay_ms1
+0     41   5   3   345  5.8  serialize_data
+0     20   2   1    98  1.3  write_lcd_data
+0     20   2   1    98  1.3  write_lcd_cmd
+0     24   3   0   127  1.3  initialize_lcd
+0      8   1   0    32  1.0  lcd_clear
+0     16   2   3   142  4.0  lcd_gotoxy
+0     13   2   3    55  2.3  lcd_gotoposition
+0     55   7   2   383  3.8  lcd_display_buffer
+0     43   5   4   134  2.6  lcd_scroll
+0      9   1   0             @MEMSET
+0     85  11   2   816  7.2  isr_rda
+0    399  50   5  4289 10.9  MAIN
+
+Program metrics:
+    Functions               11
+    Statements              182
+    Comments                71
+    Volume (V)              8767
+    Difficilty (D)          42.4
+    Effort to implement (E) 371799
+    Time to implement (T)   5 hours, 44 minutes
+    Est Delivered Bugs (B)  2
+    Cyclomatic Complexity   30
+    Maintainability (MI)    55
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00003     4  0  
+00004-00030    45  0  
+00031-007FF   753  1246  
+
+
+

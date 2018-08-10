@@ -1,0 +1,219 @@
+#include <main.h>
+#include <ds1307.c>
+
+#define FRACTIONS 75
+#define ADD_VALUE 301
+#define SUB_VALUE 723
+
+int div10(int v) {
+   int qs, q, r;
+   qs = 0;
+   r = v;
+   while (v > 16) {
+      q = v >> 4;
+      r = v & 0x0f;
+      
+      qs += q + (q >> 1);
+      r += q;
+      
+      if (q & 1) {
+         r += 5;
+      }
+      
+      v= r;
+   }
+   
+   if (v >= 10) {
+      qs++;
+      r = v - 10;
+   }
+   
+   return qs;
+}
+
+int cntfs;
+int mode = 0;
+
+int display[4];
+
+int16 somme = 0;
+
+int convert(int v) {
+   switch(v) {
+      case 0: return 0xEE;
+      case 1: return 0x22;
+      case 2: return 0xD6;
+      case 3: return 0x76;
+      case 4: return 0x3A;
+      case 5: return 0x7C;
+      case 6: return 0xFC;
+      case 7: return 0x2E;
+      case 8: return 0xFE;
+      case 9: return 0x7E;
+   }
+   return 0x00;
+}
+
+void serialize_data() {
+   int j, i, v, octet;
+   
+   for (j = 0 ; j < 4 ; j++) {
+      octet = display[j];
+      v = 0x80;
+      for (i = 0 ; i < 8 ; i++) {
+         if (octet & v) {
+            output_high(DATA);
+         } else {
+            output_low(DATA);
+         }
+         output_high(CLK);
+         output_low(CLK);
+         v = v >> 1;
+      }
+   }
+   output_high(STB);
+   output_low(STB);
+}
+
+void update_display() {
+      display[0] = convert(clk_data[MINUTE] % 10);
+      display[1] = convert(clk_data[MINUTE] / 10);
+      display[2] = convert(clk_data[HOUR] % 10);
+      display[3] = convert(clk_data[HOUR] / 10);
+      
+      disable_interrupts(GLOBAL);
+      serialize_data();
+      enable_interrupts(GLOBAL);
+}
+
+int1 display_dirty = TRUE,
+     data_dirty = TRUE;
+
+#int_timer0
+void timer0_isr() {
+   int v;
+   if (mode == 0) {
+      if (cntfs > 37) {
+         output_high(DOTS_IN);
+      } else {
+         output_low(DOTS_IN);
+      }
+      
+      if (cntfs == 0) {
+         clk_data[SECOND]++;
+         if (clk_data[SECOND] == 60) {
+            display_dirty = TRUE;
+            clk_data[MINUTE]++;
+            clk_data[SECOND] = 0;
+            if (clk_data[MINUTE] == 60) {
+               clk_data[HOUR]++;
+               clk_data[MINUTE] = 0;
+               if (clk_data[HOUR] == 24) {
+                  clk_data[HOUR] = 0;
+               }
+            }
+         }
+      
+         if (somme < SUB_VALUE) {
+            cntfs = FRACTIONS;
+            somme += ADD_VALUE;
+         } else {
+            cntfs = FRACTIONS + 1;
+            somme -= SUB_VALUE;
+         }
+         
+         if (somme == 0) {
+            data_dirty = TRUE;
+         }
+      } else {
+         cntfs--;
+      }
+   }   
+}
+
+void main() {
+   
+   delay_ms(2000);
+   
+   clk_init();
+   clk_read();
+   if (!clk_is_started()) {
+      clk_start();
+   }
+   setup_timer_0(RTCC_INTERNAL | RTCC_DIV_256);
+      
+   enable_interrupts(INT_TIMER0);
+   enable_interrupts(GLOBAL);
+   
+   int1 input1, input2, input3, input4,
+        linput1 = TRUE, linput2 = TRUE, linput3 = TRUE, linput4 = TRUE;
+   while(TRUE){
+      while (mode == 0) {
+         if (data_dirty == TRUE) {
+            disable_interrupts(GLOBAL);
+            clk_read();
+            display_dirty = TRUE;
+            cntfs = FRACTIONS;
+            somme = 0;
+            
+            data_dirty = FALSE;
+            enable_interrupts(GLOBAL);
+         }
+         
+         if (display_dirty == TRUE) {
+            update_display();
+            display_dirty = FALSE;
+         }
+         
+         input1 = input(IN1);
+         if (input1 && !linput1) {
+            mode = 1;
+         }
+         linput1 = input1;
+      }
+      
+      display[0] = 0x00;
+      display[1] = 0x00;
+      while (mode == 1) {
+         input1 = input(IN1);
+         input2 = input(IN2);
+         input3 = input(IN3);
+         input4 = input(IN4);
+         
+         if (display_dirty == TRUE) {
+            display[2] = convert(clk_data[HOUR] % 10);
+            display[3] = convert(clk_data[HOUR] / 10);
+            
+            disable_interrupts(GLOBAL);
+            serialize_data();
+            enable_interrupts(GLOBAL);
+            
+            display_dirty = FALSE;
+         }
+          
+         if (input1 && !linput1) {
+            mode = 2;
+         } else if (input2 && !linput2) {
+            
+         } else if (input3 && !linput3) {
+            if (clk_data[HOUR] == 0) {
+               clk_data[HOUR] = 23;
+            } else {
+               clk_data[HOUR]--;
+            }
+         } else if (input4 && !linput4) {
+            if (clk_data[HOUR] == 24) {
+               clk_data[HOUR] = 0;
+            } else {
+               clk_data[HOUR]++;
+            }
+         }
+         
+         linput1 = input1;
+         linput2 = input2;
+         linput3 = input3;
+         linput4 = input4;
+      }
+   }
+
+}

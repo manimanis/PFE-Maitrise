@@ -1,0 +1,49 @@
+[PROJECT]
+Target=D:\pfe\Montages Electroniques\principale\principale.hex
+Development_Mode=
+Processor_Text=PIC18F4550
+ToolSuite=CCS
+Processor=0x4550
+[D:\pfe\Montages Electroniques\principale\principale]
+Type=4
+Path=
+FileList=
+BuildTool=
+OptionString=
+AdditionalOptionString=
+[mru-list]
+1=D:\pfe\Montages Electroniques\principale\principale.c
+[Windows]
+0=0000 %S 0 0 796 451 3 0
+[Opened Files]
+1=principale.c
+2=principale.h
+3=24lc512.h
+4=24lc512.c
+5=ds1307.c
+6=ds1307.h
+7=aff7seg.h
+8=aff7seg.c
+9=ledarray.h
+10=ledarray.c
+11=prieres.h
+12=prieres.c
+13=date.h
+14=date.c
+15=utility.h
+16=utility.c
+17=lcddisplay.h
+18=lcddisplay.c
+19=infrared.h
+20=infrared.c
+21=keys.h
+22=keys.c
+23=mp3.h
+24=mp3.c
+25=
+[Target Data]
+OptionString=-p +FH
+FileList=D:\pfe\Montages Electroniques\principale\principale.c
+[Units]
+Count=1
+1=principale (main)

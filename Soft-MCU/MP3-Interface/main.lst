@@ -1,0 +1,591 @@
+CCS PCM C Compiler, Version 4.114, 93495243               04-mars-12 17:48
+
+               Filename: D:\pfe\Montages Electroniques\cmd_mp3_soft\main.lst
+
+               ROM used: 366 words (18%)
+                         Largest free fragment is 1682
+               RAM used: 35 (16%) at main() level
+                         43 (19%) worst case
+               Stack:    4 worst case (2 in main + 2 for interrupts)
+
+*
+0000:  MOVLW  01
+0001:  MOVWF  0A
+0002:  GOTO   11A
+0003:  NOP
+0004:  MOVWF  7F
+0005:  SWAPF  03,W
+0006:  CLRF   03
+0007:  MOVWF  21
+0008:  MOVF   7F,W
+0009:  MOVWF  20
+000A:  MOVF   0A,W
+000B:  MOVWF  27
+000C:  CLRF   0A
+000D:  SWAPF  20,F
+000E:  MOVF   04,W
+000F:  MOVWF  22
+0010:  MOVF   77,W
+0011:  MOVWF  23
+0012:  MOVF   78,W
+0013:  MOVWF  24
+0014:  MOVF   79,W
+0015:  MOVWF  25
+0016:  MOVF   7A,W
+0017:  MOVWF  26
+0018:  BCF    03.7
+0019:  BCF    03.5
+001A:  MOVLW  8C
+001B:  MOVWF  04
+001C:  BTFSS  00.5
+001D:  GOTO   020
+001E:  BTFSC  0C.5
+001F:  GOTO   037
+0020:  MOVF   22,W
+0021:  MOVWF  04
+0022:  MOVF   23,W
+0023:  MOVWF  77
+0024:  MOVF   24,W
+0025:  MOVWF  78
+0026:  MOVF   25,W
+0027:  MOVWF  79
+0028:  MOVF   26,W
+0029:  MOVWF  7A
+002A:  MOVF   27,W
+002B:  MOVWF  0A
+002C:  SWAPF  21,W
+002D:  MOVWF  03
+002E:  SWAPF  7F,F
+002F:  SWAPF  7F,W
+0030:  RETFIE
+.................... #include <main.h> 
+.................... #include <16F628A.h> 
+.................... //////// Standard Header file for the PIC16F628A device //////////////// 
+.................... #device PIC16F628A 
+.................... #list 
+....................  
+....................  
+.................... #FUSES NOWDT                    //No Watch Dog Timer 
+.................... #FUSES HS                       //High speed Osc (> 4mhz for PCM/PCH) (>10mhz for PCD) 
+.................... #FUSES NOPUT                    //No Power Up Timer 
+.................... #FUSES NOPROTECT                //Code not protected from reading 
+.................... #FUSES NOBROWNOUT               //No brownout reset 
+.................... #FUSES NOMCLR                   //Master Clear pin used for I/O 
+.................... #FUSES NOLVP                    //No low voltage prgming, B3(PIC16) or B5(PIC18) used for I/O 
+.................... #FUSES NOCPD                    //No EE protection 
+....................  
+....................  
+.................... #define MP3_TX                PIN_A2 
+.................... #define MP3_RQ_SD             PIN_A3 
+....................  
+.................... #define OUTPUT_ENABLE         PIN_B3 
+.................... #define PIC_RX                PIN_B1 
+.................... #define PIC_TX                PIN_B2 
+....................  
+.................... #define MP3_READY             PIN_B7 
+.................... #define MP3_ON_OFF            PIN_B4 
+.................... #define MP3_CMD_OUT           PIN_B5 
+....................  
+.................... #use delay(clock=8000000) 
+*
+0079:  MOVLW  3E
+007A:  MOVWF  04
+007B:  BCF    03.7
+007C:  MOVF   00,W
+007D:  BTFSC  03.2
+007E:  GOTO   08C
+007F:  MOVLW  02
+0080:  MOVWF  78
+0081:  CLRF   77
+0082:  DECFSZ 77,F
+0083:  GOTO   082
+0084:  DECFSZ 78,F
+0085:  GOTO   081
+0086:  MOVLW  97
+0087:  MOVWF  77
+0088:  DECFSZ 77,F
+0089:  GOTO   088
+008A:  DECFSZ 00,F
+008B:  GOTO   07F
+008C:  GOTO   13A (RETURN)
+.................... #use rs232(baud=19200,parity=N,rcv=MP3_TX,bits=8,stream=in) 
+008D:  BSF    03.5
+008E:  BSF    05.2
+008F:  BCF    03.5
+0090:  BTFSC  05.2
+0091:  GOTO   090
+0092:  MOVLW  08
+0093:  MOVWF  77
+0094:  CLRF   3D
+0095:  BSF    77.7
+0096:  GOTO   0A5
+0097:  BCF    77.7
+0098:  GOTO   0A5
+0099:  BCF    03.0
+009A:  BTFSC  05.2
+009B:  BSF    03.0
+009C:  RRF    3D,F
+009D:  BSF    77.6
+009E:  GOTO   0A5
+009F:  BCF    77.6
+00A0:  DECFSZ 77,F
+00A1:  GOTO   099
+00A2:  MOVF   3D,W
+00A3:  MOVWF  78
+00A4:  GOTO   0B1
+00A5:  MOVLW  1C
+00A6:  BTFSC  77.7
+00A7:  MOVLW  07
+00A8:  MOVWF  78
+00A9:  DECFSZ 78,F
+00AA:  GOTO   0A9
+00AB:  NOP
+00AC:  BTFSC  77.7
+00AD:  GOTO   097
+00AE:  BTFSC  77.6
+00AF:  GOTO   09F
+00B0:  GOTO   099
+00B1:  RETURN
+.................... #use rs232(baud=19200,parity=N,xmit=PIC_TX,rcv=PIC_RX,bits=8,stream=out) 
+....................  
+....................  
+....................  
+.................... BYTE CONST rmt_data [66] = { 
+....................    0xff, 0xaa, 0xaa, // 0 - Preambule    
+....................    0xb7, 0xbb, 0x56, // 1 - ON/OFF 
+....................    0xd7, 0xb7, 0x56, // 2 - Mode 
+....................    0xab, 0xdf, 0x56, // 3 - Mute 
+....................    0xef, 0x6b, 0x56, // 4 - Prev 
+....................    0xfe, 0xd5, 0x56, // 5 - Next 
+....................    0xaf, 0xbd, 0x56, // 6 - Play/Pause 
+....................    0xab, 0xfe, 0xaa, // 7 - Vol- 
+....................    0xb6, 0xfb, 0x6a, // 8 - Vol+ 
+....................    0xbb, 0xf5, 0xaa, // 9 - EQ 
+....................    0xd6, 0xf7, 0x6a, // 10 - 0 
+....................    0xba, 0xfa, 0xea, // 11 - 100+ 
+....................    0xb5, 0xfb, 0xaa, // 12 - Replay 
+....................    0xeb, 0xeb, 0xaa, // 13 - 1 
+....................    0xf5, 0xea, 0xea, // 14 - 2 
+....................    0xd5, 0x6d, 0xf6, // 15 - 3 
+....................    0xf7, 0xd5, 0xaa, // 16 - 4 
+....................    0xea, 0xf5, 0xea, // 17 - 5 
+....................    0xda, 0xdb, 0x76, // 18 - 6 
+....................    0xdf, 0x6d, 0x56, // 19 - 7 
+....................    0xdd, 0xb6, 0xb6, // 20 - 8 
+....................    0xdb, 0xb6, 0xd6  // 21 - 9 
+....................    }; 
+....................  
+.................... #define RMTCTRL_ON_OFF        1     //A 
+.................... #define RMTCTRL_MODE          2     //B 
+.................... #define RMTCTRL_MUTE          3     //C 
+.................... #define RMTCTRL_PREV          4     //D 
+.................... #define RMTCTRL_NEXT          5     //E 
+.................... #define RMTCTRL_PAUSE         6     //F 
+.................... #define RMTCTRL_DEC_VOL       7     //G 
+.................... #define RMTCTRL_INC_VOL       8     //H 
+.................... #define RMTCTRL_EQ            9     //I 
+.................... #define RMTCTRL_DIG_0         10    //J 
+.................... #define RMTCTRL_DIG_100       11    //K 
+.................... #define RMTCTRL_REPLAY        12    //L 
+.................... #define RMTCTRL_DIG_1         13    //M 
+.................... #define RMTCTRL_DIG_2         14    //N 
+.................... #define RMTCTRL_DIG_3         15    //O 
+.................... #define RMTCTRL_DIG_4         16    //P 
+.................... #define RMTCTRL_DIG_5         17    //Q 
+.................... #define RMTCTRL_DIG_6         18    //R 
+.................... #define RMTCTRL_DIG_7         19    //S 
+.................... #define RMTCTRL_DIG_8         20    //T 
+.................... #define RMTCTRL_DIG_9         21    //U 
+....................  
+....................  
+.................... #define STATE_PLAYING_START      1 
+.................... #define STATE_PLAYING_TRACK      2 
+.................... #define STATE_PAUSE              3 
+.................... #define STATE_VOLUME             4 
+.................... #define STATE_OTHER              0 
+....................  
+.................... char state[5]; 
+.................... char curr_pos[4]; 
+.................... int is_playing; 
+.................... int curr_state, old_state; 
+.................... int16 st, ost; 
+.................... int* pst; 
+.................... int etat; 
+....................  
+.................... void rmt_ctrl_byte(int data) { 
+....................    int1 bt; 
+....................    signed int i; 
+....................    for (i = 7 ; i >= 0 ; i--) { 
+....................       bt = bit_test(data, i); 
+....................       if (bt) { 
+....................          output_low(MP3_CMD_OUT); 
+....................          delay_us(533); 
+....................           
+....................          output_high(MP3_CMD_OUT); 
+....................          delay_us(560); 
+....................       } else { 
+....................          output_high(MP3_CMD_OUT); 
+....................          delay_us(1093); 
+....................       } 
+....................    } 
+.................... } 
+....................  
+.................... void rmt_ctrl_cmd(int cmd) { 
+....................    int pos; 
+....................    int v; 
+....................     
+....................    disable_interrupts(GLOBAL); 
+....................    pos = cmd * 3; 
+....................    
+....................    // Start Sequence 
+....................    output_low(MP3_CMD_OUT); 
+....................    delay_us(8885); 
+....................     
+....................    output_high(MP3_CMD_OUT); 
+....................    delay_us(4456); 
+....................    
+....................    // Préambule 
+....................    v = rmt_data[0]; 
+....................    rmt_ctrl_byte(v); 
+....................    v = rmt_data[1]; 
+....................    rmt_ctrl_byte(v); 
+....................    v = rmt_data[2]; 
+....................    rmt_ctrl_byte(v); 
+....................     
+....................    // Commande 
+....................    v = rmt_data[pos]; 
+....................    rmt_ctrl_byte(v); 
+....................    v = rmt_data[pos+1]; 
+....................    rmt_ctrl_byte(v); 
+....................    v = rmt_data[pos+2]; 
+....................    rmt_ctrl_byte(v); 
+....................     
+....................    // Stop Sequence 
+....................    // Un Logique 
+....................    output_low(MP3_CMD_OUT); 
+....................    delay_us(533); 
+....................     
+....................    output_high(MP3_CMD_OUT); 
+....................    delay_us(560); 
+....................     
+....................    output_high(MP3_CMD_OUT); 
+....................    delay_us(39466); 
+....................     
+....................    output_low(MP3_CMD_OUT); 
+....................    delay_us(8877); 
+....................     
+....................    output_high(MP3_CMD_OUT); 
+....................    delay_us(2250); 
+....................     
+....................    output_low(MP3_CMD_OUT); 
+....................    delay_us(533); 
+....................     
+....................    output_high(MP3_CMD_OUT); 
+....................    delay_us(560); 
+....................     
+....................    output_high(MP3_CMD_OUT); 
+....................    delay_ms(95); 
+....................     
+....................    output_low(MP3_CMD_OUT); 
+....................    delay_us(8877); 
+....................     
+....................    output_high(MP3_CMD_OUT); 
+....................    delay_us(2250); 
+....................     
+....................    output_low(MP3_CMD_OUT); 
+....................    delay_us(533); 
+....................     
+....................    output_high(MP3_CMD_OUT); 
+....................    delay_us(560); 
+....................    // 226.90ms 
+....................     
+....................    delay_ms(273); 
+....................    enable_interrupts(GLOBAL); 
+.................... } 
+....................  
+.................... void disable_sounds() { 
+....................    is_playing = FALSE;  
+*
+0031:  CLRF   32
+....................    output_low(MP3_ON_OFF); 
+0032:  BSF    03.5
+0033:  BCF    06.4
+0034:  BCF    03.5
+0035:  BCF    06.4
+.................... } 
+0036:  RETURN
+....................  
+.................... void enable_sounds() { 
+....................    is_playing = TRUE;  
+*
+003F:  MOVLW  01
+0040:  MOVWF  32
+....................    st = 0; 
+0041:  CLRF   36
+0042:  CLRF   35
+....................    etat = 0; 
+0043:  CLRF   3B
+....................    output_high(MP3_ON_OFF); 
+0044:  BSF    03.5
+0045:  BCF    06.4
+0046:  BCF    03.5
+0047:  BSF    06.4
+.................... } 
+....................  
+.................... #INT_RDA 
+.................... void rda_isr() { 
+....................    char c; 
+....................    c = fgetc(out); 
+*
+0037:  BTFSS  0C.5
+0038:  GOTO   037
+0039:  MOVF   1A,W
+003A:  MOVWF  44
+....................    if (c == 'P') { 
+003B:  MOVF   44,W
+003C:  SUBLW  50
+003D:  BTFSS  03.2
+003E:  GOTO   049
+....................       enable_sounds(); 
+....................    } else if (c == 'S') { 
+*
+0048:  GOTO   076
+0049:  MOVF   44,W
+004A:  SUBLW  53
+004B:  BTFSS  03.2
+004C:  GOTO   04F
+....................       disable_sounds(); 
+004D:  CALL   031
+....................    } else if (c == 'Y') { 
+004E:  GOTO   076
+004F:  MOVF   44,W
+0050:  SUBLW  59
+0051:  BTFSS  03.2
+0052:  GOTO   076
+....................       fputc(is_playing, out); 
+0053:  MOVF   32,W
+0054:  BTFSS  0C.4
+0055:  GOTO   054
+0056:  MOVWF  19
+....................       fputc(*pst, out); 
+0057:  MOVF   3A,W
+0058:  MOVWF  7A
+0059:  MOVF   39,W
+005A:  MOVWF  04
+005B:  BCF    03.7
+005C:  BTFSC  3A.0
+005D:  BSF    03.7
+005E:  MOVF   00,W
+005F:  MOVWF  45
+0060:  MOVF   45,W
+0061:  BTFSS  0C.4
+0062:  GOTO   061
+0063:  MOVWF  19
+....................       fputc(*(pst+1), out); 
+0064:  MOVLW  01
+0065:  ADDWF  39,W
+0066:  MOVWF  78
+0067:  MOVF   3A,W
+0068:  MOVWF  7A
+0069:  BTFSC  03.0
+006A:  INCF   7A,F
+006B:  MOVF   78,W
+006C:  MOVWF  04
+006D:  BCF    03.7
+006E:  BTFSC  7A.0
+006F:  BSF    03.7
+0070:  MOVF   00,W
+0071:  MOVWF  45
+0072:  MOVF   45,W
+0073:  BTFSS  0C.4
+0074:  GOTO   073
+0075:  MOVWF  19
+....................    } 
+.................... } 
+....................  
+0076:  BCF    0C.5
+0077:  BCF    0A.3
+0078:  GOTO   020
+.................... int16 calc_value() { 
+....................    return ((state[1] - '0') * 600) +  
+....................           ((state[2] - '0') * 60) +  
+....................           ((state[3] - '0') * 10) +  
+....................           (state[4] - '0'); 
+*
+00D7:  MOVLW  30
+00D8:  SUBWF  2A,W
+00D9:  MOVWF  3E
+00DA:  CLRF   40
+00DB:  MOVF   3E,W
+00DC:  MOVWF  3F
+00DD:  MOVLW  02
+00DE:  MOVWF  42
+00DF:  MOVLW  58
+00E0:  MOVWF  41
+*
+00F5:  MOVF   79,W
+00F6:  MOVWF  3E
+00F7:  MOVF   78,W
+00F8:  MOVWF  3D
+00F9:  MOVLW  30
+00FA:  SUBWF  2B,W
+00FB:  MOVWF  40
+00FC:  MOVWF  41
+00FD:  MOVLW  3C
+00FE:  MOVWF  42
+00FF:  CALL   0B2
+0100:  MOVF   78,W
+0101:  ADDWF  3D,F
+0102:  BTFSC  03.0
+0103:  INCF   3E,F
+0104:  MOVLW  30
+0105:  SUBWF  2C,W
+0106:  MOVWF  40
+0107:  MOVWF  41
+0108:  MOVLW  0A
+0109:  MOVWF  42
+010A:  CALL   0B2
+010B:  MOVF   78,W
+010C:  ADDWF  3D,F
+010D:  BTFSC  03.0
+010E:  INCF   3E,F
+010F:  MOVLW  30
+0110:  SUBWF  2D,W
+0111:  ADDWF  3D,W
+0112:  MOVWF  78
+0113:  MOVF   3E,W
+0114:  MOVWF  7A
+0115:  BTFSC  03.0
+0116:  INCF   7A,F
+0117:  MOVF   7A,W
+0118:  MOVWF  79
+.................... } 
+0119:  GOTO   15D (RETURN)
+....................  
+.................... void main() 
+.................... {   
+011A:  CLRF   04
+011B:  BCF    03.7
+011C:  MOVLW  1F
+011D:  ANDWF  03,F
+011E:  BSF    03.5
+011F:  BCF    05.0
+0120:  BCF    03.5
+0121:  BSF    05.0
+0122:  MOVLW  19
+0123:  BSF    03.5
+0124:  MOVWF  19
+0125:  MOVLW  A6
+0126:  MOVWF  18
+0127:  MOVLW  90
+0128:  BCF    03.5
+0129:  MOVWF  18
+012A:  MOVLW  07
+012B:  MOVWF  1F
+....................    int c; 
+....................    enable_interrupts(INT_RDA); 
+012C:  BSF    03.5
+012D:  BSF    0C.5
+....................    enable_interrupts(GLOBAL); 
+012E:  MOVLW  C0
+012F:  BCF    03.5
+0130:  IORWF  0B,F
+....................     
+....................    output_high(MP3_CMD_OUT); 
+0131:  BSF    03.5
+0132:  BCF    06.5
+0133:  BCF    03.5
+0134:  BSF    06.5
+....................    delay_ms(1000); 
+0135:  MOVLW  04
+0136:  MOVWF  3D
+0137:  MOVLW  FA
+0138:  MOVWF  3E
+0139:  GOTO   079
+013A:  DECFSZ 3D,F
+013B:  GOTO   137
+....................     
+....................    disable_sounds(); 
+013C:  CALL   031
+....................     
+....................    pst = &ost; 
+013D:  CLRF   3A
+013E:  MOVLW  37
+013F:  MOVWF  39
+....................    ost = 12350; 
+0140:  MOVLW  30
+0141:  MOVWF  38
+0142:  MOVLW  3E
+0143:  MOVWF  37
+....................     
+....................    while (TRUE) { 
+....................       do { 
+....................          c = fgetc(in); 
+0144:  CALL   08D
+0145:  MOVF   78,W
+0146:  MOVWF  3C
+....................       } while (c != '!'); 
+0147:  MOVF   3C,W
+0148:  SUBLW  21
+0149:  BTFSS  03.2
+014A:  GOTO   144
+....................        
+....................       state[0] = fgetc(in); 
+014B:  CALL   08D
+014C:  MOVF   78,W
+014D:  MOVWF  29
+....................       state[1] = fgetc(in); 
+014E:  CALL   08D
+014F:  MOVF   78,W
+0150:  MOVWF  2A
+....................       state[2] = fgetc(in); 
+0151:  CALL   08D
+0152:  MOVF   78,W
+0153:  MOVWF  2B
+....................       state[3] = fgetc(in); 
+0154:  CALL   08D
+0155:  MOVF   78,W
+0156:  MOVWF  2C
+....................       state[4] = fgetc(in); 
+0157:  CALL   08D
+0158:  MOVF   78,W
+0159:  MOVWF  2D
+....................        
+....................       curr_state = state[0]; 
+015A:  MOVF   29,W
+015B:  MOVWF  33
+....................       ost = calc_value(); 
+015C:  GOTO   0D7
+015D:  MOVF   79,W
+015E:  MOVWF  38
+015F:  MOVF   78,W
+0160:  MOVWF  37
+....................       if (curr_state == 0x7b && old_state == 0x6b) { 
+0161:  MOVF   33,W
+0162:  SUBLW  7B
+0163:  BTFSS  03.2
+0164:  GOTO   16A
+0165:  MOVF   34,W
+0166:  SUBLW  6B
+0167:  BTFSS  03.2
+0168:  GOTO   16A
+....................          disable_sounds(); 
+0169:  CALL   031
+....................       } 
+....................       old_state = curr_state; 
+016A:  MOVF   33,W
+016B:  MOVWF  34
+....................    } 
+016C:  GOTO   144
+.................... } 
+....................  
+.................... /* 
+.................... Etat              Affichage 
+.................... PAUSE             USB+" PAU" 
+.................... X                 USB+"000X" (X dans [1..9]) 
+.................... Lecture           USB:+"XXXX" (X position) 
+.................... */ 
+016D:  SLEEP
+
+Configuration Fuses:
+   Word  1: 3F0A   NOWDT NOPUT HS NOMCLR NOBROWNOUT NOLVP NOCPD NOPROTECT

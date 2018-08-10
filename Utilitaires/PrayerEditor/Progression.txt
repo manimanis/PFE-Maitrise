@@ -1,0 +1,113 @@
+24/11/2011
+-----------
+abstract
+  ItemsCollection
+    Classe Générique qui joue le rôle de container pour des objets d'un type donnée.
+    La classe supporte le chargement des données depuis une base de données sqlite3.
+    Les classes qui hérite de cette classe doit implémenter les méthodes :
+      
+          deleteAll()
+            Permet de supprimer tous les enregistrements qui existent dans la table
+            
+          insert()
+            Permet d'insérer les éléments de la collection d'objet dans la table.
+            Paramètres : 
+              c       sqlite3.Cursor()
+              items   liste des objets de type "classe" à sauvegarder
+  
+  QueryUtility
+    Permet d'exécuter des requêtes spéciales.
+    
+      queryArray()
+        Renvoie une liste de valeurs constituée par la première colonne du résultat
+        de la requête.
+        
+      queryOneObject()
+        Renvoie un objet correspondant à une requête qui renvoie uniquement un seul résultat.
+  
+Villes
+  SelectedVillesCollection(ItemsCollection)
+    Liste des villes enregistrés dans la table : selected_ville
+    
+  VillesUtility
+    Requêtes de sélections dans la table : ville
+    
+    searchVille()
+      Rechercher une ville
+      Retour : instance de Ville()
+      
+    getCountryList()
+      Rechercher une liste de Pays
+      Retour : tableau de chaînes
+      
+    getRegionsList()
+      Rechercher une liste de régions appartenant à un pays
+      Retour : tableau de chaînes
+      
+    getVillesList()
+      Rechercher la liste des régions appartenant à une région
+    
+    
+VillesDialog
+  Permet de modifier les paramètres des villes existants dans la table : selected_ville
+  
+VilleEditDialog
+  Permet d'éditer les paramètres d'une ville
+
+
+
+-----------
+25/11/2011
+-----------
+
+VilleChoiceDialog
+   Permet de sélectionner une ville parmi la liste des villes sélectionnés
+  
+abstract 
+  QueryUtility
+    queryOne()
+      Renvoie la première ligne du résultat d'une requête sous forme d'un tuple
+        
+Prayers
+  YearPrayersTimes(ItemsCollection)
+    Temps des prières pour une année pour une ville sélectionnée, les valeurs sont chargés de la table : prayers_times
+    
+    insert(), deleteAll()
+      Implémentation des fonctions qui permettent d'insérer les heures dans la table : prayers_times
+      
+PrayersTimesDialog
+  Permet d'afficher/générer/éditer les heures de prières pour une ville donnée.
+  
+PrayersEditDialog
+  Permet d'éditer les heures de prières pour un jour donné.
+       
+-----------
+26/11/2011
+-----------
+TODO
+Télécharger :
+OK * pygame
+OK * py2exe
+---------------------
+Ecrire les use cases, les diagrammes de robustesse, le :
+* [uc][rd] Afficher Villes sélectionnées
+* [uc] Ajouter Ville
+* [uc] Ordonner villes
+* Retrouver coordonnés initiales des villes
+* [uc] Supprimer Ville
+* Sélectionner Villes
+* ------------------------------------------------
+* Afficher coordonnés villes
+* Editer coordonnés villes
+* Modifier coordonnés villes
+* ------------------------------------------------
+* Afficher horaires de prières
+* Editer horaires de prières
+* Générer horaires de prières
+* Modifier heures de prières
+* ------------------------------------------------
+* Afficherles évènements
+* Editer évènements
+* Modifier évènements
+* ------------------------------------------------
+* Générer fichier Hex  

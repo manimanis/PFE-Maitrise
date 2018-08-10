@@ -1,0 +1,16 @@
+ÀÄmain
+   ÀÄMAIN  0/59  Ram=0
+      ÃÄ??0??
+      ÃÄ@MEMSET  0/9  Ram=0
+      ÃÄ@MEMSET  0/9  Ram=0
+      ÀÄmp3_state  0/148  Ram=0
+         ÃÄmp3_inst_state  0/115  Ram=0
+         ÃÄmp3_inst_state  0/115  Ram=0
+         ÃÄmp3_inst_state  0/115  Ram=0
+         ÃÄmp3_inst_state  0/115  Ram=0
+         ÃÄmp3_inst_state  0/115  Ram=0
+         ÃÄcmp_state_eq  (Inline)  Ram=10
+         ÃÄmp3_get_digit  0/135  Ram=1
+         ÃÄmp3_get_digit  0/135  Ram=1
+         ÃÄmp3_get_digit  0/135  Ram=1
+         ÀÄmp3_get_digit  0/135  Ram=1

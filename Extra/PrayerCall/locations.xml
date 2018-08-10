@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<informations>
+    <place>
+    <loc>
+        <country value="تونس" />
+        <town value="سوسة" />
+        <longitude value="10,37" />
+        <latitude value="35,50" />
+        <gmt value="+1" />
+        <dst value="True" />
+        <pressure value="1010.0" />
+        <sealevel value="0" />
+        <temperature value="10.0" />
+    </loc>
+    <method value="1">
+        <index value="1" />
+    </method>
+    </place>
+    <place>
+    <loc>
+        <country value="تونس" />
+        <town value="سوسة" />
+        <longitude value="10,37" />
+        <latitude value="35,50" />
+        <gmt value="+1" />
+        <dst value="True" />
+        <pressure value="1010.0" />
+        <sealevel value="0" />
+        <temperature value="10.0" />
+    </loc>
+    <method>
+        <index value="1" />
+    </method>
+    </place>
+</informations>

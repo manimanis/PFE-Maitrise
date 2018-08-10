@@ -1,0 +1,48 @@
+
+ROM used: 470 (23%)
+          470 (23%) including unused fragments
+
+          1 Average locations per line
+          3 Average locations per statement
+
+RAM used: 24 (11%) at main() level
+          34 (15%) worst case
+
+Stack used: 2 worst case (out of 8 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+  161   136 100  main.c
+   30     0   0  main.h
+  224     0   0  ..\..\..\Program Files\PICC\devices\16F628A.h
+----- -----
+  415   136 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0    115  24   0  1283  2.9  mp3_inst_state
+0    135  29   1   968  2.9  mp3_get_digit
+ Inline       10   386  3.9  cmp_state_eq
+0    148  31   0  1226  9.2  mp3_state
+0     59  13   0   352  4.2  MAIN
+0      9   2   0             @MEMSET
+
+Program metrics:
+    Functions               5
+    Statements              136
+    Comments                73
+    Volume (V)              5713
+    Difficilty (D)          23.2
+    Effort to implement (E) 132375
+    Time to implement (T)   2 hours, 3 minutes
+    Est Delivered Bugs (B)  1
+    Cyclomatic Complexity   45
+    Maintainability (MI)    61
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00003     4  0  
+00004-007FF   466  1578  
+
+
+

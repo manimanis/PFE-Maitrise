@@ -1,0 +1,1179 @@
+CCS PCM C Compiler, Version 4.084, 40907               12-juil.-11 12:55
+
+               Filename: afficheurs.lst
+
+               ROM used: 843 words (41%)
+                         Largest free fragment is 1205
+               RAM used: 58 (26%) at main() level
+                         63 (28%) worst case
+               Stack:    3 worst case (1 in main + 2 for interrupts)
+
+*
+0000:  MOVLW  00
+0001:  MOVWF  0A
+0002:  GOTO   2AE
+0003:  NOP
+0004:  MOVWF  7F
+0005:  SWAPF  03,W
+0006:  CLRF   03
+0007:  MOVWF  21
+0008:  MOVF   7F,W
+0009:  MOVWF  20
+000A:  MOVF   0A,W
+000B:  MOVWF  28
+000C:  CLRF   0A
+000D:  SWAPF  20,F
+000E:  MOVF   04,W
+000F:  MOVWF  22
+0010:  MOVF   77,W
+0011:  MOVWF  23
+0012:  MOVF   78,W
+0013:  MOVWF  24
+0014:  MOVF   79,W
+0015:  MOVWF  25
+0016:  MOVF   7A,W
+0017:  MOVWF  26
+0018:  MOVF   7B,W
+0019:  MOVWF  27
+001A:  BCF    03.7
+001B:  BCF    03.5
+001C:  MOVLW  8C
+001D:  MOVWF  04
+001E:  BTFSS  00.5
+001F:  GOTO   022
+0020:  BTFSC  0C.5
+0021:  GOTO   177
+0022:  MOVLW  8C
+0023:  MOVWF  04
+0024:  BTFSS  00.0
+0025:  GOTO   028
+0026:  BTFSC  0C.0
+0027:  GOTO   26F
+0028:  BTFSS  0B.5
+0029:  GOTO   02C
+002A:  BTFSC  0B.2
+002B:  GOTO   1C9
+002C:  MOVF   22,W
+002D:  MOVWF  04
+002E:  MOVF   23,W
+002F:  MOVWF  77
+0030:  MOVF   24,W
+0031:  MOVWF  78
+0032:  MOVF   25,W
+0033:  MOVWF  79
+0034:  MOVF   26,W
+0035:  MOVWF  7A
+0036:  MOVF   27,W
+0037:  MOVWF  7B
+0038:  MOVF   28,W
+0039:  MOVWF  0A
+003A:  SWAPF  21,W
+003B:  MOVWF  03
+003C:  SWAPF  7F,F
+003D:  SWAPF  7F,W
+003E:  RETFIE
+.................... #include <afficheurs.h> 
+.................... #include <16F628A.h> 
+.................... //////// Standard Header file for the PIC16F628A device //////////////// 
+.................... #device PIC16F628A 
+.................... #list 
+....................  
+....................  
+.................... #FUSES NOWDT                    //No Watch Dog Timer 
+.................... #FUSES INTRC_IO                       //High speed Osc (> 4mhz for PCM/PCH) (>10mhz for PCD) 
+.................... #FUSES NOPUT                    //No Power Up Timer 
+.................... #FUSES NOPROTECT                //Code not protected from reading 
+.................... #FUSES NOBROWNOUT               //No brownout reset 
+.................... #FUSES NOMCLR                   //No Master Clear pin enabled 
+.................... #FUSES NOLVP                    //No low voltage prgming, B3(PIC16) or B5(PIC18) used for I/O 
+.................... #FUSES NOCPD                    //No EE protection 
+....................  
+....................  
+....................  
+.................... #define CHIFFRE_0 0x40 // 0x3F 
+.................... #define CHIFFRE_1 0x79 // 0x06 
+.................... #define CHIFFRE_2 0x24 // 0x5B 
+.................... #define CHIFFRE_3 0x30 // 0x4F 
+.................... #define CHIFFRE_4 0x19 // 0x66 
+.................... #define CHIFFRE_5 0x12 // 0x6D 
+.................... #define CHIFFRE_6 0x02 // 0x7D 
+.................... #define CHIFFRE_7 0x58 // 0x27 
+.................... #define CHIFFRE_8 0x00 // 0x7F 
+.................... #define CHIFFRE_9 0x10 // 0x6F 
+....................  
+.................... #define CHIFFRE_A 0x20 // 0x5F 
+.................... #define CHIFFRE_B 0x03 // 0x7C 
+.................... #define CHIFFRE_C 0x27 // 0x58 
+.................... #define CHIFFRE_D 0x21 // 0x5E 
+.................... #define CHIFFRE_E 0x04 // 0x7B 
+.................... #define CHIFFRE_F 0x0E // 0x71 
+.................... #define CHIFFRE_G 0x10 // 0x6F 
+.................... #define CHIFFRE_H 0x09 // 0x76 
+.................... #define CHIFFRE_I 0x4F // 0x30 
+.................... #define CHIFFRE_J 0x61 // 0x1E 
+.................... #define CHIFFRE_K 0x09 // 0x76 
+.................... #define CHIFFRE_L 0x43 // 0x3C 
+.................... #define CHIFFRE_M 0x48 // 0x37 
+.................... #define CHIFFRE_N 0x2B // 0x54 
+.................... #define CHIFFRE_O 0x23 // 0x5C 
+.................... #define CHIFFRE_P 0x0C // 0x73 
+.................... #define CHIFFRE_Q 0x18 // 0x67 
+.................... #define CHIFFRE_R 0x2F // 0x50 
+.................... #define CHIFFRE_S 0x12 // 0x6D 
+.................... #define CHIFFRE_T 0x07 // 0x78 
+.................... #define CHIFFRE_U 0x63 // 0x1C 
+.................... #define CHIFFRE_V 0x63 // 0x1C 
+.................... #define CHIFFRE_W 0x63 // 0x1C 
+.................... #define CHIFFRE_X 0x09 // 0x76 
+.................... #define CHIFFRE_Y 0x11 // 0x6E 
+.................... #define CHIFFRE_Z 0x24 // 0x5B 
+....................  
+.................... #define CHIFFRE_TIRET  0x3F // 0x40 
+.................... #define CHIFFRE_ESPACE 0x7F // 0x00 
+.................... #define CHIFFRE_OFF    0x7F // 0x00 
+....................  
+.................... #define BLTM        244 //488 = 1s 
+....................  
+.................... #define DATA_PIN  PIN_A0 
+.................... #define CLK_PIN   PIN_A2 
+.................... #define STB_PIN   PIN_A1 
+....................  
+.................... #define RQ_SD_DT  PIN_B0 
+.................... #define RX        PIN_B1 
+.................... #define SD_OK     PIN_B3 
+....................  
+.................... #define DIG_0     PIN_B7 
+.................... #define DIG_1     PIN_B6 
+.................... #define DIG_2     PIN_B5 
+....................  
+.................... #define DIG_EN    PIN_B4 
+....................  
+.................... #define CHIFF_COUNT  4 
+....................  
+.................... #use delay(clock=4000000) 
+.................... #use rs232(baud=9600,parity=N,xmit=PIN_B2,rcv=RX,bits=8) 
+....................  
+....................  
+....................  
+.................... // BESMELLEH ARRAHMEN ARRAHIM 
+.................... // 12345678901234567890123456 
+.................... int sz, pa, rm, pos; 
+.................... int data[32]; 
+....................  
+.................... int point; 
+.................... int blink; 
+.................... int sens; 
+.................... int chiff_cour; 
+.................... int16 btm; 
+....................  
+.................... int convertToSeg(int v) { 
+....................    switch (v) { 
+003F:  MOVF   58,W
+0040:  XORLW  20
+0041:  BTFSC  03.2
+0042:  GOTO   101
+0043:  XORLW  0D
+0044:  BTFSC  03.2
+0045:  GOTO   104
+0046:  XORLW  1D
+0047:  BTFSC  03.2
+0048:  GOTO   107
+0049:  XORLW  01
+004A:  BTFSC  03.2
+004B:  GOTO   10A
+004C:  XORLW  03
+004D:  BTFSC  03.2
+004E:  GOTO   10D
+004F:  XORLW  01
+0050:  BTFSC  03.2
+0051:  GOTO   110
+0052:  XORLW  07
+0053:  BTFSC  03.2
+0054:  GOTO   113
+0055:  XORLW  01
+0056:  BTFSC  03.2
+0057:  GOTO   116
+0058:  XORLW  03
+0059:  BTFSC  03.2
+005A:  GOTO   119
+005B:  XORLW  01
+005C:  BTFSC  03.2
+005D:  GOTO   11C
+005E:  XORLW  0F
+005F:  BTFSC  03.2
+0060:  GOTO   11F
+0061:  XORLW  01
+0062:  BTFSC  03.2
+0063:  GOTO   122
+0064:  XORLW  78
+0065:  BTFSC  03.2
+0066:  GOTO   125
+0067:  XORLW  20
+0068:  BTFSC  03.2
+0069:  GOTO   125
+006A:  XORLW  23
+006B:  BTFSC  03.2
+006C:  GOTO   128
+006D:  XORLW  20
+006E:  BTFSC  03.2
+006F:  GOTO   128
+0070:  XORLW  21
+0071:  BTFSC  03.2
+0072:  GOTO   12B
+0073:  XORLW  20
+0074:  BTFSC  03.2
+0075:  GOTO   12B
+0076:  XORLW  27
+0077:  BTFSC  03.2
+0078:  GOTO   12E
+0079:  XORLW  20
+007A:  BTFSC  03.2
+007B:  GOTO   12E
+007C:  XORLW  21
+007D:  BTFSC  03.2
+007E:  GOTO   131
+007F:  XORLW  20
+0080:  BTFSC  03.2
+0081:  GOTO   131
+0082:  XORLW  23
+0083:  BTFSC  03.2
+0084:  GOTO   134
+0085:  XORLW  20
+0086:  BTFSC  03.2
+0087:  GOTO   134
+0088:  XORLW  21
+0089:  BTFSC  03.2
+008A:  GOTO   137
+008B:  XORLW  20
+008C:  BTFSC  03.2
+008D:  GOTO   137
+008E:  XORLW  2F
+008F:  BTFSC  03.2
+0090:  GOTO   13A
+0091:  XORLW  20
+0092:  BTFSC  03.2
+0093:  GOTO   13A
+0094:  XORLW  21
+0095:  BTFSC  03.2
+0096:  GOTO   13D
+0097:  XORLW  20
+0098:  BTFSC  03.2
+0099:  GOTO   13D
+009A:  XORLW  23
+009B:  BTFSC  03.2
+009C:  GOTO   140
+009D:  XORLW  20
+009E:  BTFSC  03.2
+009F:  GOTO   140
+00A0:  XORLW  21
+00A1:  BTFSC  03.2
+00A2:  GOTO   143
+00A3:  XORLW  20
+00A4:  BTFSC  03.2
+00A5:  GOTO   143
+00A6:  XORLW  27
+00A7:  BTFSC  03.2
+00A8:  GOTO   146
+00A9:  XORLW  20
+00AA:  BTFSC  03.2
+00AB:  GOTO   146
+00AC:  XORLW  21
+00AD:  BTFSC  03.2
+00AE:  GOTO   149
+00AF:  XORLW  20
+00B0:  BTFSC  03.2
+00B1:  GOTO   149
+00B2:  XORLW  23
+00B3:  BTFSC  03.2
+00B4:  GOTO   14C
+00B5:  XORLW  20
+00B6:  BTFSC  03.2
+00B7:  GOTO   14C
+00B8:  XORLW  21
+00B9:  BTFSC  03.2
+00BA:  GOTO   14F
+00BB:  XORLW  20
+00BC:  BTFSC  03.2
+00BD:  GOTO   14F
+00BE:  XORLW  3F
+00BF:  BTFSC  03.2
+00C0:  GOTO   152
+00C1:  XORLW  20
+00C2:  BTFSC  03.2
+00C3:  GOTO   152
+00C4:  XORLW  21
+00C5:  BTFSC  03.2
+00C6:  GOTO   155
+00C7:  XORLW  20
+00C8:  BTFSC  03.2
+00C9:  GOTO   155
+00CA:  XORLW  23
+00CB:  BTFSC  03.2
+00CC:  GOTO   158
+00CD:  XORLW  20
+00CE:  BTFSC  03.2
+00CF:  GOTO   158
+00D0:  XORLW  21
+00D1:  BTFSC  03.2
+00D2:  GOTO   15B
+00D3:  XORLW  20
+00D4:  BTFSC  03.2
+00D5:  GOTO   15B
+00D6:  XORLW  27
+00D7:  BTFSC  03.2
+00D8:  GOTO   15E
+00D9:  XORLW  20
+00DA:  BTFSC  03.2
+00DB:  GOTO   15E
+00DC:  XORLW  21
+00DD:  BTFSC  03.2
+00DE:  GOTO   161
+00DF:  XORLW  20
+00E0:  BTFSC  03.2
+00E1:  GOTO   161
+00E2:  XORLW  23
+00E3:  BTFSC  03.2
+00E4:  GOTO   164
+00E5:  XORLW  20
+00E6:  BTFSC  03.2
+00E7:  GOTO   164
+00E8:  XORLW  21
+00E9:  BTFSC  03.2
+00EA:  GOTO   167
+00EB:  XORLW  20
+00EC:  BTFSC  03.2
+00ED:  GOTO   167
+00EE:  XORLW  2F
+00EF:  BTFSC  03.2
+00F0:  GOTO   16A
+00F1:  XORLW  20
+00F2:  BTFSC  03.2
+00F3:  GOTO   16A
+00F4:  XORLW  21
+00F5:  BTFSC  03.2
+00F6:  GOTO   16D
+00F7:  XORLW  20
+00F8:  BTFSC  03.2
+00F9:  GOTO   16D
+00FA:  XORLW  23
+00FB:  BTFSC  03.2
+00FC:  GOTO   170
+00FD:  XORLW  20
+00FE:  BTFSC  03.2
+00FF:  GOTO   170
+0100:  GOTO   173
+....................       case ' ': return CHIFFRE_ESPACE; 
+0101:  MOVLW  7F
+0102:  MOVWF  78
+0103:  GOTO   176
+....................       case '-': return CHIFFRE_TIRET; 
+0104:  MOVLW  3F
+0105:  MOVWF  78
+0106:  GOTO   176
+....................        
+....................       case '0': return CHIFFRE_0; 
+0107:  MOVLW  40
+0108:  MOVWF  78
+0109:  GOTO   176
+....................       case '1': return CHIFFRE_1; 
+010A:  MOVLW  79
+010B:  MOVWF  78
+010C:  GOTO   176
+....................       case '2': return CHIFFRE_2; 
+010D:  MOVLW  24
+010E:  MOVWF  78
+010F:  GOTO   176
+....................       case '3': return CHIFFRE_3; 
+0110:  MOVLW  30
+0111:  MOVWF  78
+0112:  GOTO   176
+....................       case '4': return CHIFFRE_4; 
+0113:  MOVLW  19
+0114:  MOVWF  78
+0115:  GOTO   176
+....................       case '5': return CHIFFRE_5; 
+0116:  MOVLW  12
+0117:  MOVWF  78
+0118:  GOTO   176
+....................       case '6': return CHIFFRE_6; 
+0119:  MOVLW  02
+011A:  MOVWF  78
+011B:  GOTO   176
+....................       case '7': return CHIFFRE_7; 
+011C:  MOVLW  58
+011D:  MOVWF  78
+011E:  GOTO   176
+....................       case '8': return CHIFFRE_8; 
+011F:  MOVLW  00
+0120:  MOVWF  78
+0121:  GOTO   176
+....................       case '9': return CHIFFRE_9; 
+0122:  MOVLW  10
+0123:  MOVWF  78
+0124:  GOTO   176
+....................        
+....................       case 'A':  
+....................       case 'a':  return CHIFFRE_A; 
+0125:  MOVLW  20
+0126:  MOVWF  78
+0127:  GOTO   176
+....................       case 'B':  
+....................       case 'b':  return CHIFFRE_B; 
+0128:  MOVLW  03
+0129:  MOVWF  78
+012A:  GOTO   176
+....................       case 'C':  
+....................       case 'c':  return CHIFFRE_C; 
+012B:  MOVLW  27
+012C:  MOVWF  78
+012D:  GOTO   176
+....................       case 'D':  
+....................       case 'd':  return CHIFFRE_D; 
+012E:  MOVLW  21
+012F:  MOVWF  78
+0130:  GOTO   176
+....................       case 'E':  
+....................       case 'e':  return CHIFFRE_E; 
+0131:  MOVLW  04
+0132:  MOVWF  78
+0133:  GOTO   176
+....................       case 'F':  
+....................       case 'f':  return CHIFFRE_F; 
+0134:  MOVLW  0E
+0135:  MOVWF  78
+0136:  GOTO   176
+....................       case 'G':  
+....................       case 'g':  return CHIFFRE_G; 
+0137:  MOVLW  10
+0138:  MOVWF  78
+0139:  GOTO   176
+....................       case 'H':  
+....................       case 'h':  return CHIFFRE_H; 
+013A:  MOVLW  09
+013B:  MOVWF  78
+013C:  GOTO   176
+....................        
+....................       case 'I':  
+....................       case 'i':  return CHIFFRE_I; 
+013D:  MOVLW  4F
+013E:  MOVWF  78
+013F:  GOTO   176
+....................       case 'J':  
+....................       case 'j':  return CHIFFRE_J; 
+0140:  MOVLW  61
+0141:  MOVWF  78
+0142:  GOTO   176
+....................       case 'K':  
+....................       case 'k':  return CHIFFRE_K; 
+0143:  MOVLW  09
+0144:  MOVWF  78
+0145:  GOTO   176
+....................       case 'L':  
+....................       case 'l':  return CHIFFRE_L; 
+0146:  MOVLW  43
+0147:  MOVWF  78
+0148:  GOTO   176
+....................       case 'M':  
+....................       case 'm':  return CHIFFRE_M; 
+0149:  MOVLW  48
+014A:  MOVWF  78
+014B:  GOTO   176
+....................       case 'N':  
+....................       case 'n':  return CHIFFRE_N; 
+014C:  MOVLW  2B
+014D:  MOVWF  78
+014E:  GOTO   176
+....................       case 'O':  
+....................       case 'o':  return CHIFFRE_O; 
+014F:  MOVLW  23
+0150:  MOVWF  78
+0151:  GOTO   176
+....................       case 'P':  
+....................       case 'p':  return CHIFFRE_P; 
+0152:  MOVLW  0C
+0153:  MOVWF  78
+0154:  GOTO   176
+....................        
+....................       case 'Q':  
+....................       case 'q':  return CHIFFRE_Q; 
+0155:  MOVLW  18
+0156:  MOVWF  78
+0157:  GOTO   176
+....................       case 'R':  
+....................       case 'r':  return CHIFFRE_R; 
+0158:  MOVLW  2F
+0159:  MOVWF  78
+015A:  GOTO   176
+....................       case 'S':  
+....................       case 's':  return CHIFFRE_S; 
+015B:  MOVLW  12
+015C:  MOVWF  78
+015D:  GOTO   176
+....................       case 'T':  
+....................       case 't':  return CHIFFRE_T; 
+015E:  MOVLW  07
+015F:  MOVWF  78
+0160:  GOTO   176
+....................       case 'U':  
+....................       case 'u':  return CHIFFRE_U; 
+0161:  MOVLW  63
+0162:  MOVWF  78
+0163:  GOTO   176
+....................       case 'V':  
+....................       case 'v':  return CHIFFRE_V; 
+0164:  MOVLW  63
+0165:  MOVWF  78
+0166:  GOTO   176
+....................       case 'W':  
+....................       case 'w':  return CHIFFRE_W; 
+0167:  MOVLW  63
+0168:  MOVWF  78
+0169:  GOTO   176
+....................       case 'X':  
+....................       case 'x':  return CHIFFRE_X; 
+016A:  MOVLW  09
+016B:  MOVWF  78
+016C:  GOTO   176
+....................        
+....................       case 'Y':  
+....................       case 'y':  return CHIFFRE_Y; 
+016D:  MOVLW  11
+016E:  MOVWF  78
+016F:  GOTO   176
+....................       case 'Z':  
+....................       case 'z':  return CHIFFRE_Z; 
+0170:  MOVLW  24
+0171:  MOVWF  78
+0172:  GOTO   176
+....................        
+....................       default  : return CHIFFRE_OFF; 
+0173:  MOVLW  7F
+0174:  MOVWF  78
+0175:  GOTO   176
+....................    } 
+.................... } 
+0176:  RETLW  00
+....................  
+.................... #INT_RDA 
+.................... void rda_isr() { 
+....................    int c; 
+....................     
+....................    c = getch(); 
+0177:  BTFSS  0C.5
+0178:  GOTO   177
+0179:  MOVF   1A,W
+017A:  MOVWF  55
+....................    if (c == '!') { 
+017B:  MOVF   55,W
+017C:  SUBLW  21
+017D:  BTFSS  03.2
+017E:  GOTO   189
+....................       sz = 0; 
+017F:  CLRF   2A
+....................       pa = 0; 
+0180:  CLRF   2B
+....................       rm = TRUE; 
+0181:  MOVLW  01
+0182:  MOVWF  2C
+....................        
+....................       data[0] = CHIFFRE_OFF; 
+0183:  MOVLW  7F
+0184:  MOVWF  2E
+....................       data[1] = CHIFFRE_OFF; 
+0185:  MOVWF  2F
+....................       data[2] = CHIFFRE_OFF; 
+0186:  MOVWF  30
+....................       data[3] = CHIFFRE_OFF; 
+0187:  MOVWF  31
+....................    } else if (c == '$') { 
+0188:  GOTO   1C5
+0189:  MOVF   55,W
+018A:  SUBLW  24
+018B:  BTFSS  03.2
+018C:  GOTO   18F
+....................       rm = FALSE; 
+018D:  CLRF   2C
+....................    } else if (c == '*') { // Blinking ON 
+018E:  GOTO   1C5
+018F:  MOVF   55,W
+0190:  SUBLW  2A
+0191:  BTFSS  03.2
+0192:  GOTO   199
+....................       blink = TRUE; 
+0193:  MOVLW  01
+0194:  MOVWF  4F
+....................       sens = TRUE; 
+0195:  MOVWF  50
+....................       point = 0x0E; 
+0196:  MOVLW  0E
+0197:  MOVWF  4E
+....................    } else if (c == '#') { // Blinking OFF 
+0198:  GOTO   1C5
+0199:  MOVF   55,W
+019A:  SUBLW  23
+019B:  BTFSS  03.2
+019C:  GOTO   1A1
+....................       blink = FALSE; 
+019D:  CLRF   4F
+....................       point = 0x0F; 
+019E:  MOVLW  0F
+019F:  MOVWF  4E
+....................    } else if (c < 16) { 
+01A0:  GOTO   1C5
+01A1:  MOVF   55,W
+01A2:  SUBLW  0F
+01A3:  BTFSS  03.0
+01A4:  GOTO   1A8
+....................       point = c; 
+01A5:  MOVF   55,W
+01A6:  MOVWF  4E
+....................    } else { 
+01A7:  GOTO   1C5
+....................       if (rm) { 
+01A8:  MOVF   2C,F
+01A9:  BTFSC  03.2
+01AA:  GOTO   1C5
+....................          data[sz] = convertToSeg(c); 
+01AB:  MOVLW  2E
+01AC:  ADDWF  2A,W
+01AD:  MOVWF  78
+01AE:  CLRF   7A
+01AF:  BTFSC  03.0
+01B0:  INCF   7A,F
+01B1:  MOVF   78,W
+01B2:  MOVWF  56
+01B3:  MOVF   7A,W
+01B4:  MOVWF  57
+01B5:  MOVF   55,W
+01B6:  MOVWF  58
+01B7:  CALL   03F
+01B8:  MOVF   56,W
+01B9:  MOVWF  04
+01BA:  BCF    03.7
+01BB:  BTFSC  57.0
+01BC:  BSF    03.7
+01BD:  MOVF   78,W
+01BE:  MOVWF  00
+....................          sz++; 
+01BF:  INCF   2A,F
+....................          if (sz == 32) { 
+01C0:  MOVF   2A,W
+01C1:  SUBLW  20
+01C2:  BTFSS  03.2
+01C3:  GOTO   1C5
+....................             rm = FALSE; 
+01C4:  CLRF   2C
+....................          } 
+....................       } 
+....................    } 
+....................     
+....................    clear_interrupt(INT_RDA); 
+01C5:  BCF    0C.5
+.................... } 
+....................  
+01C6:  BCF    0C.5
+01C7:  BCF    0A.3
+01C8:  GOTO   02C
+.................... #INT_TIMER0  
+.................... void timer0_isr() { 
+....................    signed int i;  
+....................    int v; 
+....................    int1 pt; 
+....................    
+....................    output_low(STB_PIN); 
+01C9:  BSF    03.5
+01CA:  BCF    05.1
+01CB:  BCF    03.5
+01CC:  BCF    05.1
+....................    output_low(DATA_PIN); 
+01CD:  BSF    03.5
+01CE:  BCF    05.0
+01CF:  BCF    03.5
+01D0:  BCF    05.0
+....................    output_low(CLK_PIN); 
+01D1:  BSF    03.5
+01D2:  BCF    05.2
+01D3:  BCF    03.5
+01D4:  BCF    05.2
+....................     
+....................    output_low(DIG_EN); 
+01D5:  BSF    03.5
+01D6:  BCF    06.4
+01D7:  BCF    03.5
+01D8:  BCF    06.4
+....................     
+....................    output_bit(DIG_0, bit_test(chiff_cour, 0)); 
+01D9:  BTFSC  51.0
+01DA:  GOTO   1DD
+01DB:  BCF    06.7
+01DC:  GOTO   1DE
+01DD:  BSF    06.7
+01DE:  BSF    03.5
+01DF:  BCF    06.7
+....................    output_bit(DIG_1, bit_test(chiff_cour, 1)); 
+01E0:  BCF    03.5
+01E1:  BTFSC  51.1
+01E2:  GOTO   1E5
+01E3:  BCF    06.6
+01E4:  GOTO   1E6
+01E5:  BSF    06.6
+01E6:  BSF    03.5
+01E7:  BCF    06.6
+....................    output_bit(DIG_2, bit_test(chiff_cour, 2));  
+01E8:  BCF    03.5
+01E9:  BTFSC  51.2
+01EA:  GOTO   1ED
+01EB:  BCF    06.5
+01EC:  GOTO   1EE
+01ED:  BSF    06.5
+01EE:  BSF    03.5
+01EF:  BCF    06.5
+....................     
+....................    pos = pa + chiff_cour; 
+01F0:  BCF    03.5
+01F1:  MOVF   51,W
+01F2:  ADDWF  2B,W
+01F3:  MOVWF  2D
+....................    if (pos >= sz) { 
+01F4:  MOVF   2A,W
+01F5:  SUBWF  2D,W
+01F6:  BTFSS  03.0
+01F7:  GOTO   20C
+....................       if (sz > 3) { 
+01F8:  MOVF   2A,W
+01F9:  SUBLW  03
+01FA:  BTFSC  03.0
+01FB:  GOTO   209
+....................          pos = pa + chiff_cour - sz; 
+01FC:  MOVF   51,W
+01FD:  ADDWF  2B,W
+01FE:  MOVWF  78
+01FF:  MOVF   2A,W
+0200:  SUBWF  78,W
+0201:  MOVWF  2D
+....................          v = data[pos]; 
+0202:  MOVLW  2E
+0203:  ADDWF  2D,W
+0204:  MOVWF  04
+0205:  BCF    03.7
+0206:  MOVF   00,W
+0207:  MOVWF  56
+....................       } else { 
+0208:  GOTO   20B
+....................          v = CHIFFRE_OFF; 
+0209:  MOVLW  7F
+020A:  MOVWF  56
+....................       } 
+....................    } else { 
+020B:  GOTO   212
+....................       v = data[pos]; 
+020C:  MOVLW  2E
+020D:  ADDWF  2D,W
+020E:  MOVWF  04
+020F:  BCF    03.7
+0210:  MOVF   00,W
+0211:  MOVWF  56
+....................    } 
+....................    pt = bit_test(point, chiff_cour); 
+0212:  MOVF   4E,W
+0213:  MOVWF  77
+0214:  MOVF   51,W
+0215:  MOVWF  78
+0216:  BTFSC  03.2
+0217:  GOTO   21C
+0218:  BCF    03.0
+0219:  RRF    77,F
+021A:  DECFSZ 78,F
+021B:  GOTO   218
+021C:  BCF    57.0
+021D:  BTFSC  77.0
+021E:  BSF    57.0
+....................     
+....................    for (i = 7 ; i >= 0 ; i--) { 
+021F:  MOVLW  07
+0220:  MOVWF  55
+0221:  BTFSC  55.7
+0222:  GOTO   24A
+....................       if (i == 7) 
+0223:  MOVF   55,W
+0224:  SUBLW  07
+0225:  BTFSS  03.2
+0226:  GOTO   230
+....................          output_bit(DATA_PIN, pt); 
+0227:  BTFSC  57.0
+0228:  GOTO   22B
+0229:  BCF    05.0
+022A:  GOTO   22C
+022B:  BSF    05.0
+022C:  BSF    03.5
+022D:  BCF    05.0
+....................       else 
+022E:  GOTO   241
+022F:  BCF    03.5
+....................          output_bit(DATA_PIN, bit_test(v, i)); 
+0230:  MOVF   56,W
+0231:  MOVWF  77
+0232:  MOVF   55,W
+0233:  MOVWF  78
+0234:  BTFSC  03.2
+0235:  GOTO   23A
+0236:  BCF    03.0
+0237:  RRF    77,F
+0238:  DECFSZ 78,F
+0239:  GOTO   236
+023A:  BTFSC  77.0
+023B:  GOTO   23E
+023C:  BCF    05.0
+023D:  GOTO   23F
+023E:  BSF    05.0
+023F:  BSF    03.5
+0240:  BCF    05.0
+....................        
+....................       output_high(CLK_PIN); 
+0241:  BCF    05.2
+0242:  BCF    03.5
+0243:  BSF    05.2
+....................       output_low(CLK_PIN); 
+0244:  BSF    03.5
+0245:  BCF    05.2
+0246:  BCF    03.5
+0247:  BCF    05.2
+....................    } 
+0248:  DECF   55,F
+0249:  GOTO   221
+....................     
+....................    output_high(STB_PIN); 
+024A:  BSF    03.5
+024B:  BCF    05.1
+024C:  BCF    03.5
+024D:  BSF    05.1
+....................    output_high(DIG_EN); 
+024E:  BSF    03.5
+024F:  BCF    06.4
+0250:  BCF    03.5
+0251:  BSF    06.4
+....................        
+....................    chiff_cour++; 
+0252:  INCF   51,F
+....................    if (chiff_cour >= CHIFF_COUNT) {  
+0253:  MOVF   51,W
+0254:  SUBLW  03
+0255:  BTFSC  03.0
+0256:  GOTO   258
+....................       chiff_cour = 0; 
+0257:  CLRF   51
+....................    } 
+....................     
+....................    btm--; 
+0258:  MOVF   52,W
+0259:  BTFSC  03.2
+025A:  DECF   53,F
+025B:  DECFSZ 52,F
+....................    if (btm == 0) { 
+025C:  GOTO   26C
+025D:  MOVF   53,F
+025E:  BTFSS  03.2
+025F:  GOTO   26C
+....................       if (sz > 4) { 
+0260:  MOVF   2A,W
+0261:  SUBLW  04
+0262:  BTFSC  03.0
+0263:  GOTO   269
+....................          pa++; 
+0264:  INCF   2B,F
+....................          if (pa == sz) pa = 0; 
+0265:  MOVF   2A,W
+0266:  SUBWF  2B,W
+0267:  BTFSC  03.2
+0268:  CLRF   2B
+....................       } 
+....................       btm = BLTM; 
+0269:  CLRF   53
+026A:  MOVLW  F4
+026B:  MOVWF  52
+....................    } 
+.................... } 
+....................  
+026C:  BCF    0B.2
+026D:  BCF    0A.3
+026E:  GOTO   02C
+.................... #INT_TIMER1 
+.................... void timer1_isr() { 
+....................    if (!blink) return; 
+026F:  MOVF   4F,F
+0270:  BTFSC  03.2
+0271:  GOTO   2AB
+....................    if (sens) { 
+0272:  MOVF   50,F
+0273:  BTFSC  03.2
+0274:  GOTO   290
+....................       if (point == 0x0e) point = 0x1d; 
+0275:  MOVF   4E,W
+0276:  SUBLW  0E
+0277:  BTFSS  03.2
+0278:  GOTO   27C
+0279:  MOVLW  1D
+027A:  MOVWF  4E
+....................       else if (point == 0x1d) point = 0x3b; 
+027B:  GOTO   28F
+027C:  MOVF   4E,W
+027D:  SUBLW  1D
+027E:  BTFSS  03.2
+027F:  GOTO   283
+0280:  MOVLW  3B
+0281:  MOVWF  4E
+....................       else if (point == 0x3b) point = 0x77; 
+0282:  GOTO   28F
+0283:  MOVF   4E,W
+0284:  SUBLW  3B
+0285:  BTFSS  03.2
+0286:  GOTO   28A
+0287:  MOVLW  77
+0288:  MOVWF  4E
+....................       else if (point == 0x77) { 
+0289:  GOTO   28F
+028A:  MOVF   4E,W
+028B:  SUBLW  77
+028C:  BTFSS  03.2
+028D:  GOTO   28F
+....................          sens = FALSE; 
+028E:  CLRF   50
+....................       } 
+....................    } else { 
+028F:  GOTO   2AB
+....................       if (point == 0x77) point = 0x3b; 
+0290:  MOVF   4E,W
+0291:  SUBLW  77
+0292:  BTFSS  03.2
+0293:  GOTO   297
+0294:  MOVLW  3B
+0295:  MOVWF  4E
+....................       else if (point == 0x3b) point = 0x1d; 
+0296:  GOTO   2AB
+0297:  MOVF   4E,W
+0298:  SUBLW  3B
+0299:  BTFSS  03.2
+029A:  GOTO   29E
+029B:  MOVLW  1D
+029C:  MOVWF  4E
+....................       else if (point == 0x1d) point = 0x0e; 
+029D:  GOTO   2AB
+029E:  MOVF   4E,W
+029F:  SUBLW  1D
+02A0:  BTFSS  03.2
+02A1:  GOTO   2A5
+02A2:  MOVLW  0E
+02A3:  MOVWF  4E
+....................       else if (point == 0x0e) { 
+02A4:  GOTO   2AB
+02A5:  MOVF   4E,W
+02A6:  SUBLW  0E
+02A7:  BTFSS  03.2
+02A8:  GOTO   2AB
+....................          sens = TRUE; 
+02A9:  MOVLW  01
+02AA:  MOVWF  50
+....................       } 
+....................    } 
+.................... } 
+....................  
+02AB:  BCF    0C.0
+02AC:  BCF    0A.3
+02AD:  GOTO   02C
+.................... void main() 
+.................... {    
+02AE:  CLRF   04
+02AF:  BCF    03.7
+02B0:  MOVLW  1F
+02B1:  ANDWF  03,F
+02B2:  BSF    03.5
+02B3:  BSF    0E.3
+02B4:  MOVLW  19
+02B5:  MOVWF  19
+02B6:  MOVLW  A6
+02B7:  MOVWF  18
+02B8:  MOVLW  90
+02B9:  BCF    03.5
+02BA:  MOVWF  18
+02BB:  MOVLW  07
+02BC:  MOVWF  1F
+....................    setup_timer_0(RTCC_INTERNAL | RTCC_DIV_8); 
+02BD:  BSF    03.5
+02BE:  MOVF   01,W
+02BF:  ANDLW  C0
+02C0:  IORLW  02
+02C1:  MOVWF  01
+....................    setup_timer_1(T1_INTERNAL | T1_DIV_BY_4); 
+02C2:  MOVLW  A5
+02C3:  BCF    03.5
+02C4:  MOVWF  10
+....................    
+....................    enable_interrupts(INT_RDA); 
+02C5:  BSF    03.5
+02C6:  BSF    0C.5
+....................    enable_interrupts(INT_TIMER0); 
+02C7:  BCF    03.5
+02C8:  BSF    0B.5
+....................    enable_interrupts(INT_TIMER1); 
+02C9:  BSF    03.5
+02CA:  BSF    0C.0
+....................    enable_interrupts(GLOBAL); 
+02CB:  MOVLW  C0
+02CC:  BCF    03.5
+02CD:  IORWF  0B,F
+....................     
+....................    chiff_cour = 0; 
+02CE:  CLRF   51
+....................    sz = 10; 
+02CF:  MOVLW  0A
+02D0:  MOVWF  2A
+....................    pa = 0; 
+02D1:  CLRF   2B
+02D2:  CLRF   29
+02D3:  BTFSC  0B.7
+02D4:  BSF    29.7
+02D5:  BCF    0B.7
+....................        
+....................    data[0] = convertToSeg('B'); 
+02D6:  MOVLW  42
+02D7:  MOVWF  58
+02D8:  CALL   03F
+02D9:  BTFSC  29.7
+02DA:  BSF    0B.7
+02DB:  MOVF   78,W
+02DC:  MOVWF  2E
+02DD:  CLRF   29
+02DE:  BTFSC  0B.7
+02DF:  BSF    29.7
+02E0:  BCF    0B.7
+....................    data[1] = convertToSeg('E'); 
+02E1:  MOVLW  45
+02E2:  MOVWF  58
+02E3:  CALL   03F
+02E4:  BTFSC  29.7
+02E5:  BSF    0B.7
+02E6:  MOVF   78,W
+02E7:  MOVWF  2F
+02E8:  CLRF   29
+02E9:  BTFSC  0B.7
+02EA:  BSF    29.7
+02EB:  BCF    0B.7
+....................    data[2] = convertToSeg('S'); 
+02EC:  MOVLW  53
+02ED:  MOVWF  58
+02EE:  CALL   03F
+02EF:  BTFSC  29.7
+02F0:  BSF    0B.7
+02F1:  MOVF   78,W
+02F2:  MOVWF  30
+02F3:  CLRF   29
+02F4:  BTFSC  0B.7
+02F5:  BSF    29.7
+02F6:  BCF    0B.7
+....................    data[3] = convertToSeg('M'); 
+02F7:  MOVLW  4D
+02F8:  MOVWF  58
+02F9:  CALL   03F
+02FA:  BTFSC  29.7
+02FB:  BSF    0B.7
+02FC:  MOVF   78,W
+02FD:  MOVWF  31
+02FE:  CLRF   29
+02FF:  BTFSC  0B.7
+0300:  BSF    29.7
+0301:  BCF    0B.7
+....................    data[4] = convertToSeg('E'); 
+0302:  MOVLW  45
+0303:  MOVWF  58
+0304:  CALL   03F
+0305:  BTFSC  29.7
+0306:  BSF    0B.7
+0307:  MOVF   78,W
+0308:  MOVWF  32
+0309:  CLRF   29
+030A:  BTFSC  0B.7
+030B:  BSF    29.7
+030C:  BCF    0B.7
+....................    data[5] = convertToSeg('L'); 
+030D:  MOVLW  4C
+030E:  MOVWF  58
+030F:  CALL   03F
+0310:  BTFSC  29.7
+0311:  BSF    0B.7
+0312:  MOVF   78,W
+0313:  MOVWF  33
+0314:  CLRF   29
+0315:  BTFSC  0B.7
+0316:  BSF    29.7
+0317:  BCF    0B.7
+....................    data[6] = convertToSeg('L'); 
+0318:  MOVLW  4C
+0319:  MOVWF  58
+031A:  CALL   03F
+031B:  BTFSC  29.7
+031C:  BSF    0B.7
+031D:  MOVF   78,W
+031E:  MOVWF  34
+031F:  CLRF   29
+0320:  BTFSC  0B.7
+0321:  BSF    29.7
+0322:  BCF    0B.7
+....................    data[7] = convertToSeg('E'); 
+0323:  MOVLW  45
+0324:  MOVWF  58
+0325:  CALL   03F
+0326:  BTFSC  29.7
+0327:  BSF    0B.7
+0328:  MOVF   78,W
+0329:  MOVWF  35
+032A:  CLRF   29
+032B:  BTFSC  0B.7
+032C:  BSF    29.7
+032D:  BCF    0B.7
+....................    data[8] = convertToSeg('H'); 
+032E:  MOVLW  48
+032F:  MOVWF  58
+0330:  CALL   03F
+0331:  BTFSC  29.7
+0332:  BSF    0B.7
+0333:  MOVF   78,W
+0334:  MOVWF  36
+0335:  CLRF   29
+0336:  BTFSC  0B.7
+0337:  BSF    29.7
+0338:  BCF    0B.7
+....................    data[9] = convertToSeg(' '); 
+0339:  MOVLW  20
+033A:  MOVWF  58
+033B:  CALL   03F
+033C:  BTFSC  29.7
+033D:  BSF    0B.7
+033E:  MOVF   78,W
+033F:  MOVWF  37
+....................     
+....................    point = 0x0E; 
+0340:  MOVLW  0E
+0341:  MOVWF  4E
+....................    blink = TRUE; 
+0342:  MOVLW  01
+0343:  MOVWF  4F
+....................    btm = BLTM; 
+0344:  CLRF   53
+0345:  MOVLW  F4
+0346:  MOVWF  52
+....................    sens = TRUE; 
+0347:  MOVLW  01
+0348:  MOVWF  50
+....................     
+....................    while (TRUE) { 
+....................        
+....................    } 
+0349:  GOTO   349
+.................... } 
+....................  
+....................  
+....................  
+034A:  SLEEP
+
+Configuration Fuses:
+   Word  1: 3F18   NOWDT NOPUT NOPROTECT NOBROWNOUT NOMCLR NOLVP INTRC_IO NOCPD

@@ -1,0 +1,50 @@
+Liste des classes utilisées
+
+EventEditDialog.py
+  EventEditDialog
+
+Events.py
+  Date
+  Time
+  Event
+  EventsCollection
+  
+EventsDialog.py
+  EventsDialog
+  
+Prayers.py
+  PrayersTimes
+  PrayersUtility
+  YearPrayersUtility
+  
+PrayersEditDialog.py
+  PrayersEditDialog
+  
+PrayersTimesDialog.py
+  PrayersTimesDialog
+  
+TownsSelectDialog.py
+  TownsSelectDialog
+  
+VilleChoiceDialog.py
+  VilleChoiceDialog
+  
+VilleEditDialog.py
+  VilleEditDialog
+  
+Villes.py
+  GeoPosition
+  Ville
+  SelectedVillesCollection
+  VillesUtility
+
+VillesDialog.py
+  VillesDialog
+  
+abstracts.py
+  Serializable
+  Browsable
+  Saveable
+  ItemsCollection
+  QueryUtility
+  

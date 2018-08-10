@@ -1,0 +1,32 @@
+[PROJECT]
+Target=main.hex
+Processor_Text=PIC16F628A
+CCSVerions=5.015
+Compiler=PCM
+CCSVersion=5.015
+[Target Data]
+FileList=main.c
+[Directories]
+Include=C:\Program Files (x86)\PICC\devices\;C:\Program Files (x86)\PICC\drivers\;C:\Program Files (x86)\PICC\drivers\C:\Program Files (x86)\PICC\devices\
+[D:\Importation\PFE-Maitrise\Montages\Horloge\main]
+Type=4
+[mru-list]
+1=main.c
+[Documentation]
+1=D:\Importation\PFE-Maitrise\Montages\Horloge\main Notes.txt
+1T=main Notes.txt
+1E=
+1W=0
+Count=1
+[Opened Files]
+1=main.c
+2=main.h
+3=ds1307.h
+4=ds1307.c
+5=main.lst
+6=
+[main.c]
+Type=4
+[Units]
+Count=1
+1=main (main)

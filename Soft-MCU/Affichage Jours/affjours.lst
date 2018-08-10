@@ -1,0 +1,295 @@
+CCS PCM C Compiler, Version 4.114, 93495243               06-août-11 18:32
+
+               Filename: D:\pfe\Montages Electroniques\affichage jours\affjours.lst
+
+               ROM used: 215 words (10%)
+                         Largest free fragment is 1833
+               RAM used: 16 (7%) at main() level
+                         18 (8%) worst case
+               Stack:    3 worst case (1 in main + 2 for interrupts)
+
+*
+0000:  MOVLW  00
+0001:  MOVWF  0A
+0002:  GOTO   089
+0003:  NOP
+0004:  MOVWF  7F
+0005:  SWAPF  03,W
+0006:  CLRF   03
+0007:  MOVWF  21
+0008:  MOVF   7F,W
+0009:  MOVWF  20
+000A:  MOVF   0A,W
+000B:  MOVWF  27
+000C:  CLRF   0A
+000D:  SWAPF  20,F
+000E:  MOVF   04,W
+000F:  MOVWF  22
+0010:  MOVF   77,W
+0011:  MOVWF  23
+0012:  MOVF   78,W
+0013:  MOVWF  24
+0014:  MOVF   79,W
+0015:  MOVWF  25
+0016:  MOVF   7A,W
+0017:  MOVWF  26
+0018:  BCF    03.7
+0019:  BCF    03.5
+001A:  MOVLW  8C
+001B:  MOVWF  04
+001C:  BTFSS  00.5
+001D:  GOTO   020
+001E:  BTFSC  0C.5
+001F:  GOTO   06A
+0020:  MOVF   22,W
+0021:  MOVWF  04
+0022:  MOVF   23,W
+0023:  MOVWF  77
+0024:  MOVF   24,W
+0025:  MOVWF  78
+0026:  MOVF   25,W
+0027:  MOVWF  79
+0028:  MOVF   26,W
+0029:  MOVWF  7A
+002A:  MOVF   27,W
+002B:  MOVWF  0A
+002C:  SWAPF  21,W
+002D:  MOVWF  03
+002E:  SWAPF  7F,F
+002F:  SWAPF  7F,W
+0030:  RETFIE
+.................... #include <affjours.h> 
+.................... #include <16F628A.h> 
+.................... //////// Standard Header file for the PIC16F628A device //////////////// 
+.................... #device PIC16F628A 
+.................... #list 
+....................  
+....................  
+.................... #FUSES NOWDT                    //No Watch Dog Timer 
+.................... #FUSES NOPUT                    //No Power Up Timer 
+.................... #FUSES INTRC_IO                 //Internal RC Osc, no CLKOUT 
+.................... #FUSES NOMCLR                   //Master Clear pin used for I/O 
+.................... #FUSES NOBROWNOUT               //No brownout reset 
+.................... #FUSES NOLVP                    //No low voltage prgming, B3(PIC16) or B5(PIC18) used for I/O 
+.................... #FUSES NOCPD                    //No EE protection 
+.................... #FUSES NOPROTECT                //Code not protected from reading 
+....................  
+.................... #define RX        PIN_B1 
+....................  
+.................... #use delay(clock=4000000) 
+*
+0074:  MOVLW  2B
+0075:  MOVWF  04
+0076:  BCF    03.7
+0077:  MOVF   00,W
+0078:  BTFSC  03.2
+0079:  GOTO   088
+007A:  MOVLW  01
+007B:  MOVWF  78
+007C:  CLRF   77
+007D:  DECFSZ 77,F
+007E:  GOTO   07D
+007F:  DECFSZ 78,F
+0080:  GOTO   07C
+0081:  MOVLW  4A
+0082:  MOVWF  77
+0083:  DECFSZ 77,F
+0084:  GOTO   083
+0085:  GOTO   086
+0086:  DECFSZ 00,F
+0087:  GOTO   07A
+0088:  RETURN
+.................... #use rs232(baud=9600,parity=N,xmit=PIN_B2,rcv=RX,bits=8) 
+....................  
+....................  
+....................  
+.................... int c; 
+....................  
+.................... void show_val(int c) { 
+....................    output_bit(PIN_A2, !bit_test(c, 0)); 
+*
+0031:  BTFSS  2C.0
+0032:  GOTO   035
+0033:  BCF    05.2
+0034:  GOTO   036
+0035:  BSF    05.2
+0036:  BSF    03.5
+0037:  BCF    05.2
+....................    output_bit(PIN_A7, !bit_test(c, 1)); 
+0038:  BCF    03.5
+0039:  BTFSS  2C.1
+003A:  GOTO   03D
+003B:  BCF    05.7
+003C:  GOTO   03E
+003D:  BSF    05.7
+003E:  BSF    03.5
+003F:  BCF    05.7
+....................    output_bit(PIN_A6, !bit_test(c, 2)); 
+0040:  BCF    03.5
+0041:  BTFSS  2C.2
+0042:  GOTO   045
+0043:  BCF    05.6
+0044:  GOTO   046
+0045:  BSF    05.6
+0046:  BSF    03.5
+0047:  BCF    05.6
+....................    output_bit(PIN_B7, !bit_test(c, 3)); 
+0048:  BCF    03.5
+0049:  BTFSS  2C.3
+004A:  GOTO   04D
+004B:  BCF    06.7
+004C:  GOTO   04E
+004D:  BSF    06.7
+004E:  BSF    03.5
+004F:  BCF    06.7
+....................    output_bit(PIN_B6, !bit_test(c, 4)); 
+0050:  BCF    03.5
+0051:  BTFSS  2C.4
+0052:  GOTO   055
+0053:  BCF    06.6
+0054:  GOTO   056
+0055:  BSF    06.6
+0056:  BSF    03.5
+0057:  BCF    06.6
+....................    output_bit(PIN_B5, !bit_test(c, 5)); 
+0058:  BCF    03.5
+0059:  BTFSS  2C.5
+005A:  GOTO   05D
+005B:  BCF    06.5
+005C:  GOTO   05E
+005D:  BSF    06.5
+005E:  BSF    03.5
+005F:  BCF    06.5
+....................    output_bit(PIN_B4, !bit_test(c, 6)); 
+0060:  BCF    03.5
+0061:  BTFSS  2C.6
+0062:  GOTO   065
+0063:  BCF    06.4
+0064:  GOTO   066
+0065:  BSF    06.4
+0066:  BSF    03.5
+0067:  BCF    06.4
+.................... } 
+0068:  BCF    03.5
+0069:  RETURN
+....................  
+.................... #INT_RDA 
+.................... void  RDA_isr(void)  
+.................... { 
+....................    c = getch(); 
+006A:  BTFSS  0C.5
+006B:  GOTO   06A
+006C:  MOVF   1A,W
+006D:  MOVWF  29
+....................    show_val(c);    
+006E:  MOVF   29,W
+006F:  MOVWF  2C
+0070:  CALL   031
+.................... } 
+....................  
+0071:  BCF    0C.5
+0072:  BCF    0A.3
+0073:  GOTO   020
+.................... void main() 
+.................... { 
+*
+0089:  CLRF   04
+008A:  BCF    03.7
+008B:  MOVLW  1F
+008C:  ANDWF  03,F
+008D:  BSF    03.5
+008E:  BSF    0E.3
+008F:  MOVLW  19
+0090:  MOVWF  19
+0091:  MOVLW  A6
+0092:  MOVWF  18
+0093:  MOVLW  90
+0094:  BCF    03.5
+0095:  MOVWF  18
+0096:  MOVLW  07
+0097:  MOVWF  1F
+....................    for (c = 1 ; c < 128 ; c = c << 1) { 
+0098:  MOVLW  01
+0099:  MOVWF  29
+009A:  MOVF   29,W
+009B:  SUBLW  7F
+009C:  BTFSS  03.0
+009D:  GOTO   0AD
+009E:  CLRF   28
+009F:  BTFSC  0B.7
+00A0:  BSF    28.7
+00A1:  BCF    0B.7
+....................       show_val(c); 
+00A2:  MOVF   29,W
+00A3:  MOVWF  2C
+00A4:  CALL   031
+00A5:  BTFSC  28.7
+00A6:  BSF    0B.7
+....................       delay_ms(100); 
+00A7:  MOVLW  64
+00A8:  MOVWF  2B
+00A9:  CALL   074
+....................    } 
+00AA:  BCF    03.0
+00AB:  RLF    29,F
+00AC:  GOTO   09A
+....................      
+....................    for (c = 128 ; c > 0 ; c = c >> 1) { 
+00AD:  MOVLW  80
+00AE:  MOVWF  29
+00AF:  MOVF   29,F
+00B0:  BTFSC  03.2
+00B1:  GOTO   0C1
+00B2:  CLRF   28
+00B3:  BTFSC  0B.7
+00B4:  BSF    28.7
+00B5:  BCF    0B.7
+....................       show_val(c); 
+00B6:  MOVF   29,W
+00B7:  MOVWF  2C
+00B8:  CALL   031
+00B9:  BTFSC  28.7
+00BA:  BSF    0B.7
+....................       delay_ms(100); 
+00BB:  MOVLW  64
+00BC:  MOVWF  2B
+00BD:  CALL   074
+....................    } 
+00BE:  BCF    03.0
+00BF:  RRF    29,F
+00C0:  GOTO   0AF
+....................      
+....................    delay_ms(1300); 
+00C1:  MOVLW  0A
+00C2:  MOVWF  2A
+00C3:  MOVLW  82
+00C4:  MOVWF  2B
+00C5:  CALL   074
+00C6:  DECFSZ 2A,F
+00C7:  GOTO   0C3
+00C8:  CLRF   28
+00C9:  BTFSC  0B.7
+00CA:  BSF    28.7
+00CB:  BCF    0B.7
+....................     
+....................    show_val(0); 
+00CC:  CLRF   2C
+00CD:  CALL   031
+00CE:  BTFSC  28.7
+00CF:  BSF    0B.7
+....................     
+....................    enable_interrupts(INT_RDA); 
+00D0:  BSF    03.5
+00D1:  BSF    0C.5
+....................    enable_interrupts(GLOBAL); 
+00D2:  MOVLW  C0
+00D3:  BCF    03.5
+00D4:  IORWF  0B,F
+....................     
+....................    while (1) {} 
+00D5:  GOTO   0D5
+.................... } 
+00D6:  SLEEP
+
+Configuration Fuses:
+   Word  1: 3F18   NOWDT NOPUT INTRC_IO NOMCLR NOBROWNOUT NOLVP NOCPD NOPROTECT

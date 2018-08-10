@@ -1,0 +1,71 @@
+004-005 @READ_PROGRAM_MEMORY8.P1
+015     CCP_1_LOW
+015     CCP_1
+016     CCP_1_HIGH
+01F.6   C1OUT
+01F.7   C2OUT
+020     @INTERRUPT_AREA
+021     @INTERRUPT_AREA
+022     @INTERRUPT_AREA
+023     @INTERRUPT_AREA
+024     @INTERRUPT_AREA
+025     @INTERRUPT_AREA
+026     @INTERRUPT_AREA
+027     @INTERRUPT_AREA
+028-02B val
+02C-02F mask
+030-031 data
+032     cpt
+033     tche
+034-035 gettouche.data
+034     getirdata.i
+035     getirdata.j
+036-037 gettouche.p
+036     getirdata.@SCRATCH1
+077     @SCRATCH
+078     @SCRATCH
+078     _RETURN_
+079     @SCRATCH
+07A     @SCRATCH
+09B-09C @READ_PROGRAM_MEMORY8.P1
+
+ROM Allocation:
+00C5  gettouche
+003A  getirdata
+002F  ext_isr
+0186  MAIN
+0186  @cinit
+
+
+User Memory space: 
+
+User Memory space: 
+
+Project Directory:
+    D:\pfe\Montages Electroniques\IR\
+
+Project Files:
+    infrared.c
+    infrared.h
+    ..\..\..\Program Files\PICC\devices\16F628A.h
+
+Units:
+    D:\pfe\Montages Electroniques\IR\infrared (main)
+
+Compiler Settings:
+    Processor:      PIC16F628A
+    Pointer Size:   16
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+
+Output Files:
+    Errors:      infrared.err
+    Ext Symbols: infrared.esym
+    INHX8:       infrared.hex
+    Symbols:     infrared.sym
+    List:        infrared.lst
+    Debug/COFF:  infrared.cof
+    Project:     infrared.PJT
+    Call Tree:   infrared.tre
+    Statistics:  infrared.sta

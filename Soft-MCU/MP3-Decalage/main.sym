@@ -1,0 +1,68 @@
+004-005 @READ_PROGRAM_MEMORY8.P1
+004-005 @MEMSET.P2
+015     CCP_1_LOW
+015     CCP_1
+016     CCP_1_HIGH
+01F.6   C1OUT
+01F.7   C2OUT
+020     seven
+021     chiff
+022     mask
+023     i
+024-028 st1
+029-02D st2
+02E-032 last_state
+033-037 cmp_state_eq.state
+033     mp3_get_digit.sev
+033     @MEMSET.P1
+034     @MEMSET.P1
+038-03C cmp_state_eq.last_state
+077     @SCRATCH
+078     @SCRATCH
+078     _RETURN_
+079     @SCRATCH
+07A     @SCRATCH
+09B-09C @READ_PROGRAM_MEMORY8.P1
+
+ROM Allocation:
+000D  mp3_inst_state
+0080  mp3_get_digit
+014F  cmp_state_eq
+0107  mp3_state
+019B  MAIN
+0004  @MEMSET
+019B  @cinit
+
+
+User Memory space: 
+
+User Memory space: 
+
+Project Directory:
+    D:\pfe\Montages Electroniques\decalage\
+
+Project Files:
+    main.c
+    main.h
+    ..\..\..\Program Files\PICC\devices\16F628A.h
+
+Units:
+    D:\pfe\Montages Electroniques\decalage\main (main)
+
+Compiler Settings:
+    Processor:      PIC16F628A
+    Pointer Size:   16
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+
+Output Files:
+    Errors:      main.err
+    Ext Symbols: main.esym
+    INHX8:       main.hex
+    Symbols:     main.sym
+    List:        main.lst
+    Debug/COFF:  main.cof
+    Project:     main.PJT
+    Call Tree:   main.tre
+    Statistics:  main.sta

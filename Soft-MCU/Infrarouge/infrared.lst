@@ -1,0 +1,586 @@
+CCS PCM C Compiler, Version 4.114, 93495243               25-févr.-12 20:39
+
+               Filename: D:\pfe\Montages Electroniques\IR\infrared.lst
+
+               ROM used: 432 words (21%)
+                         Largest free fragment is 1616
+               RAM used: 25 (11%) at main() level
+                         29 (13%) worst case
+               Stack:    2 worst case (1 in main + 1 for interrupts)
+
+*
+0000:  MOVLW  01
+0001:  MOVWF  0A
+0002:  GOTO   186
+0003:  NOP
+0004:  MOVWF  7F
+0005:  SWAPF  03,W
+0006:  CLRF   03
+0007:  MOVWF  21
+0008:  MOVF   7F,W
+0009:  MOVWF  20
+000A:  MOVF   0A,W
+000B:  MOVWF  27
+000C:  CLRF   0A
+000D:  SWAPF  20,F
+000E:  MOVF   04,W
+000F:  MOVWF  22
+0010:  MOVF   77,W
+0011:  MOVWF  23
+0012:  MOVF   78,W
+0013:  MOVWF  24
+0014:  MOVF   79,W
+0015:  MOVWF  25
+0016:  MOVF   7A,W
+0017:  MOVWF  26
+0018:  BCF    03.7
+0019:  BCF    03.5
+001A:  BTFSS  0B.4
+001B:  GOTO   01E
+001C:  BTFSC  0B.1
+001D:  GOTO   02F
+001E:  MOVF   22,W
+001F:  MOVWF  04
+0020:  MOVF   23,W
+0021:  MOVWF  77
+0022:  MOVF   24,W
+0023:  MOVWF  78
+0024:  MOVF   25,W
+0025:  MOVWF  79
+0026:  MOVF   26,W
+0027:  MOVWF  7A
+0028:  MOVF   27,W
+0029:  MOVWF  0A
+002A:  SWAPF  21,W
+002B:  MOVWF  03
+002C:  SWAPF  7F,F
+002D:  SWAPF  7F,W
+002E:  RETFIE
+.................... #include <infrared.h> 
+.................... #include <16F628A.h> 
+.................... //////// Standard Header file for the PIC16F628A device //////////////// 
+.................... #device PIC16F628A 
+.................... #list 
+....................  
+....................  
+.................... #FUSES NOWDT                    //No Watch Dog Timer 
+.................... #FUSES NOPUT                    //No Power Up Timer 
+.................... #FUSES INTRC_IO                 //Internal RC Osc, no CLKOUT 
+.................... #FUSES NOMCLR                   //Master Clear pin used for I/O 
+.................... #FUSES NOBROWNOUT               //No brownout reset 
+.................... #FUSES NOLVP                    //No low voltage prgming, B3(PIC16) or B5(PIC18) used for I/O 
+.................... #FUSES NOCPD                    //No EE protection 
+.................... #FUSES NOPROTECT                //Code not protected from reading 
+....................  
+.................... #define IR_SIGNAL       PIN_A6 
+....................  
+.................... #define IR_RQ_SEND      PIN_B0 
+.................... #define IR_DATA_READY   PIN_B3 
+....................  
+.................... #use delay(clock=4000000) 
+.................... #use rs232(baud=9600,xmit=PIN_B2,rcv=PIN_B1,bits=8) 
+....................  
+....................  
+....................  
+.................... int32 val, mask; 
+.................... int16 data; 
+.................... int cpt; 
+.................... char tche; 
+....................  
+.................... int gettouche(int16 data) { 
+....................    int *p; 
+....................    p = &data; 
+*
+00C5:  CLRF   37
+00C6:  MOVLW  34
+00C7:  MOVWF  36
+....................  
+....................    switch(p[0]) { 
+00C8:  MOVF   36,W
+00C9:  MOVWF  04
+00CA:  BCF    03.7
+00CB:  BTFSC  37.0
+00CC:  BSF    03.7
+00CD:  MOVF   00,W
+00CE:  XORLW  94
+00CF:  BTFSC  03.2
+00D0:  GOTO   129
+00D1:  XORLW  04
+00D2:  BTFSC  03.2
+00D3:  GOTO   12C
+00D4:  XORLW  1C
+00D5:  BTFSC  03.2
+00D6:  GOTO   12F
+00D7:  XORLW  04
+00D8:  BTFSC  03.2
+00D9:  GOTO   132
+00DA:  XORLW  0C
+00DB:  BTFSC  03.2
+00DC:  GOTO   135
+00DD:  XORLW  3C
+00DE:  BTFSC  03.2
+00DF:  GOTO   138
+00E0:  XORLW  0C
+00E1:  BTFSC  03.2
+00E2:  GOTO   13B
+00E3:  XORLW  04
+00E4:  BTFSC  03.2
+00E5:  GOTO   13E
+00E6:  XORLW  1C
+00E7:  BTFSC  03.2
+00E8:  GOTO   141
+00E9:  XORLW  04
+00EA:  BTFSC  03.2
+00EB:  GOTO   144
+00EC:  XORLW  0C
+00ED:  BTFSC  03.2
+00EE:  GOTO   147
+00EF:  XORLW  04
+00F0:  BTFSC  03.2
+00F1:  GOTO   14A
+00F2:  XORLW  3C
+00F3:  BTFSC  03.2
+00F4:  GOTO   14D
+00F5:  XORLW  04
+00F6:  BTFSC  03.2
+00F7:  GOTO   150
+00F8:  XORLW  4C
+00F9:  BTFSC  03.2
+00FA:  GOTO   153
+00FB:  XORLW  68
+00FC:  BTFSC  03.2
+00FD:  GOTO   156
+00FE:  XORLW  6C
+00FF:  BTFSC  03.2
+0100:  GOTO   159
+0101:  XORLW  2C
+0102:  BTFSC  03.2
+0103:  GOTO   15C
+0104:  XORLW  08
+0105:  BTFSC  03.2
+0106:  GOTO   15F
+0107:  XORLW  04
+0108:  BTFSC  03.2
+0109:  GOTO   162
+010A:  XORLW  08
+010B:  BTFSC  03.2
+010C:  GOTO   165
+010D:  XORLW  78
+010E:  BTFSC  03.2
+010F:  GOTO   168
+0110:  XORLW  4C
+0111:  BTFSC  03.2
+0112:  GOTO   16B
+0113:  XORLW  04
+0114:  BTFSC  03.2
+0115:  GOTO   16E
+0116:  XORLW  0C
+0117:  BTFSC  03.2
+0118:  GOTO   171
+0119:  XORLW  04
+011A:  BTFSC  03.2
+011B:  GOTO   174
+011C:  XORLW  2C
+011D:  BTFSC  03.2
+011E:  GOTO   177
+011F:  XORLW  04
+0120:  BTFSC  03.2
+0121:  GOTO   17A
+0122:  XORLW  0C
+0123:  BTFSC  03.2
+0124:  GOTO   17D
+0125:  XORLW  04
+0126:  BTFSC  03.2
+0127:  GOTO   180
+0128:  GOTO   183
+....................       case 0x94: return 'A'; 
+0129:  MOVLW  41
+012A:  MOVWF  78
+012B:  GOTO   185
+....................       case 0x90: return 'B'; 
+012C:  MOVLW  42
+012D:  MOVWF  78
+012E:  GOTO   185
+....................       case 0x8C: return 'C'; 
+012F:  MOVLW  43
+0130:  MOVWF  78
+0131:  GOTO   185
+....................       case 0x88: return 'D'; 
+0132:  MOVLW  44
+0133:  MOVWF  78
+0134:  GOTO   185
+....................       case 0x84: return 'E'; 
+0135:  MOVLW  45
+0136:  MOVWF  78
+0137:  GOTO   185
+....................        
+....................       case 0xB8: return '1'; 
+0138:  MOVLW  31
+0139:  MOVWF  78
+013A:  GOTO   185
+....................       case 0xB4: return '2'; 
+013B:  MOVLW  32
+013C:  MOVWF  78
+013D:  GOTO   185
+....................       case 0xB0: return '3'; 
+013E:  MOVLW  33
+013F:  MOVWF  78
+0140:  GOTO   185
+....................       case 0xAC: return '4'; 
+0141:  MOVLW  34
+0142:  MOVWF  78
+0143:  GOTO   185
+....................       case 0xA8: return '5'; 
+0144:  MOVLW  35
+0145:  MOVWF  78
+0146:  GOTO   185
+....................       case 0xA4: return '6'; 
+0147:  MOVLW  36
+0148:  MOVWF  78
+0149:  GOTO   185
+....................       case 0xA0: return '7'; 
+014A:  MOVLW  37
+014B:  MOVWF  78
+014C:  GOTO   185
+....................       case 0x9C: return '8'; 
+014D:  MOVLW  38
+014E:  MOVWF  78
+014F:  GOTO   185
+....................       case 0x98: return '9'; 
+0150:  MOVLW  39
+0151:  MOVWF  78
+0152:  GOTO   185
+....................       case 0xD4: return 'F'; 
+0153:  MOVLW  46
+0154:  MOVWF  78
+0155:  GOTO   185
+....................       case 0xBC: return '0'; 
+0156:  MOVLW  30
+0157:  MOVWF  78
+0158:  GOTO   185
+....................       case 0xD0: return 'G'; 
+0159:  MOVLW  47
+015A:  MOVWF  78
+015B:  GOTO   185
+....................       case 0xFC: return 'H'; 
+015C:  MOVLW  48
+015D:  MOVWF  78
+015E:  GOTO   185
+....................       case 0xF4: return 'I'; 
+015F:  MOVLW  49
+0160:  MOVWF  78
+0161:  GOTO   185
+....................       case 0xF0: return 'J'; 
+0162:  MOVLW  4A
+0163:  MOVWF  78
+0164:  GOTO   185
+....................       case 0xF8: return 'K'; 
+0165:  MOVLW  4B
+0166:  MOVWF  78
+0167:  GOTO   185
+....................       case 0x80: return 'L'; 
+0168:  MOVLW  4C
+0169:  MOVWF  78
+016A:  GOTO   185
+....................       case 0xCC: return 'M'; 
+016B:  MOVLW  4D
+016C:  MOVWF  78
+016D:  GOTO   185
+....................       case 0xC8: return 'N'; 
+016E:  MOVLW  4E
+016F:  MOVWF  78
+0170:  GOTO   185
+....................       case 0xC4: return 'O'; 
+0171:  MOVLW  4F
+0172:  MOVWF  78
+0173:  GOTO   185
+....................       case 0xC0: return 'P'; 
+0174:  MOVLW  50
+0175:  MOVWF  78
+0176:  GOTO   185
+....................       case 0xEC: return 'Q'; 
+0177:  MOVLW  51
+0178:  MOVWF  78
+0179:  GOTO   185
+....................       case 0xE8: return 'R'; 
+017A:  MOVLW  52
+017B:  MOVWF  78
+017C:  GOTO   185
+....................       case 0xE4: return 'S'; 
+017D:  MOVLW  53
+017E:  MOVWF  78
+017F:  GOTO   185
+....................       case 0xE0: return 'T'; 
+0180:  MOVLW  54
+0181:  MOVWF  78
+0182:  GOTO   185
+....................    } 
+....................     
+....................    return 0xFF; 
+0183:  MOVLW  FF
+0184:  MOVWF  78
+.................... } 
+0185:  GOTO   1A5 (RETURN)
+....................  
+.................... void getirdata() { 
+....................    int i, j; 
+....................     
+....................    // Attend le départ du signal 
+....................    while (input(IR_SIGNAL)); 
+*
+003A:  BSF    03.5
+003B:  BSF    05.6
+003C:  BCF    03.5
+003D:  BTFSC  05.6
+003E:  GOTO   03A
+....................     
+....................    val = 0; 
+003F:  CLRF   2B
+0040:  CLRF   2A
+0041:  CLRF   29
+0042:  CLRF   28
+....................    mask = 1; 
+0043:  CLRF   2F
+0044:  CLRF   2E
+0045:  CLRF   2D
+0046:  MOVLW  01
+0047:  MOVWF  2C
+....................    j = 0; 
+0048:  CLRF   35
+....................    do { 
+....................       set_timer0(0); 
+0049:  CLRF   01
+....................       while (!input(IR_SIGNAL)) ; 
+004A:  BSF    03.5
+004B:  BSF    05.6
+004C:  BCF    03.5
+004D:  BTFSS  05.6
+004E:  GOTO   04A
+....................       cpt = get_timer0(); 
+004F:  MOVF   01,W
+0050:  MOVWF  32
+....................       set_timer0(0); 
+0051:  CLRF   01
+....................       mask = mask << 1; 
+0052:  BCF    03.0
+0053:  RLF    2C,F
+0054:  RLF    2D,F
+0055:  RLF    2E,F
+0056:  RLF    2F,F
+....................       if (cpt > 0x4f) { 
+0057:  MOVF   32,W
+0058:  SUBLW  4F
+0059:  BTFSC  03.0
+005A:  GOTO   060
+....................          mask = mask << 1; 
+005B:  BCF    03.0
+005C:  RLF    2C,F
+005D:  RLF    2D,F
+005E:  RLF    2E,F
+005F:  RLF    2F,F
+....................       } 
+....................        
+....................       while (input(IR_SIGNAL) && get_timer0() < 200) ; 
+0060:  BSF    03.5
+0061:  BSF    05.6
+0062:  BCF    03.5
+0063:  BTFSS  05.6
+0064:  GOTO   069
+0065:  MOVF   01,W
+0066:  SUBLW  C7
+0067:  BTFSC  03.0
+0068:  GOTO   060
+....................       cpt = get_timer0(); 
+0069:  MOVF   01,W
+006A:  MOVWF  32
+....................       set_timer0(0); 
+006B:  CLRF   01
+....................       if (cpt == 200) break; 
+006C:  MOVF   32,W
+006D:  SUBLW  C8
+006E:  BTFSC  03.2
+006F:  GOTO   092
+....................       val = val | mask; 
+0070:  MOVF   2C,W
+0071:  IORWF  28,F
+0072:  MOVF   2D,W
+0073:  IORWF  29,F
+0074:  MOVF   2E,W
+0075:  IORWF  2A,F
+0076:  MOVF   2F,W
+0077:  IORWF  2B,F
+....................       mask = mask << 1; 
+0078:  BCF    03.0
+0079:  RLF    2C,F
+007A:  RLF    2D,F
+007B:  RLF    2E,F
+007C:  RLF    2F,F
+....................       if (cpt > 0x4f) { 
+007D:  MOVF   32,W
+007E:  SUBLW  4F
+007F:  BTFSC  03.0
+0080:  GOTO   08E
+....................          val = val | mask; 
+0081:  MOVF   2C,W
+0082:  IORWF  28,F
+0083:  MOVF   2D,W
+0084:  IORWF  29,F
+0085:  MOVF   2E,W
+0086:  IORWF  2A,F
+0087:  MOVF   2F,W
+0088:  IORWF  2B,F
+....................          mask = mask << 1; 
+0089:  BCF    03.0
+008A:  RLF    2C,F
+008B:  RLF    2D,F
+008C:  RLF    2E,F
+008D:  RLF    2F,F
+....................       } 
+....................    } while (cpt != 200); 
+008E:  MOVF   32,W
+008F:  SUBLW  C8
+0090:  BTFSS  03.2
+0091:  GOTO   049
+....................     
+....................    // analyse des données 
+....................    data = 0; 
+0092:  CLRF   31
+0093:  CLRF   30
+....................    val = val >> 1; 
+0094:  BCF    03.0
+0095:  RRF    2B,F
+0096:  RRF    2A,F
+0097:  RRF    29,F
+0098:  RRF    28,F
+....................    for (i = 1 ; mask > 0 ; i+=2) { 
+0099:  MOVLW  01
+009A:  MOVWF  34
+009B:  MOVF   2C,F
+009C:  BTFSS  03.2
+009D:  GOTO   0A7
+009E:  MOVF   2D,F
+009F:  BTFSS  03.2
+00A0:  GOTO   0A7
+00A1:  MOVF   2E,F
+00A2:  BTFSS  03.2
+00A3:  GOTO   0A7
+00A4:  MOVF   2F,F
+00A5:  BTFSC  03.2
+00A6:  GOTO   0C4
+....................       data = (data << 1); 
+00A7:  BCF    03.0
+00A8:  RLF    30,F
+00A9:  RLF    31,F
+....................       if (!bit_test(val, 0) && bit_test(val, 1)) data |= 1; 
+00AA:  BTFSC  28.0
+00AB:  GOTO   0AE
+00AC:  BTFSC  28.1
+00AD:  BSF    30.0
+....................       mask = mask >> 2; 
+00AE:  RRF    2F,F
+00AF:  RRF    2E,F
+00B0:  RRF    2D,F
+00B1:  RRF    2C,F
+00B2:  RRF    2F,F
+00B3:  RRF    2E,F
+00B4:  RRF    2D,F
+00B5:  RRF    2C,F
+00B6:  MOVLW  3F
+00B7:  ANDWF  2F,F
+....................       val = val >> 2; 
+00B8:  RRF    2B,F
+00B9:  RRF    2A,F
+00BA:  RRF    29,F
+00BB:  RRF    28,F
+00BC:  RRF    2B,F
+00BD:  RRF    2A,F
+00BE:  RRF    29,F
+00BF:  RRF    28,F
+00C0:  ANDWF  2B,F
+....................    } 
+00C1:  MOVLW  02
+00C2:  ADDWF  34,F
+00C3:  GOTO   09B
+.................... } 
+00C4:  GOTO   1A0 (RETURN)
+....................  
+.................... #INT_EXT 
+.................... void ext_isr() { 
+....................    output_low(IR_DATA_READY); 
+*
+002F:  BSF    03.5
+0030:  BCF    06.3
+0031:  BCF    03.5
+0032:  BCF    06.3
+....................    putc(tche); 
+0033:  MOVF   33,W
+0034:  BTFSS  0C.4
+0035:  GOTO   034
+0036:  MOVWF  19
+.................... } 
+....................  
+0037:  BCF    0B.1
+0038:  BCF    0A.3
+0039:  GOTO   01E
+.................... void main() 
+.................... { 
+*
+0186:  CLRF   04
+0187:  BCF    03.7
+0188:  MOVLW  1F
+0189:  ANDWF  03,F
+018A:  BSF    03.5
+018B:  BSF    0E.3
+018C:  MOVLW  19
+018D:  MOVWF  19
+018E:  MOVLW  A6
+018F:  MOVWF  18
+0190:  MOVLW  90
+0191:  BCF    03.5
+0192:  MOVWF  18
+0193:  MOVLW  07
+0194:  MOVWF  1F
+....................    setup_timer_0(RTCC_INTERNAL | RTCC_DIV_16); 
+0195:  BSF    03.5
+0196:  MOVF   01,W
+0197:  ANDLW  C0
+0198:  IORLW  03
+0199:  MOVWF  01
+....................     
+....................    ext_int_edge(0, H_TO_L); 
+019A:  BCF    01.6
+....................    enable_interrupts(INT_EXT); 
+019B:  BCF    03.5
+019C:  BSF    0B.4
+....................    enable_interrupts(GLOBAL); 
+019D:  MOVLW  C0
+019E:  IORWF  0B,F
+....................     
+....................    while (1) { 
+....................       getirdata(); 
+019F:  GOTO   03A
+....................       tche = gettouche(data); 
+01A0:  MOVF   31,W
+01A1:  MOVWF  35
+01A2:  MOVF   30,W
+01A3:  MOVWF  34
+01A4:  GOTO   0C5
+01A5:  MOVF   78,W
+01A6:  MOVWF  33
+....................       if (tche != 0xff) { 
+01A7:  INCFSZ 33,W
+01A8:  GOTO   1AA
+01A9:  GOTO   1AE
+....................          output_high(IR_DATA_READY); 
+01AA:  BSF    03.5
+01AB:  BCF    06.3
+01AC:  BCF    03.5
+01AD:  BSF    06.3
+....................       } 
+....................    } 
+01AE:  GOTO   19F
+.................... } 
+01AF:  SLEEP
+
+Configuration Fuses:
+   Word  1: 3F18   NOWDT NOPUT INTRC_IO NOMCLR NOBROWNOUT NOLVP NOCPD NOPROTECT

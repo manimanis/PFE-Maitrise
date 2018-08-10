@@ -1,0 +1,47 @@
+
+ROM used: 215 (10%)
+          215 (10%) including unused fragments
+
+          1 Average locations per line
+          9 Average locations per statement
+
+RAM used: 16 (7%) at main() level
+          18 (8%) worst case
+
+Stack used: 3 worst case (out of 8 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+   43    23 100  affjours.c
+   17     0   0  affjours.h
+  224     0   0  ..\..\..\Program Files\PICC\devices\16F628A.h
+----- -----
+  284    23 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     21  10   1             @delay_ms1
+0     57  27   1   442  2.4  show_val
+0     10   5   0    40  1.7  RDA_isr
+0     78  36   1   380  4.7  MAIN
+
+Program metrics:
+    Functions               3
+    Statements              23
+    Comments                63
+    Volume (V)              1078
+    Difficilty (D)          8.8
+    Effort to implement (E) 9465
+    Time to implement (T)   9 minutes
+    Est Delivered Bugs (B)  0
+    Cyclomatic Complexity   2
+    Maintainability (MI)    144
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00003     4  0  
+00004-00030    45  0  
+00031-007FF   166  1833  
+
+
+

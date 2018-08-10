@@ -1,0 +1,672 @@
+CCS PCM C Compiler, Version 4.114, 93495243               08-mars-12 12:03
+
+               Filename: D:\pfe\Montages Electroniques\decalage\main.lst
+
+               ROM used: 470 words (23%)
+                         Largest free fragment is 1578
+               RAM used: 24 (11%) at main() level
+                         34 (15%) worst case
+               Stack:    2 locations
+
+*
+0000:  MOVLW  01
+0001:  MOVWF  0A
+0002:  GOTO   19B
+0003:  NOP
+.................... #include <main.h> 
+.................... #include <16F628A.h> 
+.................... //////// Standard Header file for the PIC16F628A device //////////////// 
+.................... #device PIC16F628A 
+.................... #list 
+....................  
+....................  
+.................... #FUSES NOWDT                    //No Watch Dog Timer 
+.................... #FUSES INTRC_IO                 //Internal RC Osc, no CLKOUT 
+.................... #FUSES NOPUT                    //No Power Up Timer 
+.................... #FUSES NOPROTECT                //Code not protected from reading 
+.................... #FUSES NOBROWNOUT               //No brownout reset 
+.................... #FUSES NOMCLR                   //Master Clear pin used for I/O 
+.................... #FUSES NOLVP                    //No low voltage prgming, B3(PIC16) or B5(PIC18) used for I/O 
+.................... #FUSES NOCPD                    //No EE protection 
+....................  
+.................... #define CLK_PIN      PIN_A6 
+.................... #define PS_PIN       PIN_B7 
+....................  
+.................... #define MP3_RQ_SEND  PIN_B0 
+.................... #define MP3_TX       PIN_B2 
+.................... #define MP3_READY    PIN_B3 
+....................  
+.................... #define DO11_PIN     PIN_A0 
+.................... #define DO12_PIN     PIN_A7 
+.................... #define DO13_PIN     PIN_A1 
+....................  
+.................... #define DO21_PIN     PIN_B5 
+.................... #define DO22_PIN     PIN_B4 
+.................... #define DO23_PIN     PIN_B6 
+....................  
+.................... #use delay(clock=4000000) 
+.................... #use rs232(baud=19200,parity=N,xmit=MP3_TX,rcv=PIN_B1,bits=8) 
+....................  
+....................  
+....................  
+.................... struct mp3_state_struct { 
+....................    int state; 
+....................    int dig1; 
+....................    int dig2; 
+....................    int dig3; 
+....................    int dig4; 
+.................... }; 
+....................  
+.................... int seven, chiff, mask, i; 
+.................... struct mp3_state_struct st1, st2, last_state; 
+....................  
+.................... // Optimisation de la lecture de l'état actuel de l'afficheur 
+.................... // 120µs/appel 
+.................... void mp3_inst_state() { 
+....................    output_low(CLK_PIN); 
+000D:  BSF    03.5
+000E:  BCF    05.6
+000F:  BCF    03.5
+0010:  BCF    05.6
+....................     
+....................    // Parallel Register Load 
+....................    output_high(PS_PIN); 
+0011:  BSF    03.5
+0012:  BCF    06.7
+0013:  BCF    03.5
+0014:  BSF    06.7
+....................     
+....................    output_high(CLK_PIN); 
+0015:  BSF    03.5
+0016:  BCF    05.6
+0017:  BCF    03.5
+0018:  BSF    05.6
+....................    output_low(CLK_PIN); 
+0019:  BSF    03.5
+001A:  BCF    05.6
+001B:  BCF    03.5
+001C:  BCF    05.6
+....................     
+....................    // Serial Shift Register 
+....................    output_low(PS_PIN); 
+001D:  BSF    03.5
+001E:  BCF    06.7
+001F:  BCF    03.5
+0020:  BCF    06.7
+....................     
+....................    chiff = 0; 
+0021:  CLRF   21
+....................    seven = 0; 
+0022:  CLRF   20
+....................     
+....................    // G, F, E 
+....................    if (input(DO21_PIN)) bit_set(seven, 6); 
+0023:  BSF    03.5
+0024:  BSF    06.5
+0025:  BCF    03.5
+0026:  BTFSC  06.5
+0027:  BSF    20.6
+....................    if (input(DO22_PIN)) bit_set(seven, 5); 
+0028:  BSF    03.5
+0029:  BSF    06.4
+002A:  BCF    03.5
+002B:  BTFSC  06.4
+002C:  BSF    20.5
+....................    if (input(DO23_PIN)) bit_set(seven, 4); 
+002D:  BSF    03.5
+002E:  BSF    06.6
+002F:  BCF    03.5
+0030:  BTFSC  06.6
+0031:  BSF    20.4
+....................     
+....................    // C5, C4, C3 
+....................    if (input(DO11_PIN)) bit_set(chiff, 4); 
+0032:  BSF    03.5
+0033:  BSF    05.0
+0034:  BCF    03.5
+0035:  BTFSC  05.0
+0036:  BSF    21.4
+....................    if (input(DO12_PIN)) bit_set(chiff, 3); 
+0037:  BSF    03.5
+0038:  BSF    05.7
+0039:  BCF    03.5
+003A:  BTFSC  05.7
+003B:  BSF    21.3
+....................    if (input(DO13_PIN)) bit_set(chiff, 2); 
+003C:  BSF    03.5
+003D:  BSF    05.1
+003E:  BCF    03.5
+003F:  BTFSC  05.1
+0040:  BSF    21.2
+....................        
+....................    output_high(CLK_PIN); 
+0041:  BSF    03.5
+0042:  BCF    05.6
+0043:  BCF    03.5
+0044:  BSF    05.6
+....................    output_low(CLK_PIN); 
+0045:  BSF    03.5
+0046:  BCF    05.6
+0047:  BCF    03.5
+0048:  BCF    05.6
+....................     
+....................    output_high(CLK_PIN); 
+0049:  BSF    03.5
+004A:  BCF    05.6
+004B:  BCF    03.5
+004C:  BSF    05.6
+....................    output_low(CLK_PIN); 
+004D:  BSF    03.5
+004E:  BCF    05.6
+004F:  BCF    03.5
+0050:  BCF    05.6
+....................     
+....................    output_high(CLK_PIN); 
+0051:  BSF    03.5
+0052:  BCF    05.6
+0053:  BCF    03.5
+0054:  BSF    05.6
+....................    output_low(CLK_PIN); 
+0055:  BSF    03.5
+0056:  BCF    05.6
+0057:  BCF    03.5
+0058:  BCF    05.6
+....................     
+....................    // D, C, B 
+....................    if (input(DO21_PIN)) bit_set(seven, 3); 
+0059:  BSF    03.5
+005A:  BSF    06.5
+005B:  BCF    03.5
+005C:  BTFSC  06.5
+005D:  BSF    20.3
+....................    if (input(DO22_PIN)) bit_set(seven, 2); 
+005E:  BSF    03.5
+005F:  BSF    06.4
+0060:  BCF    03.5
+0061:  BTFSC  06.4
+0062:  BSF    20.2
+....................    if (input(DO23_PIN)) bit_set(seven, 1); 
+0063:  BSF    03.5
+0064:  BSF    06.6
+0065:  BCF    03.5
+0066:  BTFSC  06.6
+0067:  BSF    20.1
+....................     
+....................    // C2, C1 
+....................    if (input(DO11_PIN)) bit_set(chiff, 1); 
+0068:  BSF    03.5
+0069:  BSF    05.0
+006A:  BCF    03.5
+006B:  BTFSC  05.0
+006C:  BSF    21.1
+....................    if (input(DO12_PIN)) bit_set(chiff, 0); 
+006D:  BSF    03.5
+006E:  BSF    05.7
+006F:  BCF    03.5
+0070:  BTFSC  05.7
+0071:  BSF    21.0
+....................       
+....................    output_high(CLK_PIN); 
+0072:  BSF    03.5
+0073:  BCF    05.6
+0074:  BCF    03.5
+0075:  BSF    05.6
+....................    output_low(CLK_PIN); 
+0076:  BSF    03.5
+0077:  BCF    05.6
+0078:  BCF    03.5
+0079:  BCF    05.6
+....................    
+....................    // A 
+....................    if (input(DO23_PIN)) bit_set(seven, 0);    
+007A:  BSF    03.5
+007B:  BSF    06.6
+007C:  BCF    03.5
+007D:  BTFSC  06.6
+007E:  BSF    20.0
+.................... } 
+007F:  RETURN
+....................  
+.................... char mp3_get_digit(int sev) { 
+....................    if (sev == 0x40) return '0'; 
+0080:  MOVF   33,W
+0081:  SUBLW  40
+0082:  BTFSS  03.2
+0083:  GOTO   087
+0084:  MOVLW  30
+0085:  MOVWF  78
+0086:  GOTO   106
+....................    if (sev == 0x79) return '1'; 
+0087:  MOVF   33,W
+0088:  SUBLW  79
+0089:  BTFSS  03.2
+008A:  GOTO   08E
+008B:  MOVLW  31
+008C:  MOVWF  78
+008D:  GOTO   106
+....................    if (sev == 0x24) return '2'; 
+008E:  MOVF   33,W
+008F:  SUBLW  24
+0090:  BTFSS  03.2
+0091:  GOTO   095
+0092:  MOVLW  32
+0093:  MOVWF  78
+0094:  GOTO   106
+....................    if (sev == 0x30) return '3'; 
+0095:  MOVF   33,W
+0096:  SUBLW  30
+0097:  BTFSS  03.2
+0098:  GOTO   09C
+0099:  MOVLW  33
+009A:  MOVWF  78
+009B:  GOTO   106
+....................    if (sev == 0x19) return '4'; 
+009C:  MOVF   33,W
+009D:  SUBLW  19
+009E:  BTFSS  03.2
+009F:  GOTO   0A3
+00A0:  MOVLW  34
+00A1:  MOVWF  78
+00A2:  GOTO   106
+....................    if (sev == 0x12) return '5'; 
+00A3:  MOVF   33,W
+00A4:  SUBLW  12
+00A5:  BTFSS  03.2
+00A6:  GOTO   0AA
+00A7:  MOVLW  35
+00A8:  MOVWF  78
+00A9:  GOTO   106
+....................    if (sev == 0x02) return '6'; 
+00AA:  MOVF   33,W
+00AB:  SUBLW  02
+00AC:  BTFSS  03.2
+00AD:  GOTO   0B1
+00AE:  MOVLW  36
+00AF:  MOVWF  78
+00B0:  GOTO   106
+....................    if (sev == 0x78) return '7'; 
+00B1:  MOVF   33,W
+00B2:  SUBLW  78
+00B3:  BTFSS  03.2
+00B4:  GOTO   0B8
+00B5:  MOVLW  37
+00B6:  MOVWF  78
+00B7:  GOTO   106
+....................    if (sev == 0x00) return '8'; 
+00B8:  MOVF   33,F
+00B9:  BTFSS  03.2
+00BA:  GOTO   0BE
+00BB:  MOVLW  38
+00BC:  MOVWF  78
+00BD:  GOTO   106
+....................    if (sev == 0x10) return '9'; 
+00BE:  MOVF   33,W
+00BF:  SUBLW  10
+00C0:  BTFSS  03.2
+00C1:  GOTO   0C5
+00C2:  MOVLW  39
+00C3:  MOVWF  78
+00C4:  GOTO   106
+....................    if (sev == 0x7F) return ' '; 
+00C5:  MOVF   33,W
+00C6:  SUBLW  7F
+00C7:  BTFSS  03.2
+00C8:  GOTO   0CC
+00C9:  MOVLW  20
+00CA:  MOVWF  78
+00CB:  GOTO   106
+....................    if (sev == 0x0C) return 'P'; 
+00CC:  MOVF   33,W
+00CD:  SUBLW  0C
+00CE:  BTFSS  03.2
+00CF:  GOTO   0D3
+00D0:  MOVLW  50
+00D1:  MOVWF  78
+00D2:  GOTO   106
+....................    if (sev == 0x08) return 'A'; 
+00D3:  MOVF   33,W
+00D4:  SUBLW  08
+00D5:  BTFSS  03.2
+00D6:  GOTO   0DA
+00D7:  MOVLW  41
+00D8:  MOVWF  78
+00D9:  GOTO   106
+....................    if (sev == 0x06) return 'E'; 
+00DA:  MOVF   33,W
+00DB:  SUBLW  06
+00DC:  BTFSS  03.2
+00DD:  GOTO   0E1
+00DE:  MOVLW  45
+00DF:  MOVWF  78
+00E0:  GOTO   106
+....................    if (sev == 0x41) return 'U'; 
+00E1:  MOVF   33,W
+00E2:  SUBLW  41
+00E3:  BTFSS  03.2
+00E4:  GOTO   0E8
+00E5:  MOVLW  55
+00E6:  MOVWF  78
+00E7:  GOTO   106
+....................    if (sev == 0x2F) return 'R'; 
+00E8:  MOVF   33,W
+00E9:  SUBLW  2F
+00EA:  BTFSS  03.2
+00EB:  GOTO   0EF
+00EC:  MOVLW  52
+00ED:  MOVWF  78
+00EE:  GOTO   106
+....................    if (sev == 0x48) return 'N'; 
+00EF:  MOVF   33,W
+00F0:  SUBLW  48
+00F1:  BTFSS  03.2
+00F2:  GOTO   0F6
+00F3:  MOVLW  4E
+00F4:  MOVWF  78
+00F5:  GOTO   106
+....................    if (sev == 0x0E) return 'F'; 
+00F6:  MOVF   33,W
+00F7:  SUBLW  0E
+00F8:  BTFSS  03.2
+00F9:  GOTO   0FD
+00FA:  MOVLW  46
+00FB:  MOVWF  78
+00FC:  GOTO   106
+....................    if (sev == 0x47) return 'L'; 
+00FD:  MOVF   33,W
+00FE:  SUBLW  47
+00FF:  BTFSS  03.2
+0100:  GOTO   104
+0101:  MOVLW  4C
+0102:  MOVWF  78
+0103:  GOTO   106
+....................    return sev; 
+0104:  MOVF   33,W
+0105:  MOVWF  78
+.................... } 
+0106:  RETURN
+....................  
+.................... int cmp_state_eq(struct mp3_state_struct state, struct mp3_state_struct last_state) { 
+....................    if (state.state != last_state.state) return FALSE; 
+*
+014F:  MOVF   38,W
+0150:  SUBWF  33,W
+0151:  BTFSC  03.2
+0152:  GOTO   156
+0153:  MOVLW  00
+0154:  MOVWF  78
+0155:  GOTO   174
+....................    if (state.dig1 != last_state.dig1) return FALSE; 
+0156:  MOVF   39,W
+0157:  SUBWF  34,W
+0158:  BTFSC  03.2
+0159:  GOTO   15D
+015A:  MOVLW  00
+015B:  MOVWF  78
+015C:  GOTO   174
+....................    if (state.dig2 != last_state.dig2) return FALSE; 
+015D:  MOVF   3A,W
+015E:  SUBWF  35,W
+015F:  BTFSC  03.2
+0160:  GOTO   164
+0161:  MOVLW  00
+0162:  MOVWF  78
+0163:  GOTO   174
+....................    if (state.dig3 != last_state.dig3) return FALSE; 
+0164:  MOVF   3B,W
+0165:  SUBWF  36,W
+0166:  BTFSC  03.2
+0167:  GOTO   16B
+0168:  MOVLW  00
+0169:  MOVWF  78
+016A:  GOTO   174
+....................    if (state.dig4 != last_state.dig4) return FALSE; 
+016B:  MOVF   3C,W
+016C:  SUBWF  37,W
+016D:  BTFSC  03.2
+016E:  GOTO   172
+016F:  MOVLW  00
+0170:  MOVWF  78
+0171:  GOTO   174
+....................    return TRUE; 
+0172:  MOVLW  01
+0173:  MOVWF  78
+.................... } 
+....................  
+....................  
+.................... // Lecture de l'état des 5 chiffres de l'afficheur 
+.................... int mp3_state() { 
+....................    for (i = 0 ; i < 3 ; i++) { 
+*
+0107:  CLRF   23
+0108:  MOVF   23,W
+0109:  SUBLW  02
+010A:  BTFSS  03.0
+010B:  GOTO   184
+....................        do { 
+....................          mp3_inst_state(); 
+010C:  CALL   00D
+....................       } while (chiff != 0x02); 
+010D:  MOVF   21,W
+010E:  SUBLW  02
+010F:  BTFSS  03.2
+0110:  GOTO   10C
+....................       st1.dig3 = seven; 
+0111:  MOVF   20,W
+0112:  MOVWF  27
+....................        
+....................       do { 
+....................          mp3_inst_state(); 
+0113:  CALL   00D
+....................       } while (chiff != 0x01); 
+0114:  DECFSZ 21,W
+0115:  GOTO   113
+....................       st1.dig4 = seven; 
+0116:  MOVF   20,W
+0117:  MOVWF  28
+....................        
+....................       do { 
+....................          mp3_inst_state(); 
+0118:  CALL   00D
+....................       } while (chiff != 0x10); 
+0119:  MOVF   21,W
+011A:  SUBLW  10
+011B:  BTFSS  03.2
+011C:  GOTO   118
+....................       st1.state = seven; 
+011D:  MOVF   20,W
+011E:  MOVWF  24
+....................        
+....................       do { 
+....................          mp3_inst_state(); 
+011F:  CALL   00D
+....................       } while (chiff != 0x08); 
+0120:  MOVF   21,W
+0121:  SUBLW  08
+0122:  BTFSS  03.2
+0123:  GOTO   11F
+....................       st1.dig1 = seven; 
+0124:  MOVF   20,W
+0125:  MOVWF  25
+....................        
+....................       do { 
+....................          mp3_inst_state(); 
+0126:  CALL   00D
+....................       } while (chiff != 0x04); 
+0127:  MOVF   21,W
+0128:  SUBLW  04
+0129:  BTFSS  03.2
+012A:  GOTO   126
+....................       st1.dig2 = seven;      
+012B:  MOVF   20,W
+012C:  MOVWF  26
+....................        
+....................       if (i == 0) { 
+012D:  MOVF   23,F
+012E:  BTFSS  03.2
+012F:  GOTO   13B
+....................          memcpy(&st2, &st1, sizeof(st1)); 
+0130:  MOVF   24,W
+0131:  MOVWF  29
+0132:  MOVF   25,W
+0133:  MOVWF  2A
+0134:  MOVF   26,W
+0135:  MOVWF  2B
+0136:  MOVF   27,W
+0137:  MOVWF  2C
+0138:  MOVF   28,W
+0139:  MOVWF  2D
+....................       } else { 
+013A:  GOTO   182
+....................          if (cmp_state_eq(st1, st2)) break; 
+013B:  MOVF   24,W
+013C:  MOVWF  33
+013D:  MOVF   25,W
+013E:  MOVWF  34
+013F:  MOVF   26,W
+0140:  MOVWF  35
+0141:  MOVF   27,W
+0142:  MOVWF  36
+0143:  MOVF   28,W
+0144:  MOVWF  37
+0145:  MOVF   29,W
+0146:  MOVWF  38
+0147:  MOVF   2A,W
+0148:  MOVWF  39
+0149:  MOVF   2B,W
+014A:  MOVWF  3A
+014B:  MOVF   2C,W
+014C:  MOVWF  3B
+014D:  MOVF   2D,W
+014E:  MOVWF  3C
+*
+0174:  MOVF   78,F
+0175:  BTFSS  03.2
+0176:  GOTO   184
+....................          memcpy(&st2, &st1, sizeof(st1)); 
+0177:  MOVF   24,W
+0178:  MOVWF  29
+0179:  MOVF   25,W
+017A:  MOVWF  2A
+017B:  MOVF   26,W
+017C:  MOVWF  2B
+017D:  MOVF   27,W
+017E:  MOVWF  2C
+017F:  MOVF   28,W
+0180:  MOVWF  2D
+....................          i = 0; 
+0181:  CLRF   23
+....................       } 
+....................    } 
+0182:  INCF   23,F
+0183:  GOTO   108
+....................     
+....................    st1.dig1 = mp3_get_digit(st1.dig1); 
+0184:  MOVF   25,W
+0185:  MOVWF  33
+0186:  CALL   080
+0187:  MOVF   78,W
+0188:  MOVWF  25
+....................    st1.dig2 = mp3_get_digit(st1.dig2); 
+0189:  MOVF   26,W
+018A:  MOVWF  33
+018B:  CALL   080
+018C:  MOVF   78,W
+018D:  MOVWF  26
+....................    st1.dig3 = mp3_get_digit(st1.dig3); 
+018E:  MOVF   27,W
+018F:  MOVWF  33
+0190:  CALL   080
+0191:  MOVF   78,W
+0192:  MOVWF  27
+....................    st1.dig4 = mp3_get_digit(st1.dig4); 
+0193:  MOVF   28,W
+0194:  MOVWF  33
+0195:  CALL   080
+0196:  MOVF   78,W
+0197:  MOVWF  28
+....................     
+....................    return TRUE; 
+0198:  MOVLW  01
+0199:  MOVWF  78
+.................... } 
+019A:  GOTO   1B9 (RETURN)
+....................  
+.................... void main() 
+.................... {      
+019B:  CLRF   04
+019C:  BCF    03.7
+019D:  MOVLW  1F
+019E:  ANDWF  03,F
+019F:  BSF    03.5
+01A0:  BSF    0E.3
+01A1:  MOVLW  0C
+01A2:  MOVWF  19
+01A3:  MOVLW  A6
+01A4:  MOVWF  18
+01A5:  MOVLW  90
+01A6:  BCF    03.5
+01A7:  MOVWF  18
+01A8:  MOVLW  07
+01A9:  MOVWF  1F
+....................    memset(&st1, 0, sizeof(st1)); 
+01AA:  MOVLW  24
+01AB:  MOVWF  04
+01AC:  BCF    03.7
+01AD:  CLRF   33
+01AE:  MOVLW  05
+01AF:  MOVWF  34
+01B0:  CALL   004
+....................    memset(&last_state, 0, sizeof(st1)); 
+01B1:  MOVLW  2E
+01B2:  MOVWF  04
+01B3:  BCF    03.7
+01B4:  CLRF   33
+01B5:  MOVLW  05
+01B6:  MOVWF  34
+01B7:  CALL   004
+....................     
+....................    while (TRUE) { 
+....................       if (mp3_state()) { 
+01B8:  GOTO   107
+01B9:  MOVF   78,F
+01BA:  BTFSC  03.2
+01BB:  GOTO   1D4
+....................          putc('!'); 
+01BC:  MOVLW  21
+01BD:  BTFSS  0C.4
+01BE:  GOTO   1BD
+01BF:  MOVWF  19
+....................          putc(st1.state); 
+01C0:  MOVF   24,W
+01C1:  BTFSS  0C.4
+01C2:  GOTO   1C1
+01C3:  MOVWF  19
+....................          putc(st1.dig4); 
+01C4:  MOVF   28,W
+01C5:  BTFSS  0C.4
+01C6:  GOTO   1C5
+01C7:  MOVWF  19
+....................          putc(st1.dig3); 
+01C8:  MOVF   27,W
+01C9:  BTFSS  0C.4
+01CA:  GOTO   1C9
+01CB:  MOVWF  19
+....................          putc(st1.dig2); 
+01CC:  MOVF   26,W
+01CD:  BTFSS  0C.4
+01CE:  GOTO   1CD
+01CF:  MOVWF  19
+....................          putc(st1.dig1); 
+01D0:  MOVF   25,W
+01D1:  BTFSS  0C.4
+01D2:  GOTO   1D1
+01D3:  MOVWF  19
+....................       } 
+....................    } 
+01D4:  GOTO   1B8
+.................... } 
+....................  
+01D5:  SLEEP
+
+Configuration Fuses:
+   Word  1: 3F18   NOWDT NOPUT INTRC_IO NOMCLR NOBROWNOUT NOLVP NOCPD NOPROTECT

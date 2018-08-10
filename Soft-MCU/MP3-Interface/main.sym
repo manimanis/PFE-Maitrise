@@ -1,0 +1,91 @@
+004-005 @READ_PROGRAM_MEMORY8.P1
+015     CCP_1_LOW
+015     CCP_1
+016     CCP_1_HIGH
+01F.6   C1OUT
+01F.7   C2OUT
+020     @INTERRUPT_AREA
+021     @INTERRUPT_AREA
+022     @INTERRUPT_AREA
+023     @INTERRUPT_AREA
+024     @INTERRUPT_AREA
+025     @INTERRUPT_AREA
+026     @INTERRUPT_AREA
+027     @INTERRUPT_AREA
+028     @INTERRUPT_AREA
+029-02D state
+02E-031 curr_pos
+032     is_playing
+033     curr_state
+034     old_state
+035-036 st
+037-038 ost
+039-03A pst
+03B     etat
+03C     MAIN.c
+03D     @GETCH_1_.@SCRATCH1
+03D     calc_value.@SCRATCH1
+03D     MAIN.@SCRATCH1
+03E     @delay_ms1.P1
+03E     calc_value.@SCRATCH2
+03F-040 @MUL1616.P1
+03F     calc_value.@SCRATCH3
+040     calc_value.@SCRATCH4
+041-042 @MUL1616.P1
+041     @MUL88.P2
+042     @MUL88.P1
+043     @MUL1616.@SCRATCH1
+044     rda_isr.c
+045     rda_isr.@SCRATCH1
+077     @SCRATCH
+078     @SCRATCH
+078     _RETURN_
+079     @SCRATCH
+07A     @SCRATCH
+09B-09C @READ_PROGRAM_MEMORY8.P1
+
+ROM Allocation:
+0079  @delay_ms1
+008D  @GETCH_1_
+00B2  @MUL88
+0031  disable_sounds
+003F  enable_sounds
+0037  rda_isr
+00D7  calc_value
+00E1  @MUL1616
+011A  MAIN
+011A  @cinit
+
+
+User Memory space: 
+
+User Memory space: 
+
+Project Directory:
+    D:\pfe\Montages Electroniques\cmd_mp3_soft\
+
+Project Files:
+    main.c
+    main.h
+    ..\..\..\Program Files\PICC\devices\16F628A.h
+
+Units:
+    D:\pfe\Montages Electroniques\cmd_mp3_soft\main (main)
+
+Compiler Settings:
+    Processor:      PIC16F628A
+    Pointer Size:   16
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+
+Output Files:
+    Errors:      main.err
+    Ext Symbols: main.esym
+    INHX8:       main.hex
+    Symbols:     main.sym
+    List:        main.lst
+    Debug/COFF:  main.cof
+    Project:     main.PJT
+    Call Tree:   main.tre
+    Statistics:  main.sta
